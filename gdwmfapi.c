@@ -195,7 +195,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
   char *s;
   int brect[8];
   int color,bg;
-  double angle;
+  double angle, sina, cosa;
   char Times[]  = "times new roman"; /* Last-resort fallback. Make sure
                                         you have this ttf on your system! */
   char TimesB[] = "times new roman bold"; 
@@ -211,7 +211,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
   int flag=0;
   gdPoint points[4];
   U16 *lpDx2=NULL;
-  U16 xx;
+  U16 xx, yy;
 
   descent = 0;
 
@@ -325,6 +325,8 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
 
 		wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
 		angle = (double)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+		sina = -sin(angle);
+		cosa =  cos(angle); 
 
 		if (lpDx == NULL)
 			{
@@ -391,13 +393,14 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
 		  /* Output individual chars: */
 		  for (i = width = 0; i < strlen(str); i++)
 			{
-			xx = x + width;
+			xx = x + width * cosa;
+			yy = y + width * sina;
 			s = (char *)malloc(2);
 			sprintf(s, "%c\n", str [i]);
 			gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
 				brect,color,fontfile, size,
-				angle, xx, y, s);
-fprintf(stderr,"<%c> at %d\n", s [0], xx);
+				angle, xx, yy, s);
+				/* fprintf(stderr,"<%c> at %d\n", s [0], xx, yy); */
 			width += ScaleX(lpDx[i], cstruct);
 			}
 		  }

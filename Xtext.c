@@ -409,7 +409,7 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
 
 	/*normalize the lpDx here*/
 	XRotDrawImageString( ((XStruct *)(cstruct->userdata))->display, afont, 
-	((float)cstruct->dc->font->lfEscapement)/10.0,
+	(-(float)cstruct->dc->font->lfEscapement)/10.0,
 		((XStruct *)(cstruct->userdata))->drawable, (GC)cstruct->dc->userdata,
 		       x, y, str);
     }

@@ -255,7 +255,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   int width;
   int height, i;
   char *facename;
-  float x_shift, y_shift;
+  float sina, cosa;
 
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -293,6 +293,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 /*   fprintf(stderr,"FaceName: %s \tString:%s\n", */
 /* 	  cstruct->dc->font->lfFaceName,  */
 /* 	  str); */
+
+  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+  sina = -sin(text->angle);
+  cosa =  cos(text->angle);
 
 
   /* 
@@ -351,9 +355,6 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   
   text->base_x = x;
   text->base_y = y;
-
-  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
-/*   text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000;  */
 
 
 
@@ -472,14 +473,15 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 	  /* fprintf(stderr, "w=%d\n", width); */
           t = (F_text *)malloc(sizeof(F_text));
 	  *t = *text;
-          t->base_x += width;
+          t->base_x += width * cosa;
+	  t->base_y += width * sina;
           t->cstring=(char *)malloc(2);
           sprintf(t->cstring, "%c\n", text->cstring [i]);
           xf_addtext(t);
           
           /* printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
 		t->length, height, 
-		t->base_x, y, t->cstring, i);*/
+		t->base_x, t->base_y, t->cstring, i);*/
 	  
           width += ScaleX(lpDx[i], cstruct);
         }
@@ -550,7 +552,10 @@ void xf_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 
 		if (fontfile == NULL)
 			return;
-		color = xfImageColorResolve(((XFStruct *)(cstruct->userdata))->im_out, (cstruct->dc->textcolor[0]& 0x00FF), ((cstruct->dc->textcolor[0]& 0xFF00)>>8), (cstruct->dc->textcolor[1]& 0x00FF));
+		color = xfImageColorResolve(((XFStruct *)(cstruct->userdata))->im_out, 
+			( cstruct->dc->textcolor[0]& 0x00FF), 
+			((cstruct->dc->textcolor[0]& 0xFF00)>>8), 
+			( cstruct->dc->textcolor[1]& 0x00FF));
 
 		wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
 		angle = (double)(cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
