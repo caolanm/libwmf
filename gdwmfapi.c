@@ -212,7 +212,6 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
   gdPoint points[4];
   U16 *lpDx2=NULL;
   U16 xx;
-/*  char fontname[4096];  */
 
   descent = 0;
 
@@ -271,8 +270,13 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
           break;
     }
 
-	size = ScaleY(cstruct->dc->font->lfHeight,cstruct);
+        /* 
+	Semi-empirical factor. I suspect this is 72/100, where 72 is
+	points per inch and 100 the dpi of the X11 display (Caolan
+	used 75)  -- MV
+	*/
 
+	size = 0.72 * i2f_ScaleY(cstruct->dc->font->lfHeight,cstruct);
 	facename = cstruct->dc->font->lfFaceName;
         /* fprintf(stderr, "%s\n", cstruct->dc->font->lfFaceName); */
 	if (str != NULL)
@@ -366,8 +370,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			      (y + descent >= rect.bottom)*/)
 			    {
 			      gdImageStringTTF(NULL,brect,color,
-				fontfile, (size*72.0)/75,
-				angle, x, y, str);
+				fontfile, size, angle, x, y, str);
 			      for(i = 0; i < 4; i++)
 				{
 				  points[i].x = brect[i*2];
@@ -392,7 +395,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			s = (char *)malloc(2);
 			sprintf(s, "%c\n", str [i]);
 			gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
-				brect,color,fontfile, (size*72.0)/75,
+				brect,color,fontfile, size,
 				angle, xx, y, s);
 fprintf(stderr,"<%c> at %d\n", s [0], xx);
 			width += ScaleX(lpDx[i], cstruct);
@@ -402,8 +405,7 @@ fprintf(stderr,"<%c> at %d\n", s [0], xx);
 		  {
 
 		  gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
-			brect,color,fontfile, (size*72.0)/75,
-			angle, x, y, str);
+			brect,color,fontfile, size, angle, x, y, str);
 		  }
 		if (flag)
 			free(lpDx2);
