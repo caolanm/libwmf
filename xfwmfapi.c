@@ -585,7 +585,7 @@ void xf_draw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
 void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
-  int c1,c2,c3,color,flag;
+  int c1,c2,c3,color,bgcolor,flag;
   int i,np;
   U16 thisx,thisy;
   F_line *line;
@@ -601,6 +601,11 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
   color=xf_find_color(c1, c2, c3);
 
+  c1=(cstruct->dc->bgcolor[0]& 0x00FF);
+  c2=((cstruct->dc->bgcolor[0]& 0xFF00)>>8);
+  c3=(cstruct->dc->bgcolor[1]& 0x00FF);
+  bgcolor=xf_find_color(c1, c2, c3);
+
   for (i=0; i<np; i++)
     {
       line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
@@ -614,8 +619,8 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->type=T_POLYLINE;
   line->style=SOLID_LINE;
   line->thickness=1;
-  line->pen_color=color;
-  line->fill_color=WHITE;
+  line->pen_color=BLACK;
+  line->fill_color=color;
   line->fill_style=-1;
   line->depth=100;
   line->pen_style=0;
@@ -629,7 +634,7 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
 void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
-  int color,flag;
+  int color,bgcolor,flag;
   int c1, c2, c3;
   F_line *line;
   int loop;
@@ -643,6 +648,11 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
   c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
   color=xf_find_color(c1, c2, c3);
+  
+  c1=(cstruct->dc->bgcolor[0]& 0x00FF);
+  c2=((cstruct->dc->bgcolor[0]& 0xFF00)>>8);
+  c3=(cstruct->dc->bgcolor[1]& 0x00FF);
+  bgcolor=xf_find_color(c1, c2, c3);
 
   flag=setlinestyle(cstruct,0,cstruct->dc->pen);
 
@@ -657,8 +667,8 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->type=T_POLYLINE;
   line->style=SOLID_LINE;
   line->thickness=1;
-  line->pen_color=color;
-  line->fill_color=WHITE;
+  line->pen_color=BLACK;
+  line->fill_color=color;
   line->fill_style=-1;
   line->depth=100;
   line->pen_style=0;

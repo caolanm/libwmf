@@ -24,7 +24,7 @@ int xf_std_colors()
   xf_put_color(3, 0x00, 0xff, 0xff); /* Cyan    */
   xf_put_color(4, 0xff, 0x00, 0x00); /* Red     */
   xf_put_color(5, 0xff, 0x00, 0xff); /* Magenta */
-  xf_put_color(6, 0xff, 0x00, 0xff); /* Yellow  */
+  xf_put_color(6, 0xff, 0xff, 0x00); /* Yellow  */
   xf_put_color(7, 0xff, 0xff, 0xff); /* White   */
 
   xf_put_color(8,  0.000,0.000,0.560);
@@ -66,6 +66,7 @@ int xf_put_color(int num, int c1, int c2, int c3)
 int xf_find_color(int c1, int c2, int c3)
 {
   double dist, lastnearest, dred, dgreen, dblue;
+  const double goodenough = 10;
   int nearestcolor;
 
   /* Check if colour already in memory database: */
@@ -78,7 +79,7 @@ int xf_find_color(int c1, int c2, int c3)
   */
 
   /* Approximate: */
-  lastnearest = 3 * 0xff; 
+  lastnearest = 4 * 0xff; 
   nearestcolor=32;
   for (i=0; i<num_used; i++)
     {
@@ -86,14 +87,18 @@ int xf_find_color(int c1, int c2, int c3)
       dgreen = (color_db[i].green - c2);
       dblue  = (color_db[i].blue  - c3);
       dist = sqrt(dred*dred + dgreen*dgreen + dblue*dblue);
+
       if (dist < lastnearest) 
         {
           lastnearest = dist;
           nearestcolor = i;
         }
     }
-  return(color_db[nearestcolor].color);
-  printf("%d\n", nearestcolor);
+  /* If close enough, return it: */
+  if (lastnearest < goodenough)
+    {
+      return(color_db[nearestcolor].color);
+    }
 
   /* If not, add it (exact match only): */
   color_db[num_used].color=num_used+32;
