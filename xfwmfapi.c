@@ -138,7 +138,8 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   int c1, c2, c3;
   F_text *text, *t;
   int width, height, i;
-	
+  char *facename;
+
   text=(F_text *)malloc(sizeof(F_text));
 
   c1=( cstruct->dc->textcolor[0]& 0x00FF);
@@ -150,6 +151,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   text->length =  ScaleX(cstruct->realwidth, cstruct);
   text->ascent =  ScaleY(cstruct->dc->font->lfHeight, cstruct);
+
 
   wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
   height = text->descent + text->ascent;
@@ -213,18 +215,21 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000; 
 
+  facename = cstruct->dc->font->lfFaceName;
+  /* fprintf(stderr, "%s\n", facename); */
 
   text->flags = 0x4;  /* PostScript font */
 
-  text->font = 0;   /* Times Roman */
-  if (cstruct->dc->font->lfWeight   > 0) text->font = 2;   /* Times Bold (?) */ 
-  if (cstruct->dc->font->lfItalic  == 1) text->font = 1;   /* Times Italic  */ 
-  if (cstruct->dc->font->lfCharSet == 2) text->font = 32;  /* Greek, symbol */
-  if (cstruct->dc->font->lfCharSet == 1) text->font = 32;  /* Greek, symbol */
-  if (cstruct->dc->font->lfCharSet > 2) 
-    {
-      fprintf(stderr, "charset=%d\n", cstruct->dc->font->lfCharSet);
-    }
+  text->font = 0;   				     /* Times Roman */
+  if (strstr(facename, "Arial"))   text->font = 16;  /* Sans Serif */
+  if (strstr(facename, "Courier")) text->font = 12;  /* Typewriter */
+
+  if (cstruct->dc->font->lfItalic  == 1) text->font += 1; /* Not in facename */
+  if (strstr(facename, "Bold"))          text->font += 2; /* ? */
+
+  if (strstr(facename, "Sym")) text->font = 32;
+
+  /* if (cstruct->dc->font->lfWeight   > 0) text->font = 2; ? */ 
 
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
@@ -726,38 +731,58 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
   line=(F_line *)malloc(sizeof(F_line));
 
-  np=wmfrecord->Parameters[0];
-  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
-  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
-  
-  /*  printf("xf_draw_polygon %d, %d %d %d\n",np, c1,c2,c3); */
-  
-  color=xf_find_color(c1, c2, c3);
-
-  line->points=(F_point *) malloc(np*sizeof(F_point));
-  for (i=0; i<np; i++)
-    {
-      line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
-      line->points[i].y=NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
-      if (i<np-1)
-	line->points[i].next=&(line->points[i+1]);
-      else
-	line->points[i].next=NULL;
-
-    }
-
-  /* Fill out defaults for F_line */
+  /* Fill out defaults for F_line: invisible polygon */
   line->type=T_POLYGON;
   line->style=SOLID_LINE;
-  line->thickness=1;
+  line->thickness=0;
   line->pen_color=BLACK;
   line->fill_color=color;
-  line->fill_style=20;
+  line->fill_style=-1;
   line->depth=cstruct->depth--;
   line->pen_style=0;
   line->style_val=0.00;
-  
+
+
+  np=wmfrecord->Parameters[0];
+  line->points=(F_point *) malloc(np*sizeof(F_point));
+  for (i=0; i<np; i++){
+    line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
+    line->points[i].y=NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
+    if (i<np-1)
+      line->points[i].next=&(line->points[i+1]);
+    else
+      line->points[i].next=NULL;
+  }
+
+  /* Set the fill color and the fill style */
+  if (cstruct->dc->brush->lbStyle != BS_NULL){
+    c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+    c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+    line->fill_color=xf_find_color(c1, c2, c3);
+
+    /* The fill style/pattern should be computed somewhere... */
+    /* setbrushstyle(cstruct,color,cstruct->dc->brush);       */
+    line->fill_style=20;
+  }
+
+  /* Set the pen color, style, and thickness, and the line style */
+  if (cstruct->dc->pen->lopnStyle != PS_NULL){
+    c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+    c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
+    line->pen_color=xf_find_color(c1, c2, c3);
+
+    /* Unused by xfig */
+    line->pen_style=0;
+
+    /* Line style */
+    line->style=setlinestyle(cstruct,color,&(line->style_val),cstruct->dc->pen);
+
+    /* How to compute thickness from cstruct->dc->pen->lopnWidth ??? */
+    line->thickness=1;
+  }
+
   xf_addpolyline(line);
 }
 
@@ -803,7 +828,7 @@ void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
 void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
   F_ellipse *ellipse;
-  int left, right, top, bottom;
+  float left, right, top, bottom;
   int c1,c2,c3;
   
   ellipse=(F_ellipse *)malloc(sizeof(F_ellipse));
@@ -855,24 +880,24 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
   /* Computations of the ellipse dimensions */
 
-  top    = iNormX(wmfrecord->Parameters[0], cstruct);
-  right  = iNormX(wmfrecord->Parameters[1], cstruct);
-  bottom = iNormX(wmfrecord->Parameters[2], cstruct);
-  left   = iNormX(wmfrecord->Parameters[3], cstruct);
+  top    = fNormY(wmfrecord->Parameters[0], cstruct);
+  right  = fNormX(wmfrecord->Parameters[1], cstruct);
+  bottom = fNormY(wmfrecord->Parameters[2], cstruct);
+  left   = fNormX(wmfrecord->Parameters[3], cstruct);
 
   if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
-    ellipse->radiuses.x = (right - left) / 2;
-    ellipse->radiuses.y = (top - bottom) / 2;
+    ellipse->radiuses.x = round((right - left) / 2);
+    ellipse->radiuses.y = round((top - bottom) / 2);
   } else {
     /* 
     cstruct->dc->pen->lopnWidth(/2.0 ?) replaced by ellipse->thickness. 
     Is it correct ? 
     */
-    ellipse->radiuses.x = (right - left) / 2 + ellipse->thickness;
-    ellipse->radiuses.y = (top - bottom) / 2 + ellipse->thickness;
+    ellipse->radiuses.x = round((right - left) / 2.0 + ellipse->thickness);
+    ellipse->radiuses.y = round((bottom - top) / 2.0 + ellipse->thickness);
   }
-  ellipse->center.x = left   + ellipse->radiuses.x;
-  ellipse->center.y = bottom + ellipse->radiuses.y;
+  ellipse->center.x = round((right+left)/2.0);
+  ellipse->center.y = round((top+bottom)/2.0);
 
   ellipse->start.x = ellipse->center.x;
   ellipse->start.y = ellipse->center.y;

@@ -190,14 +190,22 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
   int ascent, descent, height, length, width;
   FILE *in;
   gdImagePtr im;
-  char *fontfile=NULL;
+  char *fontfile = NULL;
+  char *facename = NULL;
   int brect[8];
   int color,bg;
   double angle;
-  char Roman[]  = "times new roman"; /* Last-resort fallback. Make sure
+  char Times[]  = "times new roman"; /* Last-resort fallback. Make sure
                                         you have this ttf on your system! */
+  char TimesB[] = "times new roman bold"; 
+  char TimesI[] = "times new roman italic"; 
   char Arial[]  = "arial";           /* One more fallback */
-  char Symbol[] = "linedraw";        /* Same for symbols / wingdings. */
+  char ArialB[] = "arial bold"; 
+  char ArialI[] = "arial italic"; 
+
+  char Symb1[]  = "symbol";        /* Same for symbols / wingdings. */
+  char Symb2[]  = "mt symbol";        
+  char Symb3[]  = "euclid symbol";        
   int i;
   int flag=0;
   gdPoint points[4];
@@ -263,36 +271,45 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 
 	size = ScaleY(cstruct->dc->font->lfHeight,cstruct);
 
+	facename = cstruct->dc->font->lfFaceName;
         /* fprintf(stderr, "%s\n", cstruct->dc->font->lfFaceName); */
 	if (str != NULL)
 		{
 		if (size == 0) size = 10;
 		if (ourlist != NULL)
-			{
-			/* There are fonts in the font dir */
-			/* Try to find font specified in .wmf: */
-			wmfdebug(stderr,"searching for %s\n",
-				cstruct->dc->font->lfFaceName);
-			/* Go by the name in the .wmf: */
-			fontfile = findfile(cstruct->dc->font->lfFaceName,
-			  list, ourlist);
+		  {
+		  /* There are fonts in the font dir */
+		  /* Try to find font specified in .wmf: */
+		  wmfdebug(stderr,"searching for %s\n", facename);
+		  /* Go by the name in the .wmf: */
+		  fontfile = findfile(facename, list, ourlist);
 
-			/* No luck, proceed to substitutions: */
-			if (fontfile == NULL)
-        		  if (strstr(cstruct->dc->font->lfFaceName, "sym")) {
-			    fontfile = findfile(Symbol, list, ourlist); 
-                          }
-                        
+		  /* No luck, proceed to substitutions: */
+		  if ( (fontfile == NULL) && (strstr(facename, "sym")) )
+		    fontfile = findfile(Symb1, list, ourlist); 
+		  if ( (fontfile == NULL) && (strstr(facename, "sym")) )
+		    fontfile = findfile(Symb2, list, ourlist); 
+		  if ( (fontfile == NULL) && (strstr(facename, "sym")) )
+		    fontfile = findfile(Symb3, list, ourlist); 
 
-			if (fontfile == NULL)
-	      		  if (strstr(cstruct->dc->font->lfFaceName, "arial")) {
-			    /*"/mnt/win95/windows/fonts/arial.ttf";*/
-			    fontfile = findfile(Arial, list, ourlist); 
-			  } else {
-			    /* When nothing else helps */
-			    fontfile = findfile(Roman, list, ourlist); 
-			  }
-			}
+		  if ( (fontfile == NULL) && (strstr(facename, "italic")) )
+		    fontfile = findfile(TimesI, list, ourlist); 
+		  if ( (fontfile == NULL) && (strstr(facename, "italic")) )
+		    fontfile = findfile(ArialI, list, ourlist); 
+		  if ( (fontfile == NULL) && (strstr(facename, "bold")) )
+		    fontfile = findfile(TimesB, list, ourlist); 
+		  if ( (fontfile == NULL) && (strstr(facename, "bold")) )
+		    fontfile = findfile(ArialB, list, ourlist); 
+
+		  /* When nothing else helps: */
+		  if (fontfile == NULL)
+		    fontfile = findfile(Times, list, ourlist); 
+		  if (fontfile == NULL)
+		    /*"/mnt/win95/windows/fonts/arial.ttf";*/
+		    fontfile = findfile(Arial, list, ourlist); 
+		  }
+        fprintf(stderr, "<%s|%s>\n", fontfile, facename);
+
 		if (fontfile == NULL) return;
 
 		color = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, 

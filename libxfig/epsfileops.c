@@ -186,6 +186,30 @@ void xf_write_text(FILE *fl, F_text *text)
       case 2:
         fprintf(fl,"/Times-Bold ff ");
         break;
+      case 12:
+        fprintf(fl,"/Courier ff ");
+        break;
+      case 13:
+        fprintf(fl,"/Courier-Oblique ff ");
+        break;
+      case 14:
+        fprintf(fl,"/Courier-Bold ff ");
+        break;
+      case 15:
+        fprintf(fl,"/Courier-BoldOblique ff ");
+        break;
+      case 16:
+        fprintf(fl,"/Helvetica ff ");
+        break;
+      case 17:
+        fprintf(fl,"/Helvetica-Oblique ff ");
+        break;
+      case 18:
+        fprintf(fl,"/Helvetica-Bold ff ");
+        break;
+      case 19:
+        fprintf(fl,"/Helvetica-BoldOblique ff ");
+        break;
       case 32:
         fprintf(fl,"/Symbol ff ");
         break;
