@@ -29,7 +29,7 @@ VPATH = @srcdir@
 
 #If you don't have FreeType and/or Xpm installed, including the
 #header files, uncomment this (default).
-CFLAGS=@CFLAGS@ @DEFS@ -I../ @PNG_CFLAGS@ @ZLIB_CFLAGS@ @TTF_CFLAGS@ @XPM_CFLAGS@
+CFLAGS=@CPPFLAGS@ @CFLAGS@ @DEFS@ -I../ @PNG_CFLAGS@ @ZLIB_CFLAGS@ @TTF_CFLAGS@ @XPM_CFLAGS@
 #If you do have FreeType and/or Xpm fully installed, uncomment a
 #variation of this and comment out the line above. See also LIBS below.
 #CFLAGS=-O -DHAVE_XPM -DHAVE_LIBTTF

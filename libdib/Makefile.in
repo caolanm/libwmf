@@ -22,7 +22,7 @@ bindir = @bindir@
 libdir = @libdir@
 mandir = @mandir@
 
-CFLAGS = @CFLAGS@ @DEFS@ -I.
+CFLAGS = @CPPFLAGS@ @CFLAGS@ @DEFS@ -I.
 
 MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 

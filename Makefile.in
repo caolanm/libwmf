@@ -30,7 +30,7 @@ bindir = @bindir@
 libdir = @libdir@
 mandir = @mandir@
 
-CFLAGS = @CFLAGS@ @DEFS@ -I. @XPM_CFLAGS@ -I./libxfig -I./libdib -I./xgd-1.7.3 @TTF_CFLAGS@
+CFLAGS = @CPPFLAGS@ @CFLAGS@ @DEFS@ -I. @XPM_CFLAGS@ -I./libxfig -I./libdib -I./xgd-1.7.3 @TTF_CFLAGS@
 
 MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 

@@ -149,7 +149,7 @@ void xf_write_spline(FILE *fl, F_spline *spl)
 void xf_write_arc(FILE *fl, F_arc *arc)
 {
   /* Fix Bob Bell, added %d. Now FORMALLY correct (but still unimpl) */
-  fprintf(fl,"%d %d %d %d %d %d %d %d %0.3f 0 0 0 0 %d %d %d %d %d %d %d %d\n", O_ARC, \
+  fprintf(fl,"%d %d %d %d %d %d %d %d %d %0.3f 0 0 0 0 %d %d %d %d %d %d %d %d\n", O_ARC, \
 	arc->type,\
 	arc->style,\
 	arc->thickness,\

@@ -131,9 +131,7 @@ typedef struct f_arc {
 /* THE PRECEDING VARS MUST BE IN THE SAME ORDER IN f_arc, f_line and f_spline */
 
     int		    direction;
-    struct {
-	float		x, y;
-    }		    center;
+    struct f_pos    center;
     struct f_pos    point[3];
     struct f_arc   *next;
 }
