@@ -29,14 +29,14 @@ includedir = ${prefix}/include
 
 #If you don't have FreeType and/or Xpm installed, including the
 #header files, uncomment this (default).
-CFLAGS=-O2  -I/usr/X11R6/include -I/usr/X11R6/include  -DSTDC_HEADERS=1 -DHAVE_UNISTD_H=1 -DHasPNG=1 -DHAVE_XPM=1 -DHAVE_TTF=1 -DUSE_X=1  -I../   
+CFLAGS=-O2  -I/usr/X11R6/include -I/usr/X11R6/include  -DSTDC_HEADERS=1 -DHAVE_UNISTD_H=1 -DHasPNG=1 -DHAVE_XPM=1 -DUSE_X=1  -I../   
 #If you do have FreeType and/or Xpm fully installed, uncomment a
 #variation of this and comment out the line above. See also LIBS below.
 #CFLAGS=-O -DHAVE_XPM -DHAVE_LIBTTF
 
 #If you don't have FreeType and/or Xpm fully installed, uncomment this
 #(default).
-LIBS= -lxgd -lpng -lz -lttf -lXpm  -L/usr/X11R6/lib -L/usr/X11R6/lib -lX11  -lm
+LIBS= -lxgd -lpng -lz  -lXpm  -L/usr/X11R6/lib -L/usr/X11R6/lib -lX11  -lm
 
 #If you do have FreeType and/or Xpm fully installed, uncomment a 
 #variation of this and comment out the line above. Note that

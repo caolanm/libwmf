@@ -237,7 +237,7 @@ typedef struct f_line {
     struct f_line  *next;
 }
 		F_line;
-#if 0
+#if 1
 typedef struct f_text {
     int		    tagged;
     int		    distrib;
@@ -246,7 +246,7 @@ typedef struct f_text {
 #define					T_CENTER_JUSTIFIED	1
 #define					T_RIGHT_JUSTIFIED	2
     int		    font;
-    XFontStruct	   *fontstruct;
+/*    XFontStruct	   *fontstruct;a      commented out for now to compile */
     float	    zoom;	/* to keep track of when it needs rescaling */
     int		    size;	/* point size */
     Color	    color;
@@ -443,7 +443,7 @@ extern F_compound objects;
 extern F_line		*cur_l, *new_l, *old_l;
 extern F_arc		*cur_a, *new_a, *old_a;
 extern F_ellipse	*cur_e, *new_e, *old_e;
-/* extern F_text		*cur_t, *new_t, *old_t; */
+extern F_text	 	*cur_t, *new_t, *old_t;
 extern F_spline		*cur_s, *new_s, *old_s;
 extern F_compound	*cur_c, *new_c, *old_c;
 extern F_point		*first_point, *cur_point;
