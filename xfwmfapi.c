@@ -74,45 +74,6 @@ wmf_functions xf_wmffunctions =
       xf_initial_userdata,
       xf_finish
     };
-/*
-wmf_functions xf_wmffunctions =
-    {
-	xf_pixel_width,
-    xf_pixel_height,
-    xf_mm_width,
-    xf_mm_height,
-    xf_draw_ellipse,
-    xf_draw_simple_arc,
-    xf_draw_arc,
-    xf_draw_pie,
-    xf_draw_chord,
-    xf_draw_polygon,
-    xf_draw_polypolygon,
-    xf_draw_rectangle,
-    xf_draw_round_rectangle,
-    xf_draw_line,
-    xf_draw_polylines,
-    xf_draw_text,
-	xf_set_pixel,
-	xf_flood_fill,
-	xf_extflood_fill,
-    xf_fill_opaque,
-    xf_parseROP,
-    xf_setfillstyle,
-    xf_setpenstyle,
-    xf_set_pmf_size,
-    xf_clip_rect,
-    xf_no_clip_rect,
-    xf_copy_xpm,
-	xf_paint_rgn,
-    NULL,
-	xf_copyUserData,
-	xf_restoreUserData,
-	NULL,
-    xf_initial_userdata,
-    xf_finish
-    };
-*/
 
 void *xf_initial_userdata(CSTRUCT *cstruct)
 {
@@ -172,7 +133,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   int color,flag;
   int c1, c2, c3;
   F_text *text;
-  int dx, dy;
+  int height;
 	
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -181,20 +142,56 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
   color=xf_find_color(c1, c2, c3);
 
- /* flag=setlinestyle(cstruct,0,cstruct->dc->pen); */
+  text->descent = 0;
+  text->length =  cstruct->realwidth;
+  text->ascent =  cstruct->realheight;
+  wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
+  height = text->descent + text->ascent;
 
- /* printf("%f", arect->right); segfaults */
-/*
-  dx = arect->right - arect->left;
-  dy = arect->top   - arect->bottom; / * these segfault too * /
-*/
+  switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
+    {
+      case TA_LEFT:
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+              cstruct->currentx = x + text->length;
+              cstruct->currenty = y - height;
+          }
+          break;
+      case TA_RIGHT:
+          x -= text->length;
+          y += height;
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+              cstruct->currentx = x;
+              cstruct->currenty = y;
+          }
+          break;
+      case TA_CENTER:
+          x -= text->length / 2;
+          y += height / 2;
+          break;
+    }
+        wmfdebug(stderr,"<>2--the x is %d, the y is %d\n",x,y);
 
-  text->ascent = xf_mm_width(cstruct);
-  text->length = xf_mm_height(cstruct);
-  text->base_x = (int) x;
-  text->base_y = (int) y;
+  switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
+    {
+      case TA_TOP:
+                x -=  0;
+                y +=  text->ascent;
+                fprintf(stderr,"<>top3--the x is %d, the y is %d\n",x,y);
+                break;
+      case TA_BOTTOM:
+                x += 0;
+                y -= text->descent;
+                fprintf(stderr,"<>bottom4--the x is %d, the y is %d\n",x,y);
+                break;
+      case TA_BASELINE:
+                fprintf(stderr,"<>baseline5--the x is %d, the y is %d\n",x,y);
+                  break;
+    }
   
-  /* Fill out defaults for F_text */
+  text->base_x = x;
+  text->base_y = y;
+
+  /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
   text->font=0;   /* default */
   text->size=12;
@@ -203,18 +200,26 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   text->pen_style=0;
   text->angle=0.00;
   text->flags=flags;
+
   text->cstring = str; /* ? getting junk... */
+
+printf("--- xf_draw_text: ---\n");
+printf("color=<%d>\n", text->color);
+printf("depth=<%d>\n", text->depth);
+printf("size=<%d>\n", text->size);
+printf("cstring=<%s>\n", text->cstring);
 
   /* defined in libxfig/objlist.c */
   xf_addtext(text);
-
-  printf("xf_draw_text called\n");
 }
 
 /*
 void xf_draw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpdx)
 */
 #if 0
+
+/* Inactivated. Worth keeping here? */
+
 void xf_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
 	{
 	char systext[4096];

@@ -299,7 +299,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 		objects = (Object *) malloc(sizeof(Object) * file->wmfheader->NumOfObjects);
 		if (objects == NULL)
 			{
-			fprintf(stderr,"wierdess, no mem for objects\n");
+			fprintf(stderr,"Weirdness, no memory for objects\n");
 			return(-1);
 			}
 		for(i=0;i<file->wmfheader->NumOfObjects;i++)
@@ -309,7 +309,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 	wmfrecord.Parameters = (S16 *) malloc((file->wmfheader->MaxRecordSize-3)*sizeof(S16));
 	if (wmfrecord.Parameters == NULL)
 		{
-		fprintf(stderr,"wierdess, no mem for Paramemeters\n");
+		fprintf(stderr,"Weirdness, no mem for parameters\n");
 		return(-1);
 		}
 

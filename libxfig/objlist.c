@@ -24,7 +24,8 @@ typedef struct xf_object
 
 Xfig_object *head;
 Xfig_object *current;
-Xfig_object *traverse;
+/* Xfig_object *traverse; */
+
 
 void xf_objlist_init(void)
 {
@@ -36,7 +37,10 @@ void xf_objlist_add(int code, void *point)
 Builds linked list of objects. Object pointers are void
 to allow generic handling of all types. 
 */
+
 {
+F_text *t;
+
   if (head==NULL)
     {
       /* First object */
@@ -54,6 +58,15 @@ to allow generic handling of all types.
       current->next->next=NULL;
       current=current->next;
     }
+if (code == O_TEXT) 
+   {
+      t = point;
+      printf("--- xf_objlist_add: ---\n");
+      printf("colour:  <%d>\n", t->color);
+      printf("depth:   <%d>\n", t->depth);
+      printf("size:    <%d>\n", t->size);
+      printf("cstring: <%s>\n", t->cstring);
+   }
 }
 
 void xf_addarc(F_arc *arcpoint)
@@ -88,6 +101,7 @@ void xf_objlist_tofile(FILE *fl)
 Output routine. Here the xf_write_* routines in
 fileops.c are called.
 */
+  F_text *t;
   Xfig_object *trv;
 
   trv=head;
@@ -110,6 +124,12 @@ fileops.c are called.
 	  break;
 	case O_TEXT:
 	  /* I am sure something rotten is happening here with pointers */
+          t = trv->point;
+printf("--- xf_objlist_to_file: ---\n");
+printf("colour= (%d)\n", t->color);
+printf("depth=  (%d)\n", t->depth);
+printf("size=   (%d)\n", t->size);
+printf("cstring=(%s)\n", t->cstring);
 	  xf_write_text(fl, (F_text *)(trv->point));
 	  break;
 	default:

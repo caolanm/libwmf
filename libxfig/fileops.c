@@ -121,7 +121,9 @@ void xf_write_arc(FILE *fl, F_arc *arc)
 
 void xf_write_text(FILE *fl, F_text *text)
 {
-  fprintf(fl,"%d %d %d %d %d %d %d %d %d %d %d %d %d %d ", O_TEXT, \
+  char *c;
+
+  fprintf(fl,"%d %d %d %d %d %d %d %f %d %d %d %d %d " , O_TEXT, \
 	text->type,\
 	text->color,\
 	text->depth,\
@@ -134,5 +136,6 @@ void xf_write_text(FILE *fl, F_text *text)
 	text->length,\
 	text->base_x,\
 	text->base_y);
-  fprintf(fl,"%s\\001\n", text->cstring);
+  /* fprintf(fl,"%s\\001\n", text->cstring); */
+  fprintf(fl,"%s\\001\n", "#");
 }
