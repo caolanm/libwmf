@@ -125,3 +125,18 @@ void xf_color_to_file(FILE *fl)
     }
 }
 
+void eps_color_to_file(FILE *fl)
+{
+  int i;
+  char hextemp[10];
+
+  for (i=32; i<num_used; i++)
+    {
+      /* build formatted string in #rgb notation of colour in memory database: */
+      sprintf(hextemp, "{%.3f %.3f %.3f srgb} bind def", \
+         (double)color_db[i].red/255, (double)color_db[i].green/255, (double)color_db[i].blue/255);
+      /*  .. and print it out to file. */
+      fprintf(fl, "/col%d %s\n", color_db[i].color, hextemp);
+    }
+}
+
