@@ -23,9 +23,10 @@ int main(int argc,char **argv)
 
 	if ((argc < 2) || (argc > 3)) {
 		fprintf(stderr, "Usage: xwmf file.wmf [scale-bmp]\n");
+		return(-1);
 	}
 
-	if (argc = 3) {
+	if (argc == 3) {
 		if (strcmp(argv[2],"scale-bmp") == 0) 
 			scale_BMP = 1;
 		else
