@@ -51,7 +51,7 @@ void xf_setpenstyle(CSTRUCT *cstruct,LOGPEN *pen,DC *currentDC);
 void xf_clip_rect(CSTRUCT *cstruct);
 void xf_no_clip_rect(CSTRUCT *cstruct);
 void xf_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U16 dest_w,U16 dest_h,char *filename,U32 dwROP);
-void xf_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y);
+void xf_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y);
 void xf_paint_rgn(CSTRUCT *cstruct,WINEREGION *rgn);
 void xf_copyUserData(CSTRUCT *cstruct,DC *old,DC *new);
 void xf_restoreUserData(CSTRUCT *cstruct,DC *new);

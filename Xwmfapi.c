@@ -486,7 +486,7 @@ void Xdraw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	}
 
 /*void Xdraw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpDx)*/
-void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
+void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
 	{
 	XCharStruct charstuff;
 	int dummy;

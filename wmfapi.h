@@ -568,7 +568,7 @@ typedef struct tag_wmf_functions
 	void (*draw_round_rectangle)(CSTRUCT *,WMFRECORD *);
 	void (*draw_line)(CSTRUCT*,WMFRECORD*);
 	void (*draw_polylines)(CSTRUCT *,WMFRECORD *);
-	void (*draw_text)(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y);
+	void (*draw_text)(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y);
 	void (*set_pixel)(CSTRUCT *,WMFRECORD *);
 	void (*flood_fill)(CSTRUCT *,WMFRECORD *);
 	void (*ext_flood_fill)(CSTRUCT *,WMFRECORD *);

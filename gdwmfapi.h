@@ -40,7 +40,7 @@ void gd_setpenstyle(CSTRUCT *cstruct,LOGPEN *pen,DC *currentDC);
 void gd_clip_rect(CSTRUCT *cstruct);
 void gd_no_clip_rect(CSTRUCT *cstruct);
 void gd_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U16 dest_w,U16 dest_h,char *filename,U32 dwROP);
-void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y);
+void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y);
 void gd_paint_rgn(CSTRUCT *cstruct,WINEREGION *rgn);
 void gd_copyUserData(CSTRUCT *cstruct,DC *old,DC *new);
 void gd_restoreUserData(CSTRUCT *cstruct,DC *new);

@@ -244,7 +244,7 @@ void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	/* printf("xf_set_pixel ?\n"); */
 	}
 
-void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
+void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
 {
   /* 
   The important CSTRUCT, DC, LOGFONTA are documented in wmfapi.h.

@@ -182,7 +182,7 @@ void gd_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 /*
 void gd_draw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpdx)
 */
-void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
+void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
 {
   int dummy;
   int size;
