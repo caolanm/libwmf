@@ -14,7 +14,7 @@ void print_help()
   fprintf(stderr,"\t -l\t The information on the distance between the characters (lpDx field)\n");
   fprintf(stderr,"\t   \t in a string will not be used. The general layout may look worse\n");
   fprintf(stderr,"\t   \t but the strings may look better.\n");
-  fprintf(stderr,"\t -t\t The texts will be save as ``special''\n\n"); 
+  fprintf(stderr,"\t -t\t The texts will be saved as ``special''\n\n"); 
 }
 
 
@@ -118,6 +118,10 @@ int main(int argc,char **argv)
   xf_std_colors();  
   
   cstruct->preparse = 1;
+  /* 
+  We keep 4th parameter 0 here, because we do not need the
+  rescaling of embedded BMPs. Xfig does the scaling for us.
+  */
   PlayMetaFile((void *)cstruct, file, 0, NULL);
 
 /*   fprintf(stderr,"After preparse\n"); */
