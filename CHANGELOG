@@ -1,3 +1,9 @@
+v 0.1.18
+        * A beginning of text support for the wmftofig export. Badly
+          broken still. Some cleanup and documentation in libxfig.
+        * Fixed the function names clash of read_32ubit (...16...) with
+          wvware.
+        * Fixes to realclean in gd-1.7.3 directory in two Makefile.in's.
 v 0.1.17
 	* moved codebase over the gd-1.7.3,
 	* sent some patches to gd maintainer, hopefully in a release
