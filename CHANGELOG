@@ -1,3 +1,8 @@
+	* MV: Improved routine gdImageColorResolve (introducing a
+	  gdImageColorResolveRich version) to better handle color
+	  rich XPM files. Could be improved still.
+	* Added option scale-bmp to wmftopng.
+v 0.1.19
 	* Vivien: embedded bitmaps "stack" now handled (apparently) 
 	  correctly. cell.wmf works, test.wmf appears to as well!
         * Lots and lots of fixes/development on .fig graphics elements

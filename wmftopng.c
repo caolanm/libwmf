@@ -13,6 +13,7 @@ int main(int argc,char **argv)
 	char *in;
 	HMETAFILE file;
 	int check;
+	int scale_BMP;
 	FILE *out;
 	CSTRUCT rstruct;
 	CSTRUCT *cstruct = &rstruct;
@@ -22,7 +23,10 @@ int main(int argc,char **argv)
 
 	if (argc < 3)
 		{
-		fprintf(stderr,"Usage wmftopng file.wmf output.png [\"TrueType font dir\"]\n");
+		fprintf(stderr,"Usage wmftopng file.wmf output.png [\"TrueType font dir\"] [scale-bmp]\n");
+		fprintf(stderr,"  E.g. wmftopng test.wmf test.png /home/mv/fonts scale-bmp\n");
+		fprintf(stderr,"       wmftopng test.wmf test.png /home/mv/fonts\n");
+		fprintf(stderr,"       wmftopng test.wmf test.png - scale-bmp\n");
 		return(-1);
 		}
 
@@ -40,6 +44,20 @@ int main(int argc,char **argv)
 	    	if (ourlist == NULL)
 		  fprintf(stderr,"found no tt fonts in \"%s\"\n",argv[3]);
 	  }
+
+	/* Read fourth argument = scale-bmp: */
+	if (argc > 4) 
+		{
+		if (strcmp(argv[4],"scale-bmp") == 0) 
+			scale_BMP = 1;
+		else
+			scale_BMP = 0;
+		}
+	else
+		/* default behaviour: */
+		scale_BMP = 0;
+
+
 	in = argv[1];
 
 	wmfinit(cstruct);
@@ -55,6 +73,7 @@ int main(int argc,char **argv)
 		file = GetPlaceableMetaFile(in);
 		if (file != NULL)
 			wmffunctions->set_pmf_size(cstruct,file);
+			fprintf(stderr, "Placeable Mätäfile\n");
 		}
 	else
 		file = GetMetaFile(in);
@@ -68,13 +87,14 @@ int main(int argc,char **argv)
 		}
 
 	cstruct->preparse = 1;
-	PlayMetaFile((void *)cstruct,file,1,NULL);
+	PlayMetaFile((void *)cstruct,file,scale_BMP,NULL);
 
 	gdstruct.im_out = gdImageCreate(cstruct->realwidth, cstruct->realheight);
 	gdImageColorResolve(gdstruct.im_out, 0xff, 0xff, 0xff);
 	
 	cstruct->preparse = 0;
-	PlayMetaFile((void *)cstruct,file,1,NULL);
+/* fprintf(stderr, "%f %f\n", cstruct->realwidth, cstruct->realheight); */
+	PlayMetaFile((void *)cstruct,file,scale_BMP,argv[2]);
 
 	out = fopen(argv[2], "wb");
 	if (out == NULL)

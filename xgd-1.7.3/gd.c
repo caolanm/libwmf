@@ -140,6 +140,7 @@ int gdImageColorAllocate(gdImagePtr im, int r, int g, int b)
  * in a single function.    Its advantage is that it is guaranteed to
  * return a color index in one search over the color table.
  */
+
 int gdImageColorResolve(gdImagePtr im, int r, int g, int b)
 {
         int c;
@@ -166,6 +167,75 @@ int gdImageColorResolve(gdImagePtr im, int r, int g, int b)
                 }
         }
         /* no exact match.  We now know closest, but first try to allocate exact */
+        if (op == -1) {
+                op = im->colorsTotal;
+                if (op == gdMaxColors) {    /* No room for more colors */
+                        return ct;              /* Return closest available color */
+                }
+                im->colorsTotal++;
+        }
+        im->red  [op] = r;
+        im->green[op] = g;
+        im->blue [op] = b;
+        im->open [op] = 0;
+        return op;                                      /* Return newly allocated color */
+}
+/*
+ gdImageColorResolveRich is a hack to the above to allow rich
+ color images to be resolved reasonably into the 255 color palette.
+ Without this, the first colors found will grab the whole palette,
+ even if they are all similar browns barely distinguishable to the
+ naked eye.
+
+ Called from within gdxmp.c.
+ */
+
+int gdImageColorResolveRich(gdImagePtr im, int r, int g, int b)
+{
+        int c;
+        int ct = -1;
+        int op = -1;
+        long rd, gd, bd, dist;
+        long mindist = 3*255*255;  /* init to max poss dist */
+	long goodenough;
+
+	/* 
+	Dirty hack. Prevents the situation, with color rich 
+	images, that all color slots are taken by the first 
+	colors which are very close together, e.g. all browns 
+	and greys.
+
+	This could be further improved into a search algorithm
+	with several passes seeking a near-optimum set of 255 
+	colors approximating those present (hint, hint!).
+	*/
+
+	goodenough = 500;
+
+        for (c = 0; c < im->colorsTotal; c++) {
+                if (im->open[c]) {
+                        op = c;                         /* Save open slot */
+                        continue;                       /* Color not in use */
+                }
+                rd = (long)(im->red  [c] - r);
+                gd = (long)(im->green[c] - g);
+                bd = (long)(im->blue [c] - b);
+                dist = rd * rd + gd * gd + bd * bd;
+                if (dist < mindist) {
+                        if (dist == 0) {
+                                return c; /* Return exact match color */
+                        }
+                        mindist = dist;
+                        ct = c;
+                }
+        }
+        if (mindist <= goodenough) {
+                return ct; /* Return good enough match color */
+        }
+
+        /* no exact match. 
+	   We now know closest, but first try to allocate exact 
+	*/
         if (op == -1) {
                 op = im->colorsTotal;
                 if (op == gdMaxColors) {    /* No room for more colors */

@@ -31,7 +31,6 @@ gdImagePtr gdImageCreateFromXpm(char *filename)
 	int red=0,green=0,blue=0,color=0;
 	int *colors;
 	int ret;
-
 	ret = XpmReadFileToXpmImage(filename,&image,&info);
 	if (ret != XpmSuccess)
 		return 0;
@@ -40,6 +39,7 @@ gdImagePtr gdImageCreateFromXpm(char *filename)
 	    return 0;
 
 	number = image.ncolors;
+fprintf(stderr, "gdImageCreateFromXpm: %d colours\n", number);
 	colors = (int*)malloc(sizeof(int) * number);
 	if (colors == NULL)
 		return(0);
@@ -117,10 +117,17 @@ gdImagePtr gdImageCreateFromXpm(char *filename)
 				break;
 			}
 
-
-		colors[i] = gdImageColorResolve(im,red,green,blue);
+		if (number > 256) 
+			colors[i] = gdImageColorResolveRich(im,red,green,blue);
+		else
+			colors[i] = gdImageColorResolve(im,red,green,blue);
 		if (colors[i] == -1)
+			{
 			fprintf(stderr,"ARRRGH\n");
+			fprintf(stderr,"A more civilized reponse would be:\n");
+			fprintf(stderr,"gdImageColorResolve failed in gdxpm\n");
+			fprintf(stderr,"Colour: %d .\n", i);
+			}
 		}
 
 	apixel = (char *)malloc(image.cpp+1);

@@ -16,8 +16,8 @@ winepatches dir for them.
 * Major contributions/development on Xfig output by Frédéric Vivien.
   Graphic elements, embedded bitmaps, styles and attributes. 
   And the test file cell.wmf.
-* Debugging help by Benjamin Geer, Peter Ohlerich,
-  Steve Oney.
+* Debugging help by Benjamin Geer, Peter Ohlerich, Steve Oney.
+* Revamping of the configure.in script, and more, by Albert Chin. 
 
 * adding text output (and more) to the Xfig output code of libwmf;
   creating a rudimentary wmftoeps, fixing up font handling and text
