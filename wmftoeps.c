@@ -92,14 +92,16 @@ int writeepsheader(FILE *fl, char *title, int width, int height)
 {
   char *hostname;
   size_t len = 100;
+  time_t t;
   hostname = (char *)malloc(len + 1);
   gethostname(hostname, len);
   hostname[len] = '\0';
+  t = time(NULL);
 
   fprintf(fl, "%%!PS-Adobe-2.0 EPSF-2.0\n");
   fprintf(fl, "%%%%Title: %s\n", title);
   fprintf(fl, "%%%%Creator: libwmf version 0.1.19 cvs\n");
-  fprintf(fl, "%%%%CreationDate: %s", ctime(time));
+  fprintf(fl, "%%%%CreationDate: %s", ctime(&t));
   fprintf(fl, "%%%%For: %s@%s\n", getlogin(), hostname);
   fprintf(fl, "%%%%BoundingBox: 0 0 %d %d \n",  (int) width, (int) height);
   fprintf(fl, "%%%%Magnification: 1.0000\n");
