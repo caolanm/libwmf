@@ -28,6 +28,7 @@
 #include <X11/Xatom.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "rotated.h"
 
 

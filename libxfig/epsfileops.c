@@ -91,7 +91,7 @@ void xf_write_ellipse(FILE *fl, F_ellipse *ellipse)
       fprintf(fl, "0 360 ");
     }	
   fprintf(fl, "DrawEllipse ");
-  fprintf(fl, "gs col%d 1.00 shd ef gr ", (float) ellipse->fill_color);
+  fprintf(fl, "gs col%d 1.00 shd ef gr ", ellipse->fill_color);
   fprintf(fl, "gs col%d s gr", ellipse->pen_color);
   fprintf(fl, "\n");
       

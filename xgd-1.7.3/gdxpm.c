@@ -6,6 +6,7 @@ http://www.csn.ul.ie/~caolan
 */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "gd.h"
 
 #ifndef HAVE_XPM

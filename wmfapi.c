@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "wmfapi.h"
 #include "stack.h"
@@ -716,8 +717,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 				  if ( (wmfrecord.Parameters[6] != ScaleX(wmfrecord.Parameters[6],cstruct)) 
 				       || (wmfrecord.Parameters[5] != ScaleY(wmfrecord.Parameters[5],cstruct)))
 				    {
-				      float scale_x=i2f_ScaleX(wmfrecord.Parameters[6],cstruct)/wmfrecord.Parameters[6];
-				      float scale_y=i2f_ScaleY(wmfrecord.Parameters[5],cstruct)/wmfrecord.Parameters[5];
+				      scale_x=i2f_ScaleX(wmfrecord.Parameters[6],cstruct)/wmfrecord.Parameters[6];
+				      scale_y=i2f_ScaleY(wmfrecord.Parameters[5],cstruct)/wmfrecord.Parameters[5];
 
 				      if (scale_BMP){
 					tempstring = tmpnam(NULL);
