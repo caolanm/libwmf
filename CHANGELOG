@@ -1,3 +1,8 @@
+	* Bob Bell patch to prevent buffer ovfl in wmftoeps.
+	* Option scale-bmp to xwmf also.
+	* Removed gdImageColorResolveRich again, and implemented 
+	  a better solution in gdxpm.c based on gridding the
+	  colour cube.
 	* MV: Improved routine gdImageColorResolve (introducing a
 	  gdImageColorResolveRich version) to better handle color
 	  rich XPM files. Could be improved still.
