@@ -136,8 +136,8 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   */
 
   int c1, c2, c3;
-  F_text *text;
-  int height;
+  F_text *text, *t;
+  int width, height, i;
 	
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -148,12 +148,23 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   text->descent = 0;
 
-  text->length =  cstruct->xpixeling * cstruct->realwidth;
-  text->ascent =  cstruct->dc->font->lfHeight / cstruct->ypixeling;
-/*   text->ascent =  cstruct->ypixeling * cstruct->realheight; */
+  text->length =  ScaleX(cstruct->realwidth, cstruct);
+  text->ascent =  ScaleY(cstruct->dc->font->lfHeight, cstruct);
 
   wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
   height = text->descent + text->ascent;
+
+  /* 
+  Compute text starting position.
+  have explicit character cell x offsets in logical coordinates
+  */
+
+  if (lpDx) 
+    {
+      for (i = width = 0; i < strlen(str); i++) width += lpDx[i];
+      width = ScaleX(width, cstruct);
+      text->length = width;
+    }
 
   if (cstruct->dc->textalign & TA_UPDATECP)
     {
@@ -206,22 +217,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   text->flags = 0x4;  /* PostScript font */
 
   text->font = 0;   /* Times Roman */
-  if (cstruct->dc->font->lfWeight > 0)
-    {
-      text->font = 2;  /* Times Bold (?) */ 
-    }
-  if (cstruct->dc->font->lfItalic == 1)
-    {
-      text->font = 1;  /* Times Italic */ 
-    }
-  if (cstruct->dc->font->lfCharSet == 2) 
-    { 
-      text->font = 32;  /* Greek, symbol */
-    } 
-  if (cstruct->dc->font->lfCharSet == 1) 
-    { 
-      text->font = 32;  /* Greek, symbol */
-    } 
+  if (cstruct->dc->font->lfWeight   > 0) text->font = 2;   /* Times Bold (?) */ 
+  if (cstruct->dc->font->lfItalic  == 1) text->font = 1;   /* Times Italic  */ 
+  if (cstruct->dc->font->lfCharSet == 2) text->font = 32;  /* Greek, symbol */
+  if (cstruct->dc->font->lfCharSet == 1) text->font = 32;  /* Greek, symbol */
   if (cstruct->dc->font->lfCharSet > 2) 
     {
       fprintf(stderr, "charset=%d\n", cstruct->dc->font->lfCharSet);
@@ -235,20 +234,43 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   why MS Word formulas look so ugly compared to LaTeX.
   */
 
-
   text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20; 
-  /* text->size = cstruct->dc->font->lfHeight / (20 * cstruct->ypixeling); */
   text->depth=cstruct->depth--;
   text->pen_style=0;
   
   text->cstring=(char *)malloc(strlen(str)+1);
   strncpy(text->cstring, str, strlen(str)); 
 
-  /* defined in libxfig/objlist.c */
-  xf_addtext(text);
-  printf("xf_addtext: %dx%d+%d+%d %s\n", 
+  if (lpDx) 
+    {
+      for (i = width = 0; i < strlen(str); i++) 
+        {
+	  /* Explicit widths in lpDx, output indiv. chars */
+	  /* fprintf(stderr, "w=%d\n", width); */
+          t = (F_text *)malloc(sizeof(F_text));
+	  *t = *text;
+          t->base_x += width;
+          t->cstring=(char *)malloc(2);
+          sprintf(t->cstring, "%c\n", text->cstring [i]);
+          xf_addtext(t);
+          /*
+          printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
+		t->length, height, 
+		t->base_x, y, t->cstring, i);
+          */
+          width += ScaleX(lpDx[i], cstruct);
+        }
+    }
+  else
+    {
+      /* defined in libxfig/objlist.c */
+      xf_addtext(text);
+      /*
+      printf("xf_addtext: %dx%d+%d+%d %s\n", 
 	text->length, height, 
 	x, y, text->cstring);
+      */
+    }
 }
 
 /*
