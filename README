@@ -35,11 +35,10 @@ To compile this code in its entirity you should have the freetype
 library (http://www.freetype.org), and you should have a range
 of truetype fonts, typically the ones supplied with windows.
 
-NOTE: Currently substitution rules are in effect, so if a 
-font is missing, 
-- Symbol is substituted if its name contains "sym";
-- Arial is substituted if its name contains "arial";
-- Times New Roman is substituted otherwise.
+NOTE: Currently an elaborate set of substitution/fallback rules 
+is in effect. You should be safe having times.ttf and/or
+arial.ttf and some symbol font like symbol.ttf (better: 
+eucsym.ttf) on your disc. 
 
 freetype is only required for the gd binding to libwmf, i.e. the
 wmftopng program, the X bindings, (xwmf) doesn't require the 
@@ -65,7 +64,7 @@ In this release libwmf cannot resize bitmaps embedded in wmf files
 on its own, and attempt to offload them to the netpbm utilities,
 so you should have these installed, it wont break anything not to
 have them installed, and this requirement will be removed in a later
-release.
+release. (Note MV: Frédéric working on this).
 
 INSTALLATION
 ============
@@ -171,3 +170,4 @@ CHANGELOG is the file with the changes and up to date news.
 read it for updates.
 
 C.
+MV

@@ -192,6 +192,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
   gdImagePtr im;
   char *fontfile = NULL;
   char *facename = NULL;
+  char *s;
   int brect[8];
   int color,bg;
   double angle;
@@ -210,7 +211,8 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
   int flag=0;
   gdPoint points[4];
   U16 *lpDx2=NULL;
-  char fontname[4096];
+  U16 xx;
+/*  char fontname[4096];  */
 
   descent = 0;
 
@@ -308,7 +310,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 		    /*"/mnt/win95/windows/fonts/arial.ttf";*/
 		    fontfile = findfile(Arial, list, ourlist); 
 		  }
-        fprintf(stderr, "<%s|%s>\n", fontfile, facename);
+        	/* fprintf(stderr, "<%s|%s>\n", fontfile, facename); */
 
 		if (fontfile == NULL) return;
 
@@ -328,17 +330,9 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 				for (i=0;i<strlen(str);i++)
 					{
 					lpDx2[i] = cstruct->dc->charextra;
-					wmfdebug(stderr,"the space is %d\n",lpDx2[i]);
+					fprintf(stderr,"the space is %d\n",lpDx2[i]);
 					}
 				flag = 1;
-				}
-			}
-		else
-			{
-			for (i=0;i<strlen(str);i++)
-				{
-				lpDx[i] = ScaleX(lpDx[i],cstruct);
-				wmfdebug(stderr,"the or space is %d\n",lpDx[i]);
 				}
 			}
 
@@ -389,10 +383,28 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			  }
 			}
 
-		gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
+		if (lpDx)
+		  {
+		  /* Output individual chars: */
+		  for (i = width = 0; i < strlen(str); i++)
+			{
+			xx = x + width;
+			s = (char *)malloc(2);
+			sprintf(s, "%c\n", str [i]);
+			gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
+				brect,color,fontfile, (size*72.0)/75,
+				angle, xx, y, s);
+fprintf(stderr,"<%c> at %d\n", s [0], xx);
+			width += ScaleX(lpDx[i], cstruct);
+			}
+		  }
+		else
+		  {
+
+		  gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
 			brect,color,fontfile, (size*72.0)/75,
 			angle, x, y, str);
-
+		  }
 		if (flag)
 			free(lpDx2);
 		}

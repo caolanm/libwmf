@@ -9,15 +9,16 @@ winepatches dir for them.
 * the fig code is written by David.Airlie@ul.ie 
 	(http://www.csn.ul.ie/~airlied)
 * zooming in with xwmf (+ and -) is by Raj Manandhar <raj@colsa.com> 
-
+---
 * Contributions by Dom Lachowicz (help with cvs repository, 
   checking in stuff, good ideas,...)
 * Contribution by Steven Michael Robbins (simpler configure.in)
-* Contribution to Xfig output by Frédéric Vivien.
+* Major contributions/development on Xfig output by Frédéric Vivien.
+  Graphic elements, embedded bitmaps, styles and attributes.
 * Debugging help by Benjamin Geer, Peter Ohlerich,
   Steve Oney.
 
-* adding text output (and more) to the xfig output code of libwmf;
-  creating a rudimentary wmftoeps -- yours truly the maintainer,
-  Martin Vermeer
+* adding text output (and more) to the Xfig output code of libwmf;
+  creating a rudimentary wmftoeps, fixing up font handling and text
+  placement in wnftopng -- yours truly the maintainer, Martin Vermeer
 
