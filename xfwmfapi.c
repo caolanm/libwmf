@@ -436,10 +436,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
       /*       text->length = width; */ /*Commented out as very dangerous*/
 
 
-/*       if (cstruct->dc->textalign & TA_UPDATECP){ */
-/* 	x = currentx; */
-/* 	y = currenty; */
-/*       } /* Are we forgetting the parameters value ??? */ 
+       if (cstruct->dc->textalign & TA_UPDATECP){ 
+ 	x = currentx; 
+ 	y = currenty;
+       } /* Are we forgetting the parameters value ??? 
+	    no, this is *necessary* to process Steven Oney's test
+            file correctly. Don't remove! */ 
 
       /* Justification*/
       switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
