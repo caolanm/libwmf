@@ -537,13 +537,25 @@ int i;
         for(i=0;i<im->clipping_no;i++)
             {
             if ((x < im->clipping_rects[0+(i*4)]) || (x > im->clipping_rects[2+(i*4)]) ||
-                (y < im->clipping_rects[1+(i*4)]) || (y > im->clipping_rects[3+(i*4)]))
+                (y > im->clipping_rects[1+(i*4)]) || (y < im->clipping_rects[3+(i*4)]))
                     {
-                    fprintf(stderr,"point refused %d %d - %d %d %d %d\n",x,y,
-                    im->clipping_rects[0+(i*4)],
-                    im->clipping_rects[1+(i*4)],
-                    im->clipping_rects[2+(i*4)],
-                    im->clipping_rects[3+(i*4)]);
+		    fprintf(stderr,"point refused %d %d\n", x, y);
+                    if (x < im->clipping_rects[0+(i*4)])
+			fprintf(stderr,"x < xleft\n");
+		    if (x > im->clipping_rects[2+(i*4)])
+			fprintf(stderr,"x > xright\n");
+		    if (y > im->clipping_rects[1+(i*4)])
+			fprintf(stderr,"y > ybottom\n");
+                    if (y < im->clipping_rects[3+(i*4)])
+			fprintf(stderr,"y < ytop\n");
+ 
+		    fprintf(stderr,"+------%6d------+\n", 
+			im->clipping_rects[3+(i*4)]);
+		    fprintf(stderr,"|%6d      %6d|\n",
+                    	im->clipping_rects[0+(i*4)],
+			im->clipping_rects[2+(i*4)]);
+		    fprintf(stderr,"+------%6d------+\n", 
+                    	im->clipping_rects[1+(i*4)]);
                     return(0);
                     }
             }
