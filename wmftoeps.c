@@ -91,9 +91,10 @@ int main(int argc,char **argv)
 int writeepsheader(FILE *fl, char *title, int width, int height)
 {
   char *hostname;
-  size_t len;
-  hostname = (char *)malloc(100);
+  size_t len = 100;
+  hostname = (char *)malloc(len + 1);
   gethostname(hostname, len);
+  hostname[len] = '\0';
 
   fprintf(fl, "%%!PS-Adobe-2.0 EPSF-2.0\n");
   fprintf(fl, "%%%%Title: %s\n", title);
@@ -195,6 +196,7 @@ int writeepsheader(FILE *fl, char *title, int width, int height)
   fprintf(fl, "$F2psBegin\n");
   fprintf(fl, "%%%%Page: 1 1\n");
   fprintf(fl, "0.06 0.06 sc\n");
+  return 0;
 }
   
 
@@ -202,4 +204,5 @@ int writeepsfooter(FILE *fl)
 {
   fprintf(fl, "$F2psEnd\n");
   fprintf(fl, "rs\n");
+  return 0;
 }
