@@ -136,6 +136,5 @@ void xf_write_text(FILE *fl, F_text *text)
 	text->length,\
 	text->base_x,\
 	text->base_y);
-  /* fprintf(fl,"%s\\001\n", text->cstring); */
-  fprintf(fl,"%s\\001\n", "#");
+  fprintf(fl,"%s\\001\n", text->cstring); 
 }

@@ -62,14 +62,15 @@ int main(int argc,char **argv)
   
   xfstruct.fl=out;
   writefigheader(out);
+  xf_std_colors();  
   
   cstruct->preparse = 1;
   PlayMetaFile((void *)cstruct,file);
 
   cstruct->preparse = 0;
   PlayMetaFile((void *)cstruct,file);
-  
-  xf_color_to_file(out);
+
+  xf_color_to_file(out);  /* If there are user-defined colours? */
   xf_objlist_tofile(out);
   fclose(out);
 

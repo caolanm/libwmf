@@ -237,7 +237,7 @@ typedef struct f_line {
     struct f_line  *next;
 }
 		F_line;
-#if 1
+
 typedef struct f_text {
     int		    tagged;
     int		    distrib;
@@ -449,4 +449,3 @@ extern F_compound	*cur_c, *new_c, *old_c;
 extern F_point		*first_point, *cur_point;
 extern F_linkinfo	*cur_links;
 
-#endif /* OBJECT_H */

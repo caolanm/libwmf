@@ -58,15 +58,6 @@ F_text *t;
       current->next->next=NULL;
       current=current->next;
     }
-if (code == O_TEXT) 
-   {
-      t = point;
-      printf("--- xf_objlist_add: ---\n");
-      printf("colour:  <%d>\n", t->color);
-      printf("depth:   <%d>\n", t->depth);
-      printf("size:    <%d>\n", t->size);
-      printf("cstring: <%s>\n", t->cstring);
-   }
 }
 
 void xf_addarc(F_arc *arcpoint)
@@ -102,6 +93,7 @@ Output routine. Here the xf_write_* routines in
 fileops.c are called.
 */
   F_text *t;
+  char *c;
   Xfig_object *trv;
 
   trv=head;
@@ -125,11 +117,6 @@ fileops.c are called.
 	case O_TEXT:
 	  /* I am sure something rotten is happening here with pointers */
           t = trv->point;
-printf("--- xf_objlist_to_file: ---\n");
-printf("colour= (%d)\n", t->color);
-printf("depth=  (%d)\n", t->depth);
-printf("size=   (%d)\n", t->size);
-printf("cstring=(%s)\n", t->cstring);
 	  xf_write_text(fl, (F_text *)(trv->point));
 	  break;
 	default:

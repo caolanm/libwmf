@@ -128,7 +128,10 @@ void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
 void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
 {
-  /* This is ALMOST right... somebody look into finishing this */
+  /* 
+  This is ALMOST right... 
+  The important CSTRUCT, DC, LOGFONTA are documented in wmfapi.h.
+  */
 
   int color,flag;
   int c1, c2, c3;
@@ -137,10 +140,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 	
   text=(F_text *)malloc(sizeof(F_text));
 
-  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
-  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
-  color=xf_find_color(c1, c2, c3);
+  c1=(cstruct->dc->textcolor[0]& 0x00FF);
+  c2=((cstruct->dc->textcolor[0]& 0xFF00)>>8);
+  c3=(cstruct->dc->textcolor[1]& 0x00FF);
+  text->color=xf_find_color(c1, c2, c3);
 
   text->descent = 0;
   text->length =  cstruct->realwidth;
@@ -174,43 +177,60 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
       case TA_TOP:
-                x -=  0;
-                y +=  text->ascent;
-                fprintf(stderr,"<>top3--the x is %d, the y is %d\n",x,y);
-                break;
+          x -=  0;
+          y +=  text->ascent;
+          break;
       case TA_BOTTOM:
-                x += 0;
-                y -= text->descent;
-                fprintf(stderr,"<>bottom4--the x is %d, the y is %d\n",x,y);
-                break;
+          x += 0;
+          y -= text->descent;
+          break;
       case TA_BASELINE:
-                fprintf(stderr,"<>baseline5--the x is %d, the y is %d\n",x,y);
-                  break;
+          break;
     }
   
   text->base_x = x;
   text->base_y = y;
 
+  text->angle = 2 * 3.1415 * cstruct->dc->font->lfOrientation / 10000; 
+
+/*
+printf("ht%d\n", cstruct->dc->font->lfHeight);
+printf("width%d\n", cstruct->dc->font->lfWidth);
+printf("esc%d\n", cstruct->dc->font->lfEscapement);
+printf("wt%d\n", cstruct->dc->font->lfWeight);
+printf("it%d\n", cstruct->dc->font->lfItalic);
+printf("ul%d\n", cstruct->dc->font->lfUnderline);
+printf("charset = %d\n", cstruct->dc->font->lfCharSet);
+*/
+
+  text->flags = 0x4;  /* PostScript font */
+
+  text->font = 0;   /* Times Roman */
+  if (cstruct->dc->font->lfWeight > 0)
+    {
+      text->font = 2;  /* Times Bold (?) */ 
+    }
+  if (cstruct->dc->font->lfItalic == 1)
+    {
+      text->font = 1;  /* Times Italic */ 
+    }
+  if (cstruct->dc->font->lfCharSet == 2) 
+    { 
+      text->font = 32;  /* Greek */
+    } 
+
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
-  text->font=0;   /* default */
-  text->size=12;
-  text->color=color;
+  text->size = 12;
   text->depth=100;
   text->pen_style=0;
-  text->angle=0.00;
-  text->flags=flags;
-
-  text->cstring = str; /* ? getting junk... */
-
-printf("--- xf_draw_text: ---\n");
-printf("color=<%d>\n", text->color);
-printf("depth=<%d>\n", text->depth);
-printf("size=<%d>\n", text->size);
-printf("cstring=<%s>\n", text->cstring);
+  
+  text->cstring=(char *)malloc(strlen(str)+1);
+  strncpy(text->cstring, str, strlen(str)); 
 
   /* defined in libxfig/objlist.c */
   xf_addtext(text);
+printf("addtext: %s\n", text->cstring);
 }
 
 /*
