@@ -256,6 +256,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   int height, i;
   char *facename;
   float sina, cosa;
+  float x_width=0, y_width=0;
+  float x_height, y_height;
+
+/*   fprintf(stderr,"X: %d, Y: %d\t%s ",x,y,str); */
 
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -264,14 +268,18 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   c3=( cstruct->dc->textcolor[1]& 0x00FF);
   text->color=xf_find_color(c1, c2, c3);
 
+
   text->descent = 0;
 
-  text->length =  ScaleX(cstruct->realwidth, cstruct);
+/*   text->length =  ScaleX(cstruct->realwidth, cstruct); */
   text->ascent =  ScaleY(cstruct->dc->font->lfHeight, cstruct);
 
+/*   fprintf(stderr,"ascent: %d, descent: %d ",text->ascent, text->descent); */
 
   wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
   height = text->descent + text->ascent;
+  x_height = i2f_ScaleX(cstruct->dc->font->lfHeight, cstruct);
+  y_height = i2f_ScaleY(cstruct->dc->font->lfHeight, cstruct);
 
 
 /*   fprintf(stderr,"\nHeight: %d, Width: %d, Escapement: %d, Orientation: %d, Weight: %d, \n", */
@@ -294,67 +302,6 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 /* 	  cstruct->dc->font->lfFaceName,  */
 /* 	  str); */
 
-  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
-  sina = -sin(text->angle);
-  cosa =  cos(text->angle);
-
-
-  /* 
-  Compute text starting position.
-  have explicit character cell x offsets in logical coordinates
-  */
-
-  if (lpDx) 
-    {
-      for (i = width = 0; i < strlen(str); i++) width += lpDx[i];
-      width = ScaleX(width, cstruct);
-      text->length = width;
-    }
-
-  if (cstruct->dc->textalign & TA_UPDATECP)
-    {
-        x = currentx;
-        y = currenty;
-    }
-
-  switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
-    {
-      case TA_LEFT:
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-              currentx = x + text->length;
-              currenty = y - height;
-          }
-          break;
-      case TA_RIGHT:
-          x -= text->length;
-          y += height;
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-              currentx = x;
-              currenty = y;
-          }
-          break;
-      case TA_CENTER:
-          x -= text->length / 2;
-          y += height / 2;
-          break;
-    }
-
-  switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
-    {
-      case TA_TOP:
-          x -=  0;
-          y +=  text->ascent;
-          break;
-      case TA_BOTTOM:
-          x += 0;
-          y -= text->descent;
-          break;
-      case TA_BASELINE:
-          break;
-    }
-  
-  text->base_x = x;
-  text->base_y = y;
 
 
 
@@ -465,36 +412,168 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   text->cstring=(char *)malloc(strlen(str)+1);
   strncpy(text->cstring, str, strlen(str)+1); 
 
+
+
+  /* Text angle */
+  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+  sina =  sin(text->angle);
+  cosa =  cos(text->angle);
+/*   fprintf(stderr,"angle: %f ",text->angle); */
+
+
+  /* Compute text starting position.  Have explicit character cell 
+  offsets (x,y) in logical coordinates */
+
+
+  /***************/
+  /* If the lpDx field exists and if we want to use it */
+  /***************/
   if ((lpDx!=NULL) && (use_lpDx())) 
     {
-      for (i = width = 0; i < strlen(str); i++) 
+      for (i = 0; i < strlen(str); i++) width += lpDx[i];
+      x_width = i2f_ScaleX(width, cstruct);
+      y_width = i2f_ScaleY(width, cstruct);
+      /*       text->length = width; */ /*Commented out as very dangerous*/
+
+
+/*       if (cstruct->dc->textalign & TA_UPDATECP){ */
+/* 	x = currentx; */
+/* 	y = currenty; */
+/*       } /* Are we forgetting the parameters value ??? */ 
+
+      /* Justification*/
+      switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
+	{
+	case TA_LEFT:
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+	    currentx = round(x + x_width*cosa - x_height*sina);
+	    currenty = round(y - y_width*sina - y_height*cosa);
+          }
+          break;
+	case TA_RIGHT:
+          x = round(x - x_width*cosa + x_height*sina);
+          y = round(y + y_width*sina + y_height*cosa);
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+	    currentx = x;
+	    currenty = y;
+          }
+          break;
+	case TA_CENTER:
+          x = round(x - x_width*cosa/2.0 + x_height*sina/2.0);
+          y = round(y + y_width*sina/2.0 + y_height*cosa/2.0);
+          break;
+	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown justification: %d\n",
+		  cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER));
+	}
+
+      /* ``vertical'' positionning */
+      switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
+	{
+	case TA_TOP:
+	  x +=  round(x_height*sina); 
+          y +=  round(y_height*cosa);
+/* 	  fprintf(stderr,"TA_TOP (%d,%d)\n",x,y); */
+          break;
+	case TA_BOTTOM:
+          /* As xfig bottom set things, nothing to change*/
+/* 	  fprintf(stderr,"TA_BOTTOM (%d,%d)\n",x,y); */
+          break;
+	case TA_BASELINE:
+/* 	  fprintf(stderr,"TA_BASELINE (%d,%d)\n",x,y); */
+          break;
+	default:
+	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown ``vertical'' positionning: %d\n",
+		  cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE));
+	}
+  
+      text->base_x = x;
+      text->base_y = y;
+
+
+      /* Text output, character by character*/
+      x_width = 0;
+      y_width = 0;
+      for (i = 0; i < strlen(str); i++) 
         {
 	  /* Explicit widths in lpDx, output indiv. chars */
 	  /* fprintf(stderr, "w=%d\n", width); */
           t = (F_text *)malloc(sizeof(F_text));
 	  *t = *text;
-          t->base_x += width * cosa;
-	  t->base_y += width * sina;
+          t->base_x += round(x_width);
+	  t->base_y -= round(y_width);
           t->cstring=(char *)malloc(2);
           sprintf(t->cstring, "%c\n", text->cstring [i]);
           xf_addtext(t);
           
           /* printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
-		t->length, height, 
-		t->base_x, t->base_y, t->cstring, i);*/
+	     t->length, height, 
+	     t->base_x, t->base_y, t->cstring, i);*/
 	  
-          width += ScaleX(lpDx[i], cstruct);
+          x_width += i2f_ScaleX(lpDx[i], cstruct)*cosa;
+          y_width += i2f_ScaleY(lpDx[i], cstruct)*sina;
         }
     }
+  /***************/
+  /* If the lpDx field does not exist or if we don't want to use it */
+  /***************/
   else
     {
+      
+      /* ??? I would hace said currnetx = x...*/
+/*       if (cstruct->dc->textalign & TA_UPDATECP) */
+/* 	{ */
+/* 	  x = currentx; */
+/* 	  y = currenty; */
+/* 	} */
+
+
+      /* Justification*/
+      /* Here xfig is going to do the positionning. */
+      switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
+	{
+	case TA_LEFT:
+	  text->type=T_LEFT_JUSTIFIED;
+/* 	  fprintf(stderr,"LEFT (%d,%d) ",x,y); */
+          break;
+	case TA_RIGHT:
+	  text->type=T_RIGHT_JUSTIFIED;
+/* 	  fprintf(stderr,"RIGHT (%d,%d) ",x,y); */
+          break;
+	case TA_CENTER:
+	  text->type=T_CENTER_JUSTIFIED;
+/* 	  fprintf(stderr,"CENTER (%d,%d) ",x,y); */
+          break;
+	default:
+	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown justification: %d\n",
+		  cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER));
+	  text->type=T_LEFT_JUSTIFIED;
+	}
+
+      /* ``vertical'' positionning */
+      switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
+	{
+	case TA_TOP:
+	  x +=  round(x_height*sina); 
+          y +=  round(y_height*cosa);
+/* 	  fprintf(stderr,"TA_TOP (%d,%d)\n",x,y); */
+          break;
+	case TA_BOTTOM:
+          /* As xfig bottom set things, nothing to change*/
+/* 	  fprintf(stderr,"TA_BOTTOM (%d,%d)\n",x,y); */
+          break;
+	case TA_BASELINE:
+/* 	  fprintf(stderr,"TA_BASELINE (%d,%d)\n",x,y); */
+          break;
+	default:
+	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown ``vertical'' positionning: %d\n",
+		  cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE));
+	}
+  
+      text->base_x = x;
+      text->base_y = y;
+
       /* defined in libxfig/objlist.c */
       xf_addtext(text);
-      
-      /*printf("xf_addtext: %dx%d+%d+%d %s\n", 
-	text->length, height, 
-	x, y, text->cstring);*/
-      
     }
 }
 

@@ -196,6 +196,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
   int brect[8];
   int color,bg;
   double angle, sina, cosa;
+  float x_width, y_width, x_height, y_height;
   char Times[]  = "times new roman"; /* Last-resort fallback. Make sure
                                         you have this ttf on your system! */
   char TimesB[] = "times new roman bold"; 
@@ -219,52 +220,77 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
   ascent =  ScaleY(cstruct->dc->font->lfHeight, cstruct);
 
   height = descent + ascent;
+  x_height = i2f_ScaleX(cstruct->dc->font->lfHeight, cstruct);
+  y_height = i2f_ScaleY(cstruct->dc->font->lfHeight, cstruct);
+
+
+  /* Text angle computation */
+  wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
+  angle = (double)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+  sina = sin(angle);
+  cosa = cos(angle); 
+
 
   if (lpDx)
     {
       for (i = width = 0; i < strlen(str); i++) width += lpDx[i];
-      width = ScaleX(width, cstruct);
+      x_width = i2f_ScaleX(width, cstruct);
+      y_width = i2f_ScaleY(width, cstruct);
       length = width;
     }
+  else
+    {
+      x_width = i2f_ScaleX(cstruct->realwidth, cstruct);
+      y_width = i2f_ScaleY(cstruct->realwidth, cstruct);
+    }
+
 
 
   if (cstruct->dc->textalign & TA_UPDATECP)
     {
       x = currentx;
       y = currenty;
-    }
+    } /* Is this right ??? */
 
   switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
       case TA_LEFT:
           if (cstruct->dc->textalign & TA_UPDATECP) {
-              currentx = x + length;
-              currenty = y - height;
+	    currentx = round(x + x_width*cosa - x_height*sina);
+	    currenty = round(y - y_width*sina - y_height*cosa);
+/* 	    currentx = x + length; */
+/* 	    currenty = y - height; */
           }
           break;
       case TA_RIGHT:
-          x -= length;
-          y += height;
+          x = round(x - x_width*cosa + x_height*sina);
+          y = round(y + y_width*sina + y_height*cosa);
+/*           x -= length; */
+/*           y += height; */
           if (cstruct->dc->textalign & TA_UPDATECP) {
               currentx = x;
               currenty = y;
           }
           break;
       case TA_CENTER:
-          x -= length / 2;
-          y += height / 2;
+          x = round(x - x_width*cosa/2.0 + x_height*sina/2.0);
+          y = round(y + y_width*sina/2.0 + y_height*cosa/2.0);
+/*           x -= length / 2; */
+/*           y += height / 2; */
           break;
     }
 
   switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
       case TA_TOP:
-          x -=  0;
-          y +=  ascent;
+	  x +=  round(x_height*sina); 
+          y +=  round(y_height*cosa);
+/*           x -=  0; */
+/*           y +=  ascent; */
           break;
       case TA_BOTTOM:
-          x += 0;
-          y -= descent;
+/*           x += 0; */
+/*           y -= descent; */
           break;
       case TA_BASELINE:
           break;
@@ -323,10 +349,6 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
 			((cstruct->dc->textcolor[0]& 0xFF00)>>8), 
 			(cstruct->dc->textcolor[1]& 0x00FF));
 
-		wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
-		angle = (double)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
-		sina = -sin(angle);
-		cosa =  cos(angle); 
 
 		if (lpDx == NULL)
 			{
@@ -391,17 +413,23 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
 		if (lpDx)
 		  {
 		  /* Output individual chars: */
-		  for (i = width = 0; i < strlen(str); i++)
-			{
-			xx = x + width * cosa;
-			yy = y + width * sina;
+		    x_width = 0;
+		    y_width = 0;
+		    for (i = 0; i < strlen(str); i++)
+		      {
+/* 			xx = x + width * cosa; */
+/* 			yy = y + width * sina; */
+			xx = x + round(x_width);
+			yy = y - round(y_width);
 			s = (char *)malloc(2);
 			sprintf(s, "%c\n", str [i]);
 			gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
-				brect,color,fontfile, size,
-				angle, xx, yy, s);
+					 brect,color,fontfile, size,
+					 angle, xx, yy, s);
 				/* fprintf(stderr,"<%c> at %d\n", s [0], xx, yy); */
-			width += ScaleX(lpDx[i], cstruct);
+/* 			width += ScaleX(lpDx[i], cstruct); */
+			x_width += i2f_ScaleX(lpDx[i], cstruct)*cosa;
+			y_width += i2f_ScaleY(lpDx[i], cstruct)*sina;
 			}
 		  }
 		else

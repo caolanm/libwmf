@@ -31,6 +31,10 @@ int Our_GetTextExtentPoint(CSTRUCT *cstruct , U8 *str, U16 count, SIZE *size , X
 extern int currentx,currenty;
 
 
+/* Quite dirty...*/
+
+
+
 /***********************************************************************
  *           X11DRV_ExtTextOut
  */
@@ -48,6 +52,7 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
 	XRectangle rectangles[1];
     char		dfBreakChar, lfUnderline, lfStrikeOut;
     char 		rotated = 0;
+    float x_width, y_width, angle, cosa, sina;
 	fontObject pfo2;
 	fontObject *pfo;
 	pfo = &pfo2;
@@ -140,6 +145,8 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
 		/*
 		width = (width * dc->vportExtX + extra ) / dc->wndExtX;
 		*/
+		x_width = i2f_ScaleX(width,cstruct);
+		y_width = i2f_ScaleY(width,cstruct);
 		width = ScaleX(width,cstruct);
 		}
     else
@@ -147,6 +154,8 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
 	    if (!Our_GetTextExtentPoint(cstruct, str, count, &sz ,afont))
 			return 0;
 		width = ScaleX(sz.cx,cstruct);
+		x_width = i2f_ScaleX(sz.cx,cstruct);
+		y_width = i2f_ScaleY(sz.cx,cstruct);
 		}
 
 #if 0
@@ -162,25 +171,36 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
     xwidth =  width;
     ywidth =  0;
 
+    /* angle at which the text is drawn*/
+    angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+    sina =  sin(angle);
+    cosa =  cos(angle);
+
     switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
       case TA_LEFT:
 	  if (cstruct->dc->textalign & TA_UPDATECP) {
-	      currentx = x + xwidth;
-	      currenty = y - ywidth;
+	    currentx = round(x + x_width*cosa);
+	    currenty = round(y - y_width*sina);
+/* 	      currentx = x + xwidth; */
+/* 	      currenty = y - ywidth; */
 	  }
 	  break;
       case TA_RIGHT:
-	  x -= xwidth;
-	  y += ywidth;
+/* 	  x -= xwidth; */
+/* 	  y += ywidth; */
+          x = round(x - x_width*cosa);
+          y = round(y + y_width*sina);
 	  if (cstruct->dc->textalign & TA_UPDATECP) {
 	      currentx = x;
 	      currenty = y;
 	  }
 	  break;
       case TA_CENTER:
-	  x -= xwidth / 2;
-	  y += ywidth / 2;
+          x = round(x - x_width*cosa/2.0);
+          y = round(y + y_width*sina/2.0);
+/* 	  x -= xwidth / 2; */
+/* 	  y += ywidth / 2; */
 	  break;
     }
 	wmfdebug(stderr,"<>2--the x is %d, the y is %d\n",x,y);
@@ -188,13 +208,17 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
     switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
       case TA_TOP:
-		x -=  0;
-		y +=  ascent;
+		x +=  round(sina*ascent);
+		y +=  round(cosa*ascent);
+/* 		x -=  0; */
+/* 		y +=  ascent; */
 		fprintf(stderr,"<>top3--the x is %d, the y is %d\n",x,y);
 		break;
       case TA_BOTTOM:
-		x += 0;
-		y -= descent;
+		x -=  round(sina*descent);
+		y -=  round(cosa*descent);
+/* 		x += 0; */
+/* 		y -= descent; */
 		fprintf(stderr,"<>bottom4--the x is %d, the y is %d\n",x,y);
 		break;
       case TA_BASELINE:
