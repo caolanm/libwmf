@@ -231,7 +231,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int
   angle = (double)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
   sina = sin(angle);
   cosa = cos(angle); 
-
+  fprintf(stderr, "angle=%f\n", angle);
 
   if (lpDx)
     {
@@ -249,11 +249,13 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int
       y_width = 0;
     }
 
-/*   if (cstruct->dc->textalign & TA_UPDATECP) */
-/*     { */
-/*       x = currentx; */
-/*       y = currenty; */
-/*     } */ /* Is this right ??? */
+
+
+  if (cstruct->dc->textalign & TA_UPDATECP)
+    {
+      x = currentx;
+      y = currenty;
+    } /* Is this right ??? YES IT IS! - MV */
 
   switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
