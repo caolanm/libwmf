@@ -1822,7 +1822,7 @@ fi
  _SAVE_LDFLAGS=$LDFLAGS
 
 if test "$TTF_DIR" != "" ; then
-CFLAGS="-I${TTF_DIR}/include $CFLAGS"
+CFLAGS="-I${TTF_DIR}/include -I${TTF_DIR}/include/freetype $CFLAGS"
 LDFLAGS="-L${TTF_DIR}/lib $LDFLAGS"
 fi
 
@@ -1936,7 +1936,7 @@ else
 fi
 
 if  test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ; then
-    TTF_CFLAGS="-I${TTF_DIR}/include"
+    TTF_CFLAGS="-I${TTF_DIR}/include -I${TTF_DIR}/include/freetype"
     TTF_LIBS="-L${TTF_DIR}/lib ${TTF_LIBS}"
 fi
 
@@ -3748,7 +3748,7 @@ _SAVE_CFLAGS=$CFLAGS
 _SAVE_LDFLAGS=$LDFLAGS
 
 if test "$TTF_DIR" != "" ; then
-CFLAGS="-I${TTF_DIR}/include $CFLAGS"
+CFLAGS="-I${TTF_DIR}/include -I${TTF_DIR}/include/freetype $CFLAGS"
 LDFLAGS="-L${TTF_DIR}/lib $LDFLAGS"
 fi
 
@@ -3822,7 +3822,7 @@ else
 fi
 
 if  test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ; then
-    TTF_CFLAGS="-I${TTF_DIR}/include"
+    TTF_CFLAGS="-I${TTF_DIR}/include -I${TTF_DIR}/include/freetype"
     TTF_LIBS="-L${TTF_DIR}/lib ${TTF_LIBS}"
 fi
 
