@@ -71,6 +71,9 @@ fi
 dnl system ttf support
 dnl ========================================================
 
+dnl A sensible default:
+TTF_DIR="/usr"
+
 _cppflags=${CPPFLAGS}
 _ldflags=${LDFLAGS}
 
