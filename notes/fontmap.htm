@@ -1,0 +1,946 @@
+<BASE HREF="http://www.melander.dk/lib/windows/gdi/">
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <META NAME="PREMIUM" CONTENT="MSDN">
+   <META NAME="MS.LOCALE" CONTENT="EN-US">
+   <META NAME="DESCRIPTION" CONTENT="This page is from the Technical Articles Book in the MSDN Library">
+   <META NAME="MS-HAID" CONTENT="msdn_fontmap">
+   <META NAME="GENERATOR" CONTENT="Mozilla/4.01 [en] (Win95; I) [Netscape]">
+   <TITLE>Windows Font Mapping</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#003399" VLINK="#996699">
+<!--TOOLBAR_START--><!--TOOLBAR_EXEMPT--><!--TOOLBAR_END--><!--SYNC_START--><A href="/isapi/devonly/prodinfo/msdnprod/msdnlib.idc?theURL=http://www.melander.dk/lib/windows/gdi/fontmap.htm" TARGET="_top"><IMG SRC="/library/images/msdn/art/mlibfram.gif" WIDTH=75 HEIGHT=17 BORDER=0></A>
+<H1>
+<A NAME="msdn_fontmap"></A><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Windows
+Font Mapping</FONT></FONT></H1>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Ron Gery</FONT></FONT>
+<BR><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Microsoft Developer
+Network Technology Group</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Created: June 8,
+1992</FONT></FONT>
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Abstract</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>This article discusses
+the font mapper in the Microsoft® Windows? operating system and how
+it controls the realization of fonts. In the process, the article also
+looks at what it takes to effectively create a logical font so that the
+font mapping is predictable and useful. Some of the information is specific
+to Microsoft Windows version 3.1, but most of it applies to both Windows
+versions 3.0 and 3.1.</FONT></FONT>
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Introduction</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>An application requests
+a font by creating and selecting a logical font object. In creating the
+font, the application uses the <B>CreateFont</B> or <B>CreateFontIndirect</B>
+function to specify a list of attributes that define the font. A detailed
+explanation of the specific attributes is found in the Microsoft® Windows?
+version 3.1 Software Development Kit (SDK) <I>Programmer's Reference, Volume
+2: Functions</I> and the Windows version 3.0 SDK <I>Reference, Volume 1</I>.
+The resulting font object is called a <I>logical font</I>; it defines an
+idealized font that may or may not be available on a specific output device.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>When the application
+selects this logical font into a device context (DC) using the <B>SelectObject</B>
+function, the font is matched to a <I>physical font</I>, one that can be
+output by the device. This process is called <I>realization</I>; font mapping
+is the primary operation of the realization. The goal of the realization
+is to find a font available for the output device that most closely resembles
+the logical font. Determining this closeness is what font mapping is all
+about.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Note to the squeamish:
+In the case that the idealized font does not exist, the font mapper in
+Windows is not perfect, resorting to what it defines as the closest match.
+As a result, many disgruntled developers have referred to it with such
+crafty misnames as "font mangler" and the like. As with most software,
+the trick to using the font mapper is to understand how it operates and
+to work <I>with</I> it, instead of <I>against</I> it.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>An application
+can get data about the physical font that is actually realized by using
+the <B>GetTextMetrics</B>, <B>GetTextFace</B>, and <B>GetOutlineTextMetrics</B>
+functions. (<B>GetOutlineTextMetrics</B> is relevant only to TrueType®
+fonts.) First, select the logical font; then use these functions to get
+the details on the realized font.</FONT></FONT>
+<BLOCKQUOTE><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><B>Note</B>  
+For the duration of this article, the font's attributes are referenced
+using their field names as defined in the <B>LOGFONT</B> structure. While
+this structure is not a parameter to the <B>CreateFont</B> function, that
+function's parameters map directly to the structure. Inside the graphics
+device interface (GDI), all fonts are defined by a <B>LOGFONT</B> structure.</FONT></FONT></BLOCKQUOTE>
+
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The "Right" Way to
+Create Fonts</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The ideal way for
+an application to create a logical font is to define one whose attributes
+exactly match those of an existing physical font. This strategy allows
+the application to control the mapping because it has essentially already
+chosen the physical font it wants to use. Normally, an application takes
+this approach by enumerating all of the fonts in the system using the <B>EnumFonts</B>
+or <B>EnumFontFamilies</B> function, the latter available only in Windows
+version 3.1. These functions enumerate the fonts by specifying for each
+physical font a logical font that exactly describes how the system identifies
+the physical font.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Font enumeration,
+like font realization, is based on a specific physical device identified
+by a DC. Different devices enumerate a different set of physical fonts,
+so an enumerated logical font from one device may not exactly match a physical
+font from another device. For example, a given printer may enumerate a
+hardware-based font named Courier 10cpi, but that font has no exact match
+on the display device. The application can "help out" in this process by
+choosing an ideal match from the fonts enumerated by the display device
+and using that font for selection into the display device.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Usually the desired
+font is chosen by the user, a process that can be greatly simplified by
+an application's use of the <B>ChooseFont</B> common dialog. This dialog
+box presents the user with the list of enumerated fonts and returns to
+the application a logical font to use. The application can control exactly
+which types of fonts are presented to the user, thereby limiting the enumeration
+as desired.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>If enumeration
+and exact choice is not an option, an application still needs to describe
+the font as unambiguously as possible to get a reasonable level of consistency
+in the mapping process. It is a good idea to always specify an <B>lfFaceName</B>,
+<B>lfPitchAndFamily</B>, <B>lfHeight</B>, and <B>lfCharSet</B> attribute.
+The use and abuse of default values is discussed in greater detail below
+in "Don't-Care Values."</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Point Sizes and Cell
+Heights</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The font interface
+in Windows deals with pixel heights of font cells instead of the more typographically
+traditional point sizes (1/72nd of an inch). Converting between the two
+measurements is not too difficult, though, as you can see here:</FONT></FONT>
+<PRE><FONT FACE="Courier New"><FONT SIZE=+0>CellHeight = (PointSize * VerticalResolution) / 72 + 
+              InternalLeading;</FONT></FONT></PRE>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>and conversely,</FONT></FONT>
+<PRE><FONT FACE="Courier New"><FONT SIZE=+0>PointSize = ((CellHeight - InternalLeading) * 72) / 
+              VerticalResolution;</FONT></FONT></PRE>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>In these equations:</FONT></FONT>
+<UL>
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><I>CellHeight</I>
+is the cell height of the font. This is requested with the <B>lfHeight</B>
+attribute and returned in the <B>tmHeight</B> field of the <B>TEXTMETRIC</B>
+structure after the font is selected.</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><I>PointSize</I> is
+the point size of the font.</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><I>VerticalResolution</I>
+refers to the resolution of the device being used. Windows provides two
+possible numbers for this value, neither of which is entirely accurate
+on display devices. Most applications use the convention of LOGPIXELSY
+(available through the <B>GetDeviceCaps</B> function), which is an idealized
+number of pixels per logical inch. The alternative is to compute the number
+of pixels per physical inch using VERTSIZE and VERTRES (also available
+through the <B>GetDeviceCaps</B> function). These values do not provide
+a hardware-specific value either (Windows has no knowledge of the physical
+size of the screen), but they may be a better approximation. With printer
+devices, the values for both logical resolution and physical resolution
+are usually the same.</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><I>InternalLeading</I>
+is a Windows-based concept that specifies the difference between a font's
+actual point size (also known as the em height) and its physical cell height.
+This value is returned in the <B>tmInternalLeading</B> field of the <B>TEXTMETRIC</B>
+structure after the font is selected.</FONT></FONT></LI>
+</UL>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Gee, so how does an
+application account for the internal leading value that is not available
+until after the font is selected? The simplest way to overcome the internal
+leading concept is to specify the <B>lfHeight</B> attribute as a negative
+value. The font mapper treats the absolute value of that number as the
+desired em height (that is, the value defined by <I>CellHeight</I> - <I>InternalLeading</I>)
+rather than as the cell height. To define a height for a font with a given
+point size, use:</FONT></FONT>
+<PRE><FONT FACE="Courier New"><FONT SIZE=+0>MyFont.lfHeight = -((PointSize * GetDeviceCaps(hDC, LOGPIXELSY)) / 
+                     72);</FONT></FONT></PRE>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Also, the <B>TEXTMETRIC</B>
+structure is returned during font enumeration, so it is possible to anticipate
+a font's internal leading if a specific physical font is being targeted.
+Anticipation is not possible with scalable fonts because the fonts do not
+enumerate specific sizes and may not scale linearly.</FONT></FONT>
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The Mapping Process</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Now that the logical
+font is built, the application selects the font into a DC, and GDI calls
+the font mapper to perform the realization. Well, actually, because GDI
+caches physical fonts, there may not be a need for a full mapping. GDI
+can use the cached realization information instead if the logical font
+is being reselected and the DC has not changed (same device, same mapping
+mode). Unfortunately, this can't always be done.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>A fundamental difference
+exists in the font mapping process between Windows version 3.0 and version
+3.1. Both versions share a core mapper that uses weighted penalties to
+choose the closest matching physical font, but Windows version 3.1 also
+has a shortcut layer that attempts to bypass the core mapper by looking
+for exact matches and only resorting to the core mapper when a certain
+level of exactness cannot be achieved. The basic idea is that if an application
+requests a logical font in the "right" way (see above), finding a matching
+physical font can be quick and to the point without excess processing.
+The shortcut layer is only for speed purposes; the functional behavior
+is unchanged.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Possible Physical
+Fonts</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Four types of physical
+fonts are available to the font mapper:</FONT></FONT>
+<UL>
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>System-based raster
+fonts</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>System-based vector
+fonts</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Hardware-specific
+fonts found on the device</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>TrueType fonts for
+Windows version 3.1</FONT></FONT></LI>
+</UL>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Fonts generated by
+most bolt-on font packages, such as Adobe Type Manager® (ATM), appear
+to the font mapper as device fonts.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The system-based
+fonts are the non-TrueType fonts that are installed via the Control Panel.
+(TrueType fonts are also installed via the Control Panel.). A few are installed
+automatically when Windows is set up. The raster fonts usually come in
+several sizes per face name, and because the fonts do not scale, these
+are the only sizes that are available for the realization.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The vector fonts
+that come with Windows (Modern, Roman, and Script) are scalable fonts defined
+by polylines and are the only fonts that can be printed on plotter devices.
+They are commonly referred to as the "stick fonts" because they are made
+up of line segments, which results in rather poor typographic quality.
+Most applications avoid the vector fonts by requesting a font with the
+<B>lfCharSet</B> attribute set to something other than OEM_CHARSET (specifically,
+ANSI_CHARSET or SYMBOL_CHARSET), the charset of the vector fonts, and it
+is common to see these fonts screened out of the font enumeration lists
+shown to the user.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Device fonts are
+those fonts that are provided by the device driver, either through hardware
+fonts or by downloading to the device. Usually these exist only for printer
+drivers, but bolt-on font engines also provide the concept for display
+drivers. Device fonts are controlled more by the device than by GDI. GDI
+only has access to descriptive information about the font and not to the
+actual bit information, and, more importantly, the device driver acts as
+its own font mapper in choosing the best match among the available device
+fonts. Windows sends the device driver the requested logical font, and
+the device chooses the best match from its available hardware and downloaded
+fonts. During the font-mapping process, the font mapper inspects only the
+one device font. If the device has no fonts, there is no device font for
+the font mapper to inspect.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>TrueType font technology
+is new for Windows version 3.1 and introduces to the system a class of
+fonts that are scalable and compatible with all raster devices. On printers,
+these fonts are either built into the hardware, downloaded to the hardware,
+or drawn to a bitmap that is then blted to the page. TrueType fonts, like
+raster and vector fonts, are added to the Windows environment through the
+Control Panel and managed by GDI. Because of their scalability, TrueType
+fonts are not penalized for height, width, or aspect ratio, but they are
+treated like the other types of fonts in all other respects.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The Core Mapper</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The mapper itself,
+the big kahuna, compares each of the possible physical fonts to the requested
+font. Each of the physical fonts is identified using a set of attributes
+that roughly parallel those found in the <B>LOGFONT</B> structure, and
+each attribute is compared to the requested attribute. A penalty is assessed
+for each mismatch, and the penalties are cumulative. The mapper tracks
+the physical font with the lowest penalty score, and once all of the physical
+fonts have been inspected, one font remains as the closest match. In case
+of a tie, the first closest match encountered is the one selected.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The interesting
+part, of course, is the relative size of the penalties. At the end of this
+article is a table that lists the specific penalties and their values.
+A quick inspection of this table reveals that the penalties are heavily
+weighted to discourage physical fonts whose major typographical features
+are not similar to the logical font. The big-ticket items are charset,
+output precision, variable instead of fixed pitch, face name, family type,
+and height. The lesser penalties only come into play in cases where the
+logical font is too vague to home in on a desired physical font.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The height penalty
+is often a cause for confusion. The goal for the mapper is to choose a
+font that is as large as possible without being taller than the requested
+height. For example, when using raster fonts (height problems only apply
+to fonts that do not scale arbitrarily), if the logical font has a height
+of 11 and the available physical fonts have heights of 10 and 12, the shorter
+font is chosen. If the logical font has a height of 8 and there is no font
+shorter than 10, the font with a height of 10 is chosen. A few applications
+have attempted to "guarantee" the selection of the smallest legible font
+by asking for an undersized font. That trick, though, can cause undesirable
+results if a super-small font such as SMALLE.FON is available on the system
+because the font maps to a 6-pixel-high font, which is not exactly legible.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>In the case where
+two different fonts have exactly the same penalty, the first font that
+was inspected is the one that is selected. An application does not have
+control of this ordering. Nondevice fonts are assessed an extra penalty
+to encourage the selection of a device font over an identical nondevice
+font. The selection priority is first, device; second, raster; and third,
+TrueType.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Shortcut Mapping for
+Windows version 3.1</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows version
+3.1 is an attempt to circumvent the above penalty scheme by searching for
+exact matches instead. For this algorithm, a physical font is an exact
+match if it shares the following attributes with the logical font:</FONT></FONT>
+<UL>
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>charset</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>face name</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>height</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>italicness</FONT></FONT></LI>
+
+<LI>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>weight</FONT></FONT></LI>
+</UL>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Because an exact match
+is the goal, GDI's italic and emboldening simulations are not considered.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The shortcut mechanism
+is used only if the device is a raster device that can accept raster fonts
+or a device that can output TrueType fonts (presumably by downloading).
+Also, the logical font must either specify a face name or use the OUT_TT_ONLY_PRECIS
+or CLIP_EMBEDDED flags (in its <B>lfOutputPrecision</B> and <B>lfClipPrecision</B>
+attributes, respectively) to be considered a candidate for an exact match.
+Obviously, if no face name is specified, an exact match cannot be found.
+The two flags indicate, however, that only TrueType fonts should be considered
+for a match so that some of the standard mapping process can be avoided.
+If the shortcut method cannot be used, the standard penalty-based mapper
+is used to choose the font.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Like the full font
+mapper, the shortcut inspects all the possible physical fonts for a match,
+but instead of tracking penalties, it throws out of consideration any candidate
+font that does not exactly match the above attributes. So if the logical
+font is based directly on an existing physical font, the matching is very
+simple, which is the entire goal of the shortcut.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>If no exact match
+is found, the font mapping defaults to the penalty-based system. Ties (that
+is, multiple physical fonts providing an exact match) are resolved based
+on the filter setting of the <B>lfOutputPrecision</B> attribute. If no
+special filter is specified, the default behavior is that device fonts
+beat out everything else, and raster fonts beat out TrueType fonts. The
+default behavior can be altered to have the TrueType font win a tie by
+using the <B>TTIfCollisions</B> entry in the <B>[TrueType]</B> section
+of WIN.INI.</FONT></FONT>
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Extra Commentary</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The following issues
+and suggestions affect the application's control of the font-mapping process.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>TrueType</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The existence of the
+TrueType font technology in Windows version 3.1 changes the font-mapping
+game to some degree. The basic mapping process remains intact, but the
+availability of more fonts and the ability of these fonts to be scaled
+to any desired size greatly increases the chance for a very close font
+match.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The possibility
+for close matches is especially true for loosely defined fonts, those fonts
+that use a lot of default attribute settings. For example, an application
+is making a very bad assumption if it assumes that a logical font created
+by specifying a height of 12 and setting all other attributes to 0 will
+map to the system font. While operating under this assumption might work
+under Windows version 3.0, under Windows version 3.1 at least six fonts
+can match that request exactly even if only the core TrueType fonts are
+loaded. The one that is chosen by the font mapper is suddenly not so obvious
+and depends on such intangibles as the ordering of the fonts during initialization.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>It is up to the
+application to be specific enough in its definition of the logical font
+to avoid mapping confusion. The first thing to consider is that TrueType
+fonts are fully scalable, so an apparently off-size height can be matched-there
+is no penalty for height (or for width or aspect ratio).</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Because most TrueType
+fonts are designed with a normal, italic, bold, and bold italic version,
+a request for one of these variations maps directly to a nonsimulated variant
+of the standard font. Many fonts are also available in nontraditional weights
+such as light, demibold, and black, so the exact <B>lfWeight</B> attribute
+that is specified could be meaningful. An application needs to be careful
+in choosing the <B>lfFaceName</B> attribute to deal with the potential
+explosion of face names. The <B>EnumFontFamilies</B> function is designed
+to help an application sort through the face names and their family relationships.
+In the eyes of the font mapper, the <B>lfFaceName</B> attribute specified
+by the application can be either the full face name (for example, Arial®
+Italic) or only the family name (in this example, Arial). Assuming that
+all of the attributes match (in this example, the <B>lfItalic</B> attribute
+needs to be set), the two names are considered equivalent.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>TrueType doesn't
+really introduce anything new into the font-mapping picture, but it does
+make the choice of physical fonts large enough to require that an application
+carefully define its logical fonts.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Substituted Face Names</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Font face names are
+usually copyrighted strings, which adds a level of confusion in trying
+to identify various fonts that are produced by different vendors but look
+remarkably alike. Because much of the font-mapping process relies on the
+exact use of face names, the font mapper has the concept of <I>face name
+substitution</I> to allow one face name to be substituted for another in
+the mapping process. This feature is new to Windows version 3.1. For example,
+Windows version 3.0 had a raster font named Helv that is renamed MS®
+Sans Serif in Windows version 3.1. With version 3.1's built-in substitutions,
+a logical font with the <B>lfFaceName</B> attribute set to Helv is matched
+by face name to the physical font with the name MS Sans Serif.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Face name substitutions
+are used only for raster and TrueType fonts and not for device fonts. Also,
+when a face name is matched through substitution, it is not considered
+an exact match-a penalty is assessed for substitute face names, and an
+exact match always takes precedence.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The substitutions
+come from two places: one list is predefined in GDI, and a second list
+is defined by the user in WIN.INI under the <B>[FontSubstitutes]</B> section.
+The user-defined list can override GDI's predefined list to customize the
+Windows environment to the user's font needs. GDI's list consists of approximately
+20 substitutions that map Tms Rmn to MS Serif, Helv to MS Sans Serif, and
+various PostScript® names to the corresponding TrueType fonts that
+ship with Windows and in the Microsoft TrueType Font Pack for Windows.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Filters</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>An application can,
+to some extent, filter which physical fonts are examined by the font mapper.
+Aspect-ratio filtering, which is available in both Windows versions 3.0
+and 3.1, allows an application to specify that only fonts designed for
+the device's aspect ratio should be considered by the font mapper. An application
+enables and disables this filter by using the <B>SetMapperFlags</B> function.
+Because nonscaling raster fonts are designed with a certain aspect ratio
+in mind, it is sometimes desirable to ensure that only fonts actually designed
+for the device are used. When this filter is enabled, the font mapper does
+not consider any physical fonts whose design aspect ratio does not match
+that of the device. Aspect-ratio filtering does not affect TrueType fonts
+because they can scale to match any aspect ratio. This filter affects all
+font selections to the DC until the filter is turned off. Aspect-ratio
+filtering is a holdover from earlier times and is not a recommended approach
+in today's font world.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The second type
+of filtering is new for Windows version 3.1 and allows an application to
+choose what type of physical font should be chosen in the case of a face
+name conflict. These filters only affect the shortcut mapping described
+above; if no shortcut match is found, the font mapper continues with its
+standard matching scheme and ignores these filters. The application defines
+the filter in the <B>lfOutputPrecision</B> attribute of the logical font.
+Unlike the aspect-ratio filter, this filter is specific to a given logical
+font. The three possible filter settings are OUT_TT_PRECIS for TrueType
+fonts, OUT_DEVICE_PRECIS for device fonts, and OUT_RASTER_PRECIS for raster
+fonts. For example, if the shortcut mechanism finds two fonts-one TrueType
+and one raster-that provide an exact match for the logical font, and the
+logical font is defined with OUT_TT_PRECIS, the TrueType font is chosen.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Another shortcut
+filter, OUT_TT_ONLY_PRECIS, specifies that only TrueType fonts should be
+considered for the exact matching. None of the other types of physical
+fonts are considered. This filter is useful for an application that wants
+to guarantee that the realized font is a TrueType font.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>"Don't-Care" Values</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Many of the attributes
+that define a logical font can be specified as being unimportant by using
+special "don't-care" values. For most attributes, the font mapper ignores
+these don't-care settings in its penalty scheme so that no penalty is given
+for that attribute for any candidate font. Using these values is a simple
+way to indicate that an attribute is not important in the font mapping.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>There are times
+when using don't-care values gets dangerous. Using DEFAULT_CHARSET for
+specifying the font's <B>lfCharSet</B> attribute can lead to the font mapper
+choosing a non-ANSI font that may not contain needed characters and may
+not even be composed of alphanumeric glyphs. Internally, the DEFAULT_CHARSET
+is an actual charset definition, so all candidate fonts get an equally
+large penalty for not matching the charset. It is always a good idea to
+use a real charset when defining a logical font.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The font mapper
+treats a logical font with an <B>lfHeight</B> attribute of 0 as a font
+that is 12 points high. The actual pixel height depends on the resolution
+of the device being used. With the advent of TrueType technology in Windows
+version 3.1, this zero height becomes even less meaningful. The moral:
+Always specify a height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>By specifying no
+face name (the <B>lfFaceName</B> attribute) for the logical font, an application
+indicates to the font mapper that the exact face name of the physical font
+is not critical. An application that does not specify a face name is only
+asking for trouble. Because the face name is the only unique identifier
+of a font, ignoring it leaves the application open to more ambiguity in
+realizing a physical font. The more fonts that are available on the system,
+the less control the application has over the mapping process. An application
+can overcome some of this ambiguity by defining the generalized look of
+the font using the <B>lfPitchAndFamily</B> field, but as more and more
+fonts become available in the Windows system, a font's unique face name
+becomes critical in its identification. The moral: Always specify a face
+name.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The font mapper
+interprets an <B>lfWeight</B> attribute of FW_DONTCARE as though it were
+really FW_NORMAL, and any corresponding penalty is tabulated.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>It is generally
+considered good to specify a don't-care <B>lfWidth</B> attribute by setting
+it to 0. While for most fonts the character widths cannot be changed and
+are not actually affected, scalable fonts (TrueType and many device fonts)
+are altered in shape by a nonzero width. This effect is usually not desirable.
+Because height is more important than width in the matching process, a
+nonzero width usually does not affect the matching, but it could. The font
+mapper compares this value to the average width value of the candidate
+font (accessible through the <B>tmAvgWidth</B> field of the <B>TEXTMETRIC</B>
+structure), a value that for nonscalable, variable-pitch fonts is an approximation
+at best. For scalable fonts, the <B>lfWidth</B> field is used to define
+an <I>x</I>-scaling factor for the font (<I>x</I>-scale = <B>lfWidth</B>/<B>tmAvgWidth</B>),
+where an <B>lfWidth</B> of 0 means a scaling factor of 1.0.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Font Rotation</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>An application specifies
+the desired rotation of a logical font using the <B>lfEscapement</B> and
+<B>lfOrientation</B> attributes. The main font mapper does not use these
+attributes in its font selection process-no penalties are assessed for
+candidate fonts that are not rotated or rotatable-but the shortcut method
+does not choose a raster font if either of these attributes is nonzero.
+The key issue here is that not all fonts, raster fonts especially, can
+be rotated effectively. Because font rotation is not a factor in the mapping,
+it is possible that the chosen physical font is not able to rotate as desired
+by the application. Fonts that do rotate are TrueType fonts, the vector
+fonts, and some device fonts. It is wise for an application that desires
+rotated fonts to specifically ask for a font that the application knows
+can actually be rotated.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Other Warnings</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Most applications
+do not want a vector font selected as the physical font because vector
+fonts are ugly. Before TrueType, the vector fonts were the only fonts that
+could be arbitrarily scaled and rotated, and it could be argued that they
+maintained more dignity than a GDI-scaled raster font at very large sizes.
+Mostly, though, they are to be avoided. The simplest way to do this is
+to explicitly use ANSI_CHARSET or SYMBOL_CHARSET when defining a logical
+font. The penalty for the charset is large enough to keep the vector fonts
+from font-matching contention. Vector fonts can also be culled from an
+enumeration by ignoring any enumerated font that is not a raster, TrueType,
+or device font. With the <B>ChooseFont</B> common dialog, vector fonts
+can be removed from the user's view through use of the CF_NOVECTORFONTS
+flag.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The height and
+width of a logical font are defined in logical units. When the font is
+selected into a DC, these values are converted to device units before the
+font mapping takes place. As a result, the realized font may be larger
+or smaller, depending on the DC's current mapping mode. Also, if an application
+changes the mapping mode of a DC, the currently selected font is re-realized
+based on the new coordinate system. This is entirely consistent with GDI's
+handling of logical and physical coordinates and is something to keep in
+mind when specifying the height of a font. The one exception to this process
+is new to Windows version 3.1: If the logical font is one of the stock
+objects (available through the <B>GetStockObject</B> function-copies don't
+count), the height and width are always treated as MM_TEXT values, regardless
+of the DC's current mapping mode.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>GDI Simulations</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>GDI provides simulations
+for some font attributes. It emboldens a normal-weight font by overstriking,
+italicizes a nonitalic font by shearing the output (TrueType fonts are
+sheared during rasterization), underlines or strikes out fonts, and scales
+raster fonts independently in <I>x</I> and <I>y</I> by integral amounts.
+In cases where GDI's simulations help a font become a better match, the
+font mapper reduces but does not eliminate the penalty for a mismatch of
+the simulated attribute. This makes the font a more palatable choice. Unfortunately,
+those simulations that alter the shape of the font (emboldening, italicizing,
+and scaling) are not always typographically pleasing. With the exception
+of scaling, all of these simulations can be performed on any of the available
+fonts.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>When GDI scales
+a raster font, it does so by simply stretching the font's original bitmap
+definition horizontally and vertically, as appropriate. Because the scaling
+is always integral, none of the really nasty side effects of bitmap stretching
+occur, but a stretched font still looks very clunky, especially so at larger
+scale factors.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>GDI can trivially
+simulate underlines and strikethroughs using horizontal lines, so these
+attributes are not a real concern. While TrueType fonts have special metrics
+for the placement of underlines and strikethroughs, GDI approximates these
+values for other fonts with the underline on the baseline and the strikethrough
+one-third of the ascent above the baseline.</FONT></FONT>
+<H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Stock Object Special
+Case</FONT></FONT></H3>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Under Windows version
+3.0, a font's logical height and width are always translated to physical
+units before font mapping, so a stock font could potentially map to an
+unexpected font if the DC's coordinate system results in a different-sized
+physical font. This can be a real "gotcha" for an application that assumes
+it can use the SYSTEM_FONT stock object, for example, without regard to
+the scaling being done. The physical font scales with the coordinate system.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Under Windows version
+3.1, if an application selects a stock font into a DC, the requested font's
+logical height and width are not translated into logical units. The effect
+is that a stock font remains the same size regardless of the DC's mapping
+mode. A copy of a logical object does not qualify for this special feature;
+only the actual stock object does. Because objects recorded in metafiles
+are simply copies of objects, a stock font recorded in a metafile is treated
+as an ordinary font when the metafile is played back.</FONT></FONT>
+<H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Actual Weights</FONT></FONT></H2>
+<FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Table 1 specifies
+the penalty weights used by the font mapper in Windows versions 3.0 and
+3.1. Penalties that are new for Windows version 3.1 are identified as such.
+Note very carefully that this information is <I>version-specific</I> and
+is subject to change without warning in future versions of Windows. The
+Comments column of the table specifies the reason for the penalty. The
+physical font being examined is referred to as the candidate, and the logical
+font is treated as a set of requests for certain attributes and characteristics.
+The candidate with the smallest penalty is the one that is elected.</FONT></FONT>
+
+<P><B><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Table 1. Penalty
+Weights in the Font Mapper</FONT></FONT></B>
+<TABLE BORDER CELLPADDING=7 >
+<TR VALIGN=TOP>
+<TD><B><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Penalty description</FONT></FONT></B></TD>
+
+<TD><B><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Penalty weight</FONT></FONT></B></TD>
+
+<TD><B><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Comments</FONT></FONT></B></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>CharSet</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>65000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested charset
+does not match the candidate's.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>OutputPrecision</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>19000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested OUT_STROKE_PRECIS,
+but the device can't do it or the candidate is not a vector font. </FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Or OUT_STROKE_PRECIS
+not requested, and the candidate is a vector font that requires GDI support.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>FixedPitch</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>15000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a fixed
+pitch font, but the candidate is a variable pitch font.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>FaceName</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>10000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a face
+name, but the candidate's face name does not match.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Family</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>9000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a family,
+but the candidate's family is different.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>FamilyUnknown</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>8000</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a family,
+but the candidate has no family. </FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>HeightBigger</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>600</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a nonvector font and is bigger than the requested height.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>FaceNameSubst</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>500</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows
+version 3.1.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Requested
+face name is matched with a substitute face name.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>PitchVariable</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>350</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a variable
+pitch font, but the candidate is not a variable pitch font.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>HeightSmaller</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>150</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a raster font and is smaller than the requested height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+height difference</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>HeightBiggerDifference</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>150</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a raster font and is larger than the requested height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+height difference</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>FamilyUnlikely</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>50</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows
+version 3.1.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Requested
+a roman/modern/swiss family, but the candidate is decorative/script. Or
+requested decorative/script, and the candidate is roman/modern/swiss. </FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Width</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>50</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested a nonzero
+width, but the candidate's width doesn't match.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+width difference</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>SizeSynth</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>50</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a raster font that needs scaling by GDI.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Aspect</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>30</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate's
+aspect ratio is different from that of the device.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+((100 * devY/devX) - (100 * candidateY / candidateX))</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>IntSizeSynth</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>20</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a raster font that needs scaling.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+(height multiplier + width multiplier)</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>UnevenSizeSynth</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>4</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate
+is a raster font that is scaled unequally in width and height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+(100 * bigger multiplier / smaller multiplier)</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Italic</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>4</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested font
+and candidate font do not agree on italic status, and the desired result
+cannot be simulated.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>NotTrueType</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>4</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows
+version 3.1.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Requested
+OUT_TT_PRECIS, but the candidate is not a TrueType font. </FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Weight</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>3</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>The candidate's
+weight does not match the requested weight.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+(weight difference/10)</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Underline</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>3</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested font
+has no underline, but the candidate is underlined.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>StrikeOut</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>3</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested font
+has no strike-out, but the candidate is struck out.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>VectorHeightSmaller</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>2</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Candidate is a
+vector font that is smaller than the requested height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+height difference</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>DeviceFavor</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>2</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Extra penalty
+for all nondevice fonts.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>ItalicSim</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>1</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows
+version 3.1.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Requested
+italic font but the candidate is not italic, although italics can be simulated.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>DefaultPitchFixed</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>1</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Requested DEFAULT_PITCH,
+but the candidate is fixed pitch.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>SmallPenalty</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>1</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>New for Windows
+version 3.1.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Requested
+a rotated font, and the candidate needs bold or italic simulation and is
+a raster or vector font.</FONT></FONT></TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>VectorHeightBigger</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>1</FONT></FONT></TD>
+
+<TD><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1>Candidate is a
+vector font that is bigger than the requested height.</FONT></FONT>
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1> Penalty *
+height difference</FONT></FONT></TD>
+</TR>
+</TABLE>
+
+
+<P><FONT FACE="Verdana, Arial, Helvetica"><FONT SIZE=-1><A HREF="http://premium.microsoft.com/isapi/gomscom.asp?TARGET=/misc/cpyright.htm">©
+1997 Microsoft Corporation. All rights reserved. Terms of use</A></FONT></FONT>
+</BODY>
+</HTML>

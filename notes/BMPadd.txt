@@ -1,0 +1,18 @@
+Date: Mon, 25 May 1998 01:36:38 -0700
+From: "Kevin D. Quitt" <Kevin@Quitt.net>
+To: submit@wotsit.demon.co.uk
+Subject: BMP format
+
+There is a deficiency in the BMP file format specification from
+Microsoft.
+While they do point out in RLE encoding mode that lines must start on an
+even byte number, they have omitted the following:
+
+EVERY compression group must start on an even byte boundary.
+
+In RGB encoding (no compression), when using 8 bits per pixel, lines
+must start on a long-word boundary (i.e., low two bits zero).
+
+And, of course, they use 'int' in the spec when it should properly be
+'short', and they use 'long' and 'DWORD' interchangeably.  Should just
+be 'long'.

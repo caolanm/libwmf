@@ -1,0 +1,148 @@
+LIBS = -L./libdib -ldib @XPM_LIBS@ @LIBS@ -lm
+
+GDLIBS = -L./libdib -ldib -Lxgd-1.7.3 -lxgd @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lpng -lm 
+
+XFLIBS = -L./libxfig -lxfig -L./libdib -ldib @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
+
+DOGD = @GD_LIBS@
+
+LDFLAGS = -L. @LDFLAGS@
+
+CC = @CC@
+
+AR = ar
+
+RANLIB = @RANLIB@
+
+SHELL=/bin/sh
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+INCLUDEDIR = @includedir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+srcdir = @srcdir@
+bindir = @bindir@
+libdir = @libdir@
+mandir = @mandir@
+
+CFLAGS = @CFLAGS@ @DEFS@ -I. @XPM_CFLAGS@ -I./libxfig -I./libdib -I./xgd-1.7.3 @TTF_CFLAGS@
+
+MKINSTALLDIRS = $(srcdir)/mkinstalldirs
+
+SHELL = /bin/sh
+
+.SUFFIXES: .C .o
+
+WMFLIBOBJECTS =	\
+	wmfapi.o \
+	stack.o \
+	bytelevel.o
+
+GDLIBOBJECTS =	\
+	gdwmfapi.o \
+	wmftt.o
+
+XFLIBOBJECTS =	\
+	xfwmfapi.o 
+
+XLIBOBJECTS =	\
+	Xwmfapi.o \
+	Xtext.o \
+	rotated.o
+
+TARGETS = wmftopng wmftofig xwmf
+
+all: $(TARGETS)
+
+xwmf: libwmf.a libXwmf.a xwmf.o LIBDIB
+	$(CC) $(LDFLAGS) -o xwmf xwmf.o -L. -lXwmf -lwmf $(LIBS)
+
+wmftopng:	libwmf.a libgdwmf.a wmftopng.o LIBXGD LIBDIB
+	$(CC) $(LDFLAGS) -o wmftopng wmftopng.o -L. -lgdwmf -lwmf $(GDLIBS)
+
+wmftofig: libwmf.a libxfwmf.a wmftofig.o LIBXFIG
+	$(CC) $(LDFLAGS) -o wmftofig wmftofig.o -L. -lxfwmf -lwmf $(XFLIBS)
+
+libwmf.a:	$(WMFLIBOBJECTS)
+	 $(AR) rc libwmf.a $(WMFLIBOBJECTS) 
+	 $(RANLIB) libwmf.a 
+
+libgdwmf.a:	$(GDLIBOBJECTS)
+	 $(AR) rc libgdwmf.a $(GDLIBOBJECTS) 
+	 $(RANLIB) libgdwmf.a
+
+libxfwmf.a:	$(XFLIBOBJECTS)
+	 $(AR) rc libxfwmf.a $(XFLIBOBJECTS) 
+	 $(RANLIB) libxfwmf.a
+
+libXwmf.a:	$(XLIBOBJECTS)
+	 $(AR) rc libXwmf.a $(XLIBOBJECTS) 
+	 $(RANLIB) libXwmf.a
+
+LIBDIB:
+	@echo making libdib in libdib
+	@(cd libdib && $(MAKE)) || exit 1
+
+LIBXGD:
+	@echo making libxgd in xgd-1.7.3
+	@(cd xgd-1.7.3 && $(MAKE)) || exit 1
+
+LIBXFIG:
+	@echo making libxfig in libxfig
+	@(cd libxfig && $(MAKE)) || exit 1
+
+%.o: %.c 
+	$(CC) $(CFLAGS) -c $*.c 
+
+clean: cleansub
+	rm -rf *.o wmftopng wmftofig xwmf a.out core *.a .pure
+
+cleansub:
+	@echo cleaning libdib in libdib
+	@(cd libdib && $(MAKE) clean) || exit 1
+	@echo cleaning libxgd in xgd-1.7.3
+	@(cd xgd-1.7.3 && $(MAKE) clean) || exit 1
+	@echo cleaning libxfig in libxfig
+	@(cd libxfig && $(MAKE) clean) || exit 1
+
+installsub:
+	@echo installing libdib from libdib
+	@(cd libdib && $(MAKE) install) || exit 1
+	@echo installing libxgd from xgd-1.7.3
+	@(cd xgd-1.7.3 && $(MAKE) install) || exit 1
+	@echo installing libxfig.a from libxfig
+	@(cd libxfig && $(MAKE) install) || exit 1
+
+distclean: realclean
+
+realclean: realcleansub
+	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o wmftopng wmftofig xwmf a.out *.a core .pure
+
+realcleansub:
+	@echo cleaning libdib in libdib
+	@(cd libdib && $(MAKE) realclean) || exit 1
+	@echo cleaning libxgd in xgd-1.7.3
+	@(cd xgd-1.7.3 && $(MAKE) clean) || exit 1
+	@echo cleaning libxfig in libxfig
+	@(cd libxfig && $(MAKE) realclean) || exit 1
+
+installdirs:
+	$(MKINSTALLDIRS) $(bindir) \
+	$(libdir)
+
+install: all installdirs installsub
+	$(INSTALL) $(srcdir)/xwmf $(bindir)/xwmf
+	$(INSTALL) $(srcdir)/wmftopng $(bindir)/wmftopng
+	$(INSTALL) $(srcdir)/wmftofig $(bindir)/wmftofig
+	$(INSTALL_DATA) $(srcdir)/libwmf.a $(libdir)/libwmf.a
+	$(INSTALL_DATA) $(srcdir)/libgdwmf.a $(libdir)/libgdwmf.a
+	$(INSTALL_DATA) $(srcdir)/libXwmf.a $(libdir)/libXwmf.a
+	$(INSTALL_DATA) $(srcdir)/libxfwmf.a $(libdir)/libxfwmf.a
+	$(INSTALL_DATA) wmfapi.h $(INCLUDEDIR)/wmfapi.h
+	$(INSTALL_DATA) gdwmfapi.h $(INCLUDEDIR)/gdwmfapi.h
+	$(INSTALL_DATA) Xwmfapi.h $(INCLUDEDIR)/Xwmfapi.h
+
+#  DO  NOT  DELETE THIS LINE -- make depend depends on it.

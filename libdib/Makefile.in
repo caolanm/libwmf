@@ -1,0 +1,65 @@
+LIBS = @LIBS@
+
+LDFLAGS = @LDFLAGS@ -L.
+
+CC = @CC@
+
+AR = ar
+
+RANLIB = @RANLIB@
+
+SHELL=/bin/sh
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+INCLUDEDIR = @includedir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+srcdir = @srcdir@
+bindir = @bindir@
+libdir = @libdir@
+mandir = @mandir@
+
+CFLAGS = @CFLAGS@ @DEFS@ -I.
+
+MKINSTALLDIRS = $(srcdir)/mkinstalldirs
+
+SHELL = /bin/sh
+
+.SUFFIXES: .C .o
+
+MYOBJECTS = \
+    bytelevel.o \
+    bintree.o \
+    dibtoxpm.o
+
+all: libdib.a test_dibtoxpm
+
+libdib.a:  $(MYOBJECTS)
+	$(AR) rc libdib.a $(MYOBJECTS)
+	$(RANLIB) libdib.a 
+
+test_dibtoxpm:  libdib.a test_dibtoxpm.o
+	$(CC) $(LDFLAGS) -o test_dibtoxpm test_dibtoxpm.o -ldib
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $*.c
+
+clean:
+	rm -rf *.o *.a test_dibtoxpm a.out core
+
+realclean: 
+	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o *.a test_dibtoxpm core
+
+installdirs:
+	$(MKINSTALLDIRS) @libdir@ \
+	$(INCLUDEDIR)
+
+install: all installdirs
+	$(INSTALL_DATA) dibtoxpm.h $(INCLUDEDIR)/dibtoxpm.h
+	$(INSTALL_DATA) libdib.a @libdir@/libdib.a
+
+
+#  DO  NOT  DELETE THIS LINE -- make depend depends on it.

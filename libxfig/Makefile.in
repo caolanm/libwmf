@@ -1,0 +1,61 @@
+LIBS = @LIBS@
+
+LDFLAGS = @LDFLAGS@ -L.
+
+CC = @CC@
+
+AR = ar
+
+RANLIB = @RANLIB@
+
+SHELL=/bin/sh
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+INCLUDEDIR = @includedir@
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+srcdir = @srcdir@
+bindir = @bindir@
+libdir = @libdir@
+mandir = @mandir@
+
+CFLAGS = @CFLAGS@ @DEFS@ -I.
+
+MKINSTALLDIRS = $(srcdir)/mkinstalldirs
+
+SHELL = /bin/sh
+
+.SUFFIXES: .C .o
+
+MYOBJECTS = \
+	color.o \
+	objlist.o \
+	fileops.o
+
+all: libxfig.a 
+
+libxfig.a:  $(MYOBJECTS)
+	$(AR) rc libxfig.a $(MYOBJECTS)
+	$(RANLIB) libxfig.a 
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $*.c
+
+clean:
+	rm -rf *.o *.a core
+
+realclean: 
+	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o *.a core
+
+install: all installdirs
+	$(INSTALL_DATA) libxfig.a @libdir@/libxfig.a
+
+installdirs:
+	$(MKINSTALLDIRS) @libdir@ \
+	$(INCLUDEDIR)
+
+
+#  DO  NOT  DELETE THIS LINE -- make depend depends on it.

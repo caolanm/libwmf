@@ -1,0 +1,28 @@
+The FrameRgn function draws a border around the specified region by using the specified brush. 
+BOOL FrameRgn(
+  
+
+    HDC  hdc,	// handle of device context 
+    HRGN  hrgn,	// handle of region to be framed 
+    HBRUSH  hbr,	// handle of brush used to draw border  
+    int  nWidth,	// width of region frame 
+    int  nHeight 	// height of region frame 
+   );	
+Parameters
+hdc
+Identifies the device context. 
+hrgn
+Identifies the region to be enclosed in a border. The region's coordinates are presumed to be in logical units. 
+hbr
+Identifies the brush to be used to draw the border. 
+nWidth
+Specifies the width, in logical units, of vertical brush strokes. 
+nHeight
+Specifies the height, in logical units, of horizontal brush strokes. 
+Return Value
+If the function succeeds, the return value is TRUE.
+If the function fails, the return value is FALSE. 
+See Also
+FillRgn, PaintRgn 
+
+ 

@@ -1,0 +1,491 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(wmfapi.c)
+dnl AC_CONFIG_HEADER(config.h)
+
+dnl Checks for programs.
+dnl AC_PROG_CC
+dnl AC_PROG_CC shoves in -g by default, i *really* hate this so here goes...
+dnl ill shove in the autoconf def of AC_PROG_CC verbatim and remove the -g 
+dnl stuff
+dnl autoconf stuff begins here
+
+AC_DEFUN(AC_PROG_CC_NO_G,
+[AC_BEFORE([$0], [AC_PROG_CPP])dnl
+AC_CHECK_PROG(CC, gcc, gcc)
+if test -z "$CC"; then
+  AC_CHECK_PROG(CC, cc, cc, , , /usr/ucb/cc)
+  test -z "$CC" && AC_MSG_ERROR([no acceptable cc found in \$PATH])
+fi
+
+AC_PROG_CC_WORKS
+AC_PROG_CC_GNU
+
+if test $ac_cv_prog_gcc = yes; then
+  GCC=yes
+dnl Check whether -g works, even if CFLAGS is set, in case the package
+dnl plays around with CFLAGS (such as to build both debugging and
+dnl normal versions of a library), tasteless as that idea is.
+  ac_test_CFLAGS="${CFLAGS+set}"
+  ac_save_CFLAGS="$CFLAGS"
+  CFLAGS=
+dnl   C Begin
+dnl AC_PROG_CC_G
+dnl   C End
+  if test "$ac_test_CFLAGS" = set; then
+    CFLAGS="$ac_save_CFLAGS"
+dnl   C Begin
+dnl  elif test $ac_cv_prog_cc_g = yes; then
+dnl    CFLAGS="-g -O2"
+dnl   C End
+  else
+    CFLAGS="-O2"
+  fi
+else
+  GCC=
+  test "${CFLAGS+set}" = set 
+dnl   C Begin
+dnl || CFLAGS="-g"
+dnl   C End
+fi
+])
+
+
+
+dnl autoconf stuff ends here
+
+AC_PROG_CC_NO_G
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AC_PROG_RANLIB
+
+dnl test for X, and Xpm and ttf to get the flags needed to compile something to use libwmf
+
+dnl finding X
+AC_PATH_X
+### Check for the pt library (for SCO, needed for X)
+AC_CHECK_LIB(pt,ptsname,[X_EXTRA_LIBS="$X_EXTRA_LIBS -lpt"])
+
+AC_PATH_XTRA
+
+dnl CFLAGS="$CFLAGS $X_CFLAGS"
+
+if test [ "$no_x" = yes ]; then
+X11=""
+else
+X11="-lX11"
+fi
+
+
+dnl system ttf support
+dnl ========================================================
+AC_ARG_WITH(ttf,
+[  --with-ttf=\$dir	  find the ttf library in \$dir],
+    TTF_DIR=$withval)
+
+ _SAVE_CFLAGS=$CFLAGS
+ _SAVE_LDFLAGS=$LDFLAGS
+
+if test "$TTF_DIR" != "" ; then
+CFLAGS="-I${TTF_DIR}/include $CFLAGS"
+LDFLAGS="-L${TTF_DIR}/lib $LDFLAGS"
+fi
+
+if test "$TTF_DIR" = no; then
+    SYSTEM_TTF=0
+else
+    AC_MSG_CHECKING("for freetype.h")
+    AC_TRY_COMPILE([#include "freetype.h"], [],
+    [result="yes" SYSTEM_TTF=1],
+    [])
+    AC_MSG_RESULT("$result")
+fi
+if [ test "$SYSTEM_TTF" = 1 ]; then
+	AC_CHECK_LIB(ttf, TT_Init_FreeType, [TTF_LIBS="-lttf"],
+	AC_CHECK_LIB(ttf, TT_Done_FreeType, [TTF_LIBS="-lttf -lnsl"],
+	no_ttf=yes, -lnsl))
+else
+    no_ttf=yes
+fi
+
+if [ test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ]; then
+    TTF_CFLAGS="-I${TTF_DIR}/include"
+    TTF_LIBS="-L${TTF_DIR}/lib ${TTF_LIBS}"
+fi
+
+if test "x$no_ttf" = xyes; then
+    if test "$TTF_DIR" != "" ; then
+    CFLAGS="-I${TTF_DIR} $CFLAGS"
+    LDFLAGS="-L${TTF_DIR} $LDFLAGS"
+    fi
+
+    if test "$TTF_DIR" = no; then
+        SYSTEM_TTF=0
+    else
+        AC_MSG_CHECKING("for freetype.h")
+        AC_TRY_COMPILE([#include "freetype.h"], [],
+        [result="yes" SYSTEM_TTF=1],
+        [result="no, WARNING the gd binding will not be able to handle wmf text" SYSTEM_TTF=0])
+        AC_MSG_RESULT("$result")
+    fi
+    if [ test "$SYSTEM_TTF" = 1 ]; then
+		AC_CHECK_LIB(ttf, TT_Init_FreeType, [TTF_LIBS="-lttf"],
+		AC_CHECK_LIB(ttf, TT_Done_FreeType, [TTF_LIBS="-lttf -lnsl"],
+		no_ttf=yes, -lnsl))
+    else
+        no_ttf=yes
+    fi
+
+if [ test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ]; then
+    TTF_CFLAGS="-I${TTF_DIR}"
+    TTF_LIBS="-L${TTF_DIR} ${TTF_LIBS}"
+fi
+
+fi
+
+ CFLAGS=$_SAVE_CFLAGS
+ LDFLAGS=$_SAVE_LDFLAGS
+
+
+
+
+
+AC_PATH_X
+### Check for the pt library (for SCO, needed for X)
+AC_CHECK_LIB(pt,ptsname,[X_EXTRA_LIBS="$X_EXTRA_LIBS -lpt"])
+
+AC_PATH_XTRA
+AC_HEADER_STDC
+
+AC_CHECK_HEADERS(unistd.h)
+CFLAGS="$CFLAGS $X_CFLAGS"
+
+LIBS="$X_LIBS $LIBS -lX11 $X_EXTRA_LIBS"
+
+dnl system xpm support, done after X, as its usually in the same place
+dnl ========================================================
+AC_ARG_WITH(xpm,
+[  --with-xpm=\$dir	  find the xpm library in \$dir],
+    XPM_DIR=$withval)
+
+_SAVE_CFLAGS=$CFLAGS
+_SAVE_LDFLAGS=$LDFLAGS
+
+if test "$XPM_DIR" != "" ; then
+CFLAGS="-I${XPM_DIR}/include $CFLAGS"
+LDFLAGS="-L${XPM_DIR}/lib $LDFLAGS"
+fi
+
+
+if test "$XPM_DIR" = no; then
+    SYSTEM_XPM=0
+else
+    AC_MSG_CHECKING("for xpm.h")
+    AC_TRY_COMPILE([#include <X11/xpm.h>], [],
+    [result="yes" SYSTEM_XPM=1],
+    [result="no" SYSTEM_XPM=0])
+    if [test "$SYSTEM_XPM" = 0]; then
+        AC_TRY_COMPILE([#include <xpm.h>], [],
+        [result="yes" SYSTEM_XPM=1],
+        [result="no" SYSTEM_XPM=0])
+        XPMINCLUDE="<xpm.h>"
+    else
+        XPMINCLUDE="<X11/xpm.h>"
+    fi
+    AC_MSG_RESULT("$result")
+fi
+if [ test "$SYSTEM_XPM" = 1 ]; then
+    AC_CHECK_LIB(Xpm, main, [XPM_LIBS="-lXpm"],no_Xpm=yes)
+else
+    no_Xpm=yes
+fi
+
+if [ test -n "${XPM_DIR}" && test -d "${XPM_DIR}" && test "$SYSTEM_XPM" = 1 ]; then
+    XPM_CFLAGS="-I${XPM_DIR}/include"
+    XPM_LIBS="-L${XPM_DIR}/lib ${XPM_LIBS}"
+fi
+
+if test "x$no_Xpm" = "xyes"; then
+    if test "$XPM_DIR" != "" ; then
+    CFLAGS="-I${XPM_DIR} $CFLAGS"
+    LDFLAGS="-L${XPM_DIR} $LDFLAGS"
+    fi
+
+
+    if test "$XPM_DIR" = no; then
+        SYSTEM_XPM=0
+    else
+        AC_MSG_CHECKING("for xpm.h")
+        AC_TRY_COMPILE([#include <X11/xpm.h>], [],
+        [result="yes" SYSTEM_XPM=1],
+        [result="no" SYSTEM_XPM=0])
+        if [test "$SYSTEM_XPM" = 0]; then
+            AC_TRY_COMPILE([#include <xpm.h>], [],
+            [result="yes" SYSTEM_XPM=1],
+            [result="no" SYSTEM_XPM=0])
+            XPMINCLUDE="<xpm.h>"
+        else
+            XPMINCLUDE="<X11/xpm.h>"
+        fi
+        AC_MSG_RESULT("$result")
+    fi
+    if [ test "$SYSTEM_XPM" = 1 ]; then
+        AC_CHECK_LIB(Xpm, main, [XPM_LIBS="-lXpm"],no_Xpm=yes,-lX11)
+    else
+        no_Xpm=yes
+    fi
+
+
+if [ test -n "${XPM_DIR}" && test -d "${XPM_DIR}" && test "$SYSTEM_XPM" = 1 ]; then
+    XPM_CFLAGS="-I${XPM_DIR}"
+    XPM_LIBS="-L${XPM_DIR} ${XPM_LIBS}"
+fi
+
+fi
+
+CFLAGS=$_SAVE_CFLAGS
+LDFLAGS=$_SAVE_LDFLAGS
+
+dnl system ZLIB support, originally nicked from mozilla source
+dnl ========================================================
+AC_ARG_WITH(zlib,
+[  --with-zlib=\$dir        use libz in \$dir],
+    ZLIB_DIR=$withval)
+
+_SAVE_CFLAGS=$CFLAGS
+_SAVE_LDFLAGS=$LDFLAGS
+CFLAGS="-I${ZLIB_DIR}/include $CFLAGS"
+LDFLAGS="-L${ZLIB_DIR}/lib $LDFLAGS"
+if test "$ZLIB_DIR" = no; then
+    SYSTEM_ZLIB=
+else
+    AC_MSG_CHECKING("for zlib.h")
+    AC_TRY_COMPILE([#include "zlib.h"], [],
+    [result="yes" SYSTEM_ZLIB=1],
+    [result="no" SYSTEM_ZLIB=])
+    AC_MSG_RESULT("$result")
+fi
+
+if [ test "$SYSTEM_ZLIB" = 1 ]; then
+
+dnl there is often a crap libz hiding in the X11 lib dir
+dnl redhat 4.2 and SuSE have been known to do this, something to do with the
+dnl libgr package and imake
+dnl so for this reason i stick -L/usr/lib before the X11 options here first
+
+    _SAVE_LD=$LDFLAGS
+    LDFLAGS="-L/usr/lib $LDFLAGS"
+
+    AC_CHECK_LIB(z, gzread, [SYSTEM_ZLIB=1 ZLIB_LIBS="-lz"],
+    [SYSTEM_ZLIB= ZLIB_CFLAGS= ZLIB_LIBS=])
+
+dnl if there wasn't a usable libz, then look for libgz ala SuSE
+
+    if [ test "$SYSTEM_ZLIB" = "" ]; then
+    AC_CHECK_LIB(gz, gzread, [SYSTEM_ZLIB=1 ZLIB_LIBS="-lgz"],
+    [SYSTEM_ZLIB= ZLIB_CFLAGS= ZLIB_LIBS=])
+    fi
+fi
+
+if [ test -n "${ZLIB_DIR}" && test -d "${ZLIB_DIR}" && test "$SYSTEM_ZLIB" = 1 ]; then
+    ZLIB_CFLAGS="-I${ZLIB_DIR}/include"
+    ZLIB_LIBS="-L${ZLIB_DIR}/lib ${ZLIB_LIBS}"
+fi
+
+if [ test "$SYSTEM_ZLIB" = "" ]; then
+    CFLAGS="-I${ZLIB_DIR} $CFLAGS"
+    LDFLAGS="-L${ZLIB_DIR} $LDFLAGS"
+    if test "$ZLIB_DIR" = no; then
+        SYSTEM_ZLIB=
+    else
+        AC_MSG_CHECKING("for zlib.h")
+        AC_TRY_COMPILE([#include "zlib.h"], [],
+        [result="yes" SYSTEM_ZLIB=1],
+        [result="no" SYSTEM_ZLIB=])
+        AC_MSG_RESULT("$result")
+    fi
+
+    if [ test "$SYSTEM_ZLIB" = 1 ]; then
+
+    dnl there is often a crap libz hiding in the X11 lib dir
+    dnl redhat 4.2 and SuSE have been known to do this, something to do with the libgr
+    dnl package and imake
+    dnl so for this reason i stick -L/usr/lib before the X11 options here first
+
+        LDFLAGS=$_SAVE_LD
+        LDFLAGS="-L/usr/lib $LDFLAGS"
+
+        AC_CHECK_LIB(z, gzread, [SYSTEM_ZLIB=1 ZLIB_LIBS="-lz"],
+        [SYSTEM_ZLIB= ZLIB_CFLAGS= ZLIB_LIBS=])
+
+    dnl if there wasn't a usable libz, then look for libgz ala SuSE
+
+        if [ test "$SYSTEM_ZLIB" = "" ]; then
+        AC_CHECK_LIB(gz, gzread, [SYSTEM_ZLIB=1 ZLIB_LIBS="-lgz"],
+        [SYSTEM_ZLIB= ZLIB_CFLAGS= ZLIB_LIBS=])
+        fi
+    fi
+
+
+if [ test -n "${ZLIB_DIR}" && test -d "${ZLIB_DIR}" && test "$SYSTEM_ZLIB" = 1 ]; then
+    ZLIB_CFLAGS="-I${ZLIB_DIR}"
+    ZLIB_LIBS="-L${ZLIB_DIR} ${ZLIB_LIBS}"
+fi
+
+fi
+
+CFLAGS=$_SAVE_CFLAGS
+LDFLAGS=$_SAVE_LDFLAGS
+
+dnl ========================================================
+dnl end of zlib
+
+
+dnl begin png search
+dnl =========================
+#
+# Check for PNG
+#
+AC_ARG_WITH(png,
+[  --with-png=\$dir	  use png in \$dir],
+    PNG_DIR=$withval)
+_SAVE_CFLAGS=$CFLAGS
+_SAVE_LDFLAGS=$LDFLAGS
+    have_png='no'
+    LIB_PNG=''
+    if test "$with_png" != 'no'; then
+
+        AC_CHECKING(for PNG support ...)
+        failed=0;
+        passed=0;
+        AC_CHECK_HEADER(png.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+        AC_CHECK_HEADER(pngconf.h,passed=`expr $passed + 1`,failed=`expr $failed + 1`,)
+        AC_CHECK_LIB(png,png_info_init,passed=`expr $passed + 1`,failed=`expr $failed + 1`,$ZLIB_LIBS -lm)
+        AC_MSG_CHECKING(if PNG package is complete)
+        if test $passed -gt 0; then
+            if test $failed -gt 0; then
+                AC_MSG_RESULT(no -- some components failed test)
+                have_png='no (failed tests)'
+            else
+                LIB_PNG='-lpng'
+                AC_DEFINE(HasPNG)
+                AC_MSG_RESULT(yes)
+                have_png='yes'
+            fi
+        else
+            AC_MSG_RESULT(no)
+        fi
+    fi
+CFLAGS=$_SAVE_CFLAGS
+LDFLAGS=$_SAVE_LDFLAGS
+dnl end png search
+dnl =========================
+
+dnl system ttf support
+dnl ========================================================
+AC_ARG_WITH(ttf,
+[  --with-ttf=\$dir	  find the ttf library in \$dir],
+    TTF_DIR=$withval)
+
+_SAVE_CFLAGS=$CFLAGS
+_SAVE_LDFLAGS=$LDFLAGS
+
+if test "$TTF_DIR" != "" ; then
+CFLAGS="-I${TTF_DIR}/include $CFLAGS"
+LDFLAGS="-L${TTF_DIR}/lib $LDFLAGS"
+fi
+
+if test "$TTF_DIR" = no; then
+    SYSTEM_TTF=0
+else
+    AC_MSG_CHECKING("for freetype.h")
+    AC_TRY_COMPILE([#include "freetype.h"], [],
+    [result="yes" SYSTEM_TTF=1],
+    [])
+    AC_MSG_RESULT("$result")
+fi
+if [ test "$SYSTEM_TTF" = 1 ]; then
+    AC_CHECK_LIB(ttf, TT_Init_FreeType, [TTF_LIBS="-lttf"],no_ttf=yes,-lm)
+else
+    no_ttf=yes
+fi
+
+if [ test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ]; then
+    TTF_CFLAGS="-I${TTF_DIR}/include"
+    TTF_LIBS="-L${TTF_DIR}/lib ${TTF_LIBS}"
+fi
+
+if test "x$no_ttf" = xyes; then
+    if test "$TTF_DIR" != "" ; then
+    CFLAGS="-I${TTF_DIR} $CFLAGS"
+    LDFLAGS="-L${TTF_DIR} $LDFLAGS"
+    fi
+
+    if test "$TTF_DIR" = no; then
+        SYSTEM_TTF=0
+    else
+        AC_MSG_CHECKING("for freetype.h")
+        AC_TRY_COMPILE([#include "freetype.h"], [],
+        [result="yes" SYSTEM_TTF=1],
+        [result="no, WARNING the gd binding will not be able to handle wmf text" SYSTEM_TTF=0])
+        AC_MSG_RESULT("$result")
+    fi
+    if [ test "$SYSTEM_TTF" = 1 ]; then
+        AC_CHECK_LIB(ttf, TT_Init_FreeType, [TTF_LIBS="-lttf"],no_ttf=yes,-lm)
+    else
+        no_ttf=yes
+    fi
+
+
+if [ test -n "${TTF_DIR}" && test -d "${TTF_DIR}" && test "$SYSTEM_TTF" = 1 ]; then
+    TTF_CFLAGS="-I${TTF_DIR}"
+    TTF_LIBS="-L${TTF_DIR} ${TTF_LIBS}"
+fi
+
+fi
+
+ CFLAGS=$_SAVE_CFLAGS
+ LDFLAGS=$_SAVE_LDFLAGS
+
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+
+dnl check for getopt
+dnl AC_CHECK_FUNC(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
+dnl AC_CHECK_FUNC(strerror, , [LIBOBJS="$LIBOBJS strerror.o"])
+dnl AC_SUBST(LIBOBJS)
+
+if test "x$no_Xpm" = xyes; then
+	AC_MSG_ERROR(Could not find both required Xpm library and header file: cannot continue)
+else
+	AC_DEFINE(HAVE_XPM)
+fi
+
+if test "x$no_ttf" = xyes; then
+	AC_MSG_WARN(Could not find ttf library: wmftogif will not have text support: see README)
+else
+	AC_DEFINE(HAVE_TTF)
+fi
+
+if [ test "$XPM_LIBS" != "" ]; then
+AC_DEFINE(USE_X)
+AC_SUBST(X11)
+AC_SUBST(X_LIBS)
+AC_SUBST(X_EXTRA_LIBS)
+fi
+
+
+AC_SUBST(LIB_PNG)
+
+AC_SUBST(ZLIB_CFLAGS)
+AC_SUBST(ZLIB_LIBS)
+
+AC_SUBST(TTF_LIBS)
+AC_SUBST(TTF_CFLAGS)
+
+AC_SUBST(XPM_LIBS)
+AC_SUBST(XPM_CFLAGS)
+AC_SUBST(XPMINCLUDE)
+
+AC_OUTPUT(Makefile libdib/Makefile xgd-1.7.3/Makefile libxfig/Makefile)
+

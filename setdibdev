@@ -1,0 +1,60 @@
+	34 00 			{
+	00 00  			{size
+	33 0d 			opcode
+0	00 00 			guess DIB_PAL_COLORS vs DIB_RGB_COLORS ?
+1	08 00 			guess lines ?
+2	00 00			guess startscan ?
+3	00 00 			guess ySrc
+4	00 00 			guess xSrc
+5	08 00 			cy
+6	08 00			cx
+7	c2 01 			yDest
+8	0e 01 			xDest
+9	28 00 00 00		the full dib in question
+	08 00 00 00 
+	08 00 00 00
+	01 00 01 00 
+	00 00 00 00
+	cb 69 82 5f 
+	d4 4e 68 00
+	ac ef 63 00 
+	00 00 00 00
+	a4 00 00 00 
+	01 00 00 00
+	27 15 00 00 
+	ff 00 0c 00
+	0c 00 0c 00 
+	ff 00 c0 00
+	c0 00 00 00 
+	2a 19 00 00 
+	00 00 00 00 
+	45 45 45 00  
+	b2 14
+
+SetDIBitsToDevice(bltmet, 
+270, 
+450, 
+8, 
+8, 
+0, 
+0,
+0,
+8,
+wBrickBits,
+&BitmapInfo,
+DIB_RGB_COLORS);
+
+SetDIBitsToDevice
+		HDC32 hdc,
+        INT32 xDest,
+        INT32 yDest,
+        DWORD cx,
+        DWORD cy,
+        INT32 xSrc,
+        INT32 ySrc,
+        UINT32 startscan,
+        UINT32 lines,
+        LPCVOID bits,
+        const BITMAPINFO *info,
+        UINT32 coloruse
+

@@ -1,0 +1,60 @@
+Index: graphics/x11drv/graphics.c
+===================================================================
+RCS file: /home/wine/wine/graphics/x11drv/graphics.c,v
+retrieving revision 1.11
+diff -u -w -r1.11 graphics.c
+--- graphics/x11drv/graphics.c	1999/02/26 11:11:21	1.11
++++ graphics/x11drv/graphics.c	1999/03/09 15:19:30
+@@ -1160,8 +1160,14 @@
+                              rect.bottom - rect.top,
+                              AllPlanes, ZPixmap ))) return FALSE;
+ 
++/*  
++Im pretty sure that FloodFill doesnt use the current brush at all, 
++the app im playing with shows this behaviour
++Caolan.McNamara@ul.ie
++	
+     if (X11DRV_SetupGCForBrush( dc ))
+     {
++*/
+           /* ROP mode is always GXcopy for flood-fill */
+         XSetFunction( display, physDev->gc, GXcopy );
+         X11DRV_InternalFloodFill(image, dc,
+@@ -1171,7 +1177,8 @@
+                                  rect.top,
+                                  COLOR_ToPhysical( dc, params->color ),
+                                  params->fillType );
+-    }
++/*    }
++*/
+ 
+     XDestroyImage( image );
+     return TRUE;
+Index: objects/metafile.c
+===================================================================
+RCS file: /home/wine/wine/objects/metafile.c,v
+retrieving revision 1.8
+diff -u -w -r1.8 metafile.c
+--- objects/metafile.c	1999/02/26 11:11:31	1.8
++++ objects/metafile.c	1999/03/09 15:19:58
+@@ -924,6 +924,12 @@
+        	SetTextJustification(hdc, *(mr->rdParm + 1), *(mr->rdParm));
+ 	break;
+ 
++       /* --- Added metafile operation. March, 1999 (caolan.mcnamara@ul.ie) ----*/
++     case META_EXTFLOODFILL:
++	ExtFloodFill(hdc, (INT16)*(mr->rdParm + 4), (INT16)*(mr->rdParm + 3),
++                    MAKELONG(*(mr->rdParm+1), *(mr->rdParm + 2)),*(mr->rdParm));
++	break;
++
+ #define META_UNIMP(x) case x: FIXME(metafile, "PlayMetaFileRecord:record type "#x" not implemented.\n");break;
+     META_UNIMP(META_FRAMEREGION)
+     META_UNIMP(META_DRAWTEXT)
+@@ -931,7 +937,6 @@
+     META_UNIMP(META_ANIMATEPALETTE)
+     META_UNIMP(META_SETPALENTRIES)
+     META_UNIMP(META_RESIZEPALETTE)
+-    META_UNIMP(META_EXTFLOODFILL)
+     META_UNIMP(META_RESETDC)
+     META_UNIMP(META_STARTDOC)
+     META_UNIMP(META_STARTPAGE)

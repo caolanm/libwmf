@@ -1,0 +1,12 @@
+A lot of this source code is derived from selected portions of wine
+code, wine can be found at http://www.winehq.com. Where ive found
+problems in wine's handling of metafile's and graphics ive 
+endevoured to create patches and submit them to wine, see the
+winepatches dir for them.
+
+* the majority of the code is my own work, Caolan.McNamara@ul.ie 
+	(http://www.csn.ul.ie/~caolan)
+* the fig code is written by David.Airlie@ul.ie 
+	(http://www.csn.ul.ie/~airlied)
+* zooming in with xwmf (+ and -) is by Raj Manandhar <raj@colsa.com> 
+
