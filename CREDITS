@@ -13,7 +13,9 @@ winepatches dir for them.
 * Contributions by Dom Lachowicz (help with cvs repository, 
   checking in stuff, good ideas,...)
 * Contribution by Steven Michael Robbins (simpler configure.in)
-* Debugging help by Frédéric Vivien, Benjamin Geer, Peter Ohlerich.
+* Contribution to Xfig output by Frédéric Vivien.
+* Debugging help by Benjamin Geer, Peter Ohlerich,
+  Steve Oney.
 
 * adding text output (and more) to the xfig output code of libwmf;
   creating a rudimentary wmftoeps -- yours truly the maintainer,

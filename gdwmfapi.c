@@ -183,57 +183,117 @@ void gd_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 void gd_draw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpdx)
 */
 void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
-	{
-	char systext[4096];
-	int dummy;
-	int size;
-	int frombaseline=0;
-	int ascent,descent;
-	FILE *in;
-	gdImagePtr im;
-	char *fontfile=NULL;
-	int brect[8];
-	int color,bg;
-	double angle;
-	char Arial[] = "Arial";
-	int i;
-	int flag=0;
-	gdPoint points[4];
-	U16 *lpDx2=NULL;
+{
+  int dummy;
+  int size;
+  int frombaseline=0;
+  int ascent, descent, height, length, width;
+  FILE *in;
+  gdImagePtr im;
+  char *fontfile=NULL;
+  int brect[8];
+  int color,bg;
+  double angle;
+  char Roman[]  = "times new roman"; /* Last-resort fallback. Make sure
+                                        you have this ttf on your system! */
+  char Arial[]  = "arial";           /* One more fallback */
+  char Symbol[] = "linedraw";        /* Same for symbols / wingdings. */
+  int i;
+  int flag=0;
+  gdPoint points[4];
+  U16 *lpDx2=NULL;
+  char fontname[4096];
 
-	char fontname[4096];
+  descent = 0;
+
+  length =  ScaleX(cstruct->realwidth, cstruct);
+  ascent =  ScaleY(cstruct->dc->font->lfHeight, cstruct);
+
+  height = descent + ascent;
+
+  if (lpDx)
+    {
+      for (i = width = 0; i < strlen(str); i++) width += lpDx[i];
+      width = ScaleX(width, cstruct);
+      length = width;
+    }
+
+
+  if (cstruct->dc->textalign & TA_UPDATECP)
+    {
+      x = currentx;
+      y = currenty;
+    }
+
+  switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
+    {
+      case TA_LEFT:
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+              currentx = x + length;
+              currenty = y - height;
+          }
+          break;
+      case TA_RIGHT:
+          x -= length;
+          y += height;
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+              currentx = x;
+              currenty = y;
+          }
+          break;
+      case TA_CENTER:
+          x -= length / 2;
+          y += height / 2;
+          break;
+    }
+
+  switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
+    {
+      case TA_TOP:
+          x -=  0;
+          y +=  ascent;
+          break;
+      case TA_BOTTOM:
+          x += 0;
+          y -= descent;
+          break;
+      case TA_BASELINE:
+          break;
+    }
+
 	size = ScaleY(cstruct->dc->font->lfHeight,cstruct);
-	wmfdebug(stderr,"gd fontface is -*-%s-*-*-*-*-%d-*-*-*-*-*-*-*",
-		cstruct->dc->font->lfFaceName,size);
-	if (!(strcmp("None",cstruct->dc->font->lfFaceName)))
-		{
-		strcpy(cstruct->dc->font->lfFaceName,"Arial");
-		sprintf(fontname,"-*-arial-bold-r-*-*-10-*-*-*-*-*-*-*");
-		size=10;
-		}
-	else
-		sprintf(fontname,"-*-%s-*-r-*-*-%d-*-*-*-*-*-*-*",
-			cstruct->dc->font->lfFaceName,size);
 
-
+        /* fprintf(stderr, "%s\n", cstruct->dc->font->lfFaceName); */
 	if (str != NULL)
 		{
-		if (size == 0)
-			size = 10;
+		if (size == 0) size = 10;
 		if (ourlist != NULL)
 			{
+			/* There are fonts in the font dir */
+			/* Try to find font specified in .wmf: */
 			wmfdebug(stderr,"searching for %s\n",
 				cstruct->dc->font->lfFaceName);
+			/* Go by the name in the .wmf: */
 			fontfile = findfile(cstruct->dc->font->lfFaceName,
-				list,ourlist);
+			  list, ourlist);
+
+			/* No luck, proceed to substitutions: */
+			if (fontfile == NULL)
+        		  if (strstr(cstruct->dc->font->lfFaceName, "sym")) {
+			    fontfile = findfile(Symbol, list, ourlist); 
+                          }
+                        
 
 			if (fontfile == NULL)
-				/*"/mnt/win95/windows/fonts/arial.ttf";*/
-				fontfile = findfile(Arial,list,ourlist);
+	      		  if (strstr(cstruct->dc->font->lfFaceName, "arial")) {
+			    /*"/mnt/win95/windows/fonts/arial.ttf";*/
+			    fontfile = findfile(Arial, list, ourlist); 
+			  } else {
+			    /* When nothing else helps */
+			    fontfile = findfile(Roman, list, ourlist); 
+			  }
 			}
-
-		if (fontfile == NULL)
-			return;
+		if (fontfile == NULL) return;
 
 		color = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, 
 			(cstruct->dc->textcolor[0]& 0x00FF), 
@@ -270,8 +330,13 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			/*fill the rectangle*/
 			if (arect)
 				{
-				bg = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, (cstruct->dc->bgcolor[0]& 0x00FF), ((cstruct->dc->bgcolor[0]& 0xFF00)>>8), (cstruct->dc->bgcolor[1]& 0x00FF));
-				gdImageFilledRectangle(((GDStruct *)(cstruct->userdata))->im_out,arect->left,arect->top,arect->right,arect->bottom,bg);
+				bg = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, 
+				  ( cstruct->dc->bgcolor[0]& 0x00FF), 
+				  ((cstruct->dc->bgcolor[0]& 0xFF00)>>8), 
+				  ( cstruct->dc->bgcolor[1]& 0x00FF));
+				gdImageFilledRectangle(((GDStruct *)(cstruct->userdata))->im_out,
+				  arect->left,arect->top,
+				  arect->right,arect->bottom,bg);
 				}
 			}
 			
@@ -280,31 +345,31 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			{
 			/* If rectangle is opaque and clipped, do nothing */
 			if (!(flags & ETO_CLIPPED) || !(flags & ETO_OPAQUE))
+			  {
+			  /* Only draw if rectangle is not opaque or if some */
+			  /* text is outside the rectangle */
+			  if (!(flags & ETO_OPAQUE) /*||
+			      (x < rect.left) ||
+			      (x + width >= rect.right) ||
+			      (y - ascent < rect.top) ||
+			      (y + descent >= rect.bottom)*/)
+			    {
+			      gdImageStringTTF(NULL,brect,color,
+				fontfile, (size*72.0)/75,
+				angle, x, y, str);
+			      for(i = 0; i < 4; i++)
 				{
-				/* Only draw if rectangle is not opaque or if some */
-				/* text is outside the rectangle */
-				if (!(flags & ETO_OPAQUE) /*||
-				  (x < rect.left) ||
-				  (x + width >= rect.right) ||
-				  (y - ascent < rect.top) ||
-				  (y + descent >= rect.bottom)*/)
-				    {
-				      gdImageStringTTF(NULL,brect,color,
-					fontfile, (size*72.0)/75,
-					angle, x, y, str);
-				      for(i = 0; i < 4; i++)
-					{
-					  points[i].x = brect[i*2];
-					  points[i].y = brect[(i*2)+1];
-					}
-				      bg = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, 
-				  	( cstruct->dc->bgcolor[0]& 0x00FF), 
-					((cstruct->dc->bgcolor[0]& 0xFF00)>>8), 
-					( cstruct->dc->bgcolor[1]& 0x00FF));
-				      gdImageFilledPolygon(((GDStruct *)(cstruct->userdata))->im_out, 
-					points,4, bg);
-				    }
+				  points[i].x = brect[i*2];
+				  points[i].y = brect[(i*2)+1];
 				}
+			      bg = gdImageColorResolve(((GDStruct *)(cstruct->userdata))->im_out, 
+			  	( cstruct->dc->bgcolor[0]& 0x00FF), 
+				((cstruct->dc->bgcolor[0]& 0xFF00)>>8), 
+				( cstruct->dc->bgcolor[1]& 0x00FF));
+			      gdImageFilledPolygon(((GDStruct *)(cstruct->userdata))->im_out, 
+				points,4, bg);
+			    }
+			  }
 			}
 
 		gdImageStringTTF(((GDStruct *)(cstruct->userdata))->im_out,
@@ -315,7 +380,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 			free(lpDx2);
 		}
 	}
-	
+
 
 int gd_pixel_width(CSTRUCT *cstruct)
     {

@@ -35,18 +35,24 @@ To compile this code in its entirity you should have the freetype
 library (http://www.freetype.org), and you should have a range
 of truetype fonts, typically the ones supplied with windows.
 
+NOTE: Currently substitution rules are in effect, so if a 
+font is missing, 
+- Symbol is substituted if its name contains "sym";
+- Arial is substituted if its name contains "arial";
+- Times New Roman is substituted otherwise.
+
 freetype is only required for the gd binding to libwmf, i.e. the
 wmftopng program, the X bindings, (xwmf) doesn't require the 
-truetype library, but i very much reccomend that you install
+truetype library, but I very much recommend that you install
 xfsft, or have a X server able to use ttf fonts. 
 
 Without the freetype library wmftopng will compile, but will
 not be able to display text strings in the output png. If
-you do have freetype, you still are required to specify
+you do have freetype, you still *are* *required* to specify
 the directory that they are in to wmftopng as the third argument
 to it, the fonts should be the standard ttf fonts supplied with
 windows, or the font that the text will be rendered in will
-not be the original font.
+not be the original font (see above, or source gdwmfapi.c).
 
 3)
 Without a truetype font server and the standard windows fonts
