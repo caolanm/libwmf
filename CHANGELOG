@@ -1,3 +1,5 @@
+    * F.J. Franklin patch cleaning up header files (add common.h, region.h).
+    * F.J. Franklin patch improves TTF config.
 	* Bob Bell syntax fixes. 
 v 0.1.20
 	* Bob Bell patch to remove ctime warning in wmftoeps.
