@@ -25,12 +25,7 @@ void xf_write_polyline(FILE *fl, F_line *line)
       p=p->next;
     }
   
-  fprintf(fl,"% Polyline\n");
-/*
-  fprintf(fl, "%d %d ", \
-  	line->type, \
-	line->style, \
-*/
+  fprintf(fl,"%% Polyline\n");
   fprintf(fl, "%.3f slw\n gs ", (line->thickness * 7.5));
   fprintf(fl, "col%d s gr\n", line->pen_color);
 
@@ -44,24 +39,63 @@ void xf_write_polyline(FILE *fl, F_line *line)
 	np);
 */
 
-
   for (i=0; i<np; i++)
     {
-      if (i == 0) { fprintf(fl,"n %d %d m\n", line->points[i].x, line->points[i].y); }
+      if (i == 0) { fprintf(fl,"n %d %d m ", line->points[i].x, line->points[i].y); }
       else 
         { 
           fprintf(fl,"%d %d l ", line->points[i].x, line->points[i].y); 
-          fprintf(fl, "gs col%d s gr\n", line->pen_color);
         }
     }
-  fprintf(fl,"\n");
+  if (line->type > 1) fprintf(fl, "cp col%d 1.00 shd ef ", line->fill_color);
+  fprintf(fl, "gs col%d s gr\n", line->pen_color);
 }
+
+/*
+    (3.4) ELLIPSE
+
+    First line:
+        type    name                    (brief description)
+        ----    ----                    -------------------
+        int     object_code             (always 1)
+        int     sub_type                (1: ellipse defined by radiuses
+                                         2: ellipse defined by diameters
+                                         3: circle defined by radius
+                                         4: circle defined by diameter)
+        int     line_style              (enumeration type)
+        int     thickness               (1/80 inch)
+        int     pen_color               (enumeration type, pen color)
+        int     fill_color              (enumeration type, fill color)
+        int     depth                   (enumeration type)
+        int     pen_style               (pen style, not used)
+        int     area_fill               (enumeration type, -1 = no fill)
+        float   style_val               (1/80 inch)
+        int     direction               (always 1)
+        float   angle                   (radians, the angle of the x-axis)
+        int     center_x, center_y      (Fig units)
+        int     radius_x, radius_y      (Fig units)
+        int     start_x, start_y        (Fig units; the 1st point entered)
+        int     end_x, end_y            (Fig units; the last point entered)
+
+*/
 
 void xf_write_ellipse(FILE *fl, F_ellipse *ellipse)
 {
   
-  fprintf(fl,"%d %d %d %d %d %d %d %d %d %0.3f %d %0.3f ", O_ELLIPSE, \
-	ellipse->type,\
+  fprintf(fl, "%% Ellipse\n");
+  fprintf(fl, "n ");
+  if (ellipse->type == 1)
+    {
+      fprintf(fl, "%d %d ", ellipse->center.x, ellipse->center.y);
+      fprintf(fl, "%d %d ", ellipse->radiuses.x, ellipse->radiuses.y);
+      fprintf(fl, "0 360 ");
+    }	
+  fprintf(fl, "DrawEllipse ");
+  fprintf(fl, "gs col%d 1.00 shd ef gr ", (float) ellipse->fill_color);
+  fprintf(fl, "gs col%d s gr", ellipse->pen_color);
+  fprintf(fl, "\n");
+      
+/*
 	ellipse->style,\
 	ellipse->thickness,\
 	ellipse->pen_color,\
@@ -71,10 +105,10 @@ void xf_write_ellipse(FILE *fl, F_ellipse *ellipse)
 	ellipse->fill_style,\
 	ellipse->style_val, 1, 0.0);
   fprintf(fl,"%d %d %d %d %d %d %d %d\n", \
-	ellipse->center.x, ellipse->center.y, \
-	ellipse->radiuses.x, ellipse->radiuses.y, \
+
 	ellipse->start.x, ellipse->start.y, \
 	ellipse->end.x, ellipse->end.y);
+*/
 }
 
 void xf_write_spline(FILE *fl, F_spline *spl)

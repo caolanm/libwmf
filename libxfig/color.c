@@ -101,7 +101,7 @@ int xf_find_color(int c1, int c2, int c3)
     }
 
   /* If not, add it (exact match only): */
-  color_db[num_used].color=num_used+32;
+  color_db[num_used].color=num_used;
   color_db[num_used].red=c1;
   color_db[num_used].green=c2;
   color_db[num_used].blue=c3;
@@ -128,7 +128,7 @@ void xf_color_to_file(FILE *fl)
 void eps_color_to_file(FILE *fl)
 {
   int i;
-  char hextemp[10];
+  char hextemp[100];
 
   for (i=32; i<num_used; i++)
     {

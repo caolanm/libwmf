@@ -184,6 +184,18 @@ int writeepsheader(FILE *fl, char *title, double realwidth, double realheight)
   fprintf(fl, "  4 -2 roll mul srgb} bind def\n");
   fprintf(fl, "/$F2psBegin {$F2psDict begin /$F2psEnteredState save def} def\n");
   fprintf(fl, "/$F2psEnd {$F2psEnteredState restore end} def\n");
+  fprintf(fl, " /DrawEllipse {\n");
+  fprintf(fl, "        /endangle exch def\n");
+  fprintf(fl, "        /startangle exch def\n");
+  fprintf(fl, "        /yrad exch def\n");
+  fprintf(fl, "        /xrad exch def\n");
+  fprintf(fl, "        /y exch def\n");
+  fprintf(fl, "        /x exch def\n");
+  fprintf(fl, "        /savematrix mtrx currentmatrix def\n");
+  fprintf(fl, "        x y tr xrad yrad sc 0 0 1 startangle endangle arc\n");
+  fprintf(fl, "        closepath\n");
+  fprintf(fl, "        savematrix setmatrix\n");
+  fprintf(fl, "        } def\n");
   fprintf(fl, "\n");
   fprintf(fl, "$F2psBegin\n");
   fprintf(fl, "%%%%Page: 1 1\n");
