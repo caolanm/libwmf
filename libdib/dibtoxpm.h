@@ -74,11 +74,11 @@ typedef struct tagBITMAPINFO
 #define DIB_RGB_COLORS      0 /* color table in RGBs */
 #define DIB_PAL_COLORS      1 /* color table in palette indices */
 
-int get_BMPHEADER(FILE *file,BMPHEADER *bmp_header);
+void get_BMPHEADER(FILE *file,BMPHEADER *bmp_header);
 
-int get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header);
+void get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header);
 
-int save_DIBasXpm(FILE *,BITMAPINFOHEADER* ,FILE *);
+void save_DIBasXpm(FILE *,BITMAPINFOHEADER* ,FILE *);
 
 int DIB_BitmapInfoSize( BITMAPINFO * info, U16 coloruse );
 

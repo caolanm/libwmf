@@ -17,7 +17,7 @@ winepatches dir for them.
   Graphic elements, embedded bitmaps, styles and attributes. 
   And the test file cell.wmf.
 * Debugging help by Benjamin Geer, Peter Ohlerich, Steve Oney.
-* Patch by Bob Bell.
+* Patches by Bob Bell.
 * Revamping of the configure.in script, and more, by Albert Chin. 
 
 * adding text output (and more) to the Xfig output code of libwmf;

@@ -1,3 +1,6 @@
+	* Bob Bell syntax fixes. 
+v 0.1.20
+	* Bob Bell patch to remove ctime warning in wmftoeps.
 	* Bob Bell patch to prevent buffer ovfl in wmftoeps.
 	* Option scale-bmp to xwmf also.
 	* Removed gdImageColorResolveRich again, and implemented 

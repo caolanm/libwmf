@@ -53,6 +53,7 @@ int xf_std_colors()
   xf_put_color(31, 1.000,0.840,0.000);
 
   num_used = 32;
+  return(0);
 }
 
 int xf_put_color(int num, int c1, int c2, int c3)
@@ -61,6 +62,7 @@ int xf_put_color(int num, int c1, int c2, int c3)
   color_db[num].red=c1;
   color_db[num].green=c2;
   color_db[num].blue=c3;
+  return(0);
 }
 
 int xf_find_color(int c1, int c2, int c3)

@@ -22,7 +22,7 @@ char *get_dibversion(void)
 	return(dibversion);
 	}
 
-int get_BMPHEADER(FILE *file,BMPHEADER *bmpheader)
+void get_BMPHEADER(FILE *file,BMPHEADER *bmpheader)
 	{
 	bmpheader->Identifier[0] = getc(file);
 	bmpheader->Identifier[1] = getc(file);
@@ -32,7 +32,7 @@ int get_BMPHEADER(FILE *file,BMPHEADER *bmpheader)
 	bmpheader->BitmapDataOffset = wmfReadU32bit(file);
 	}
 
-int get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header)
+void get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header)
 	{
 	int i;
 
@@ -55,7 +55,7 @@ int get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header)
 
 
 
-int save_DIBasXpm(FILE *file,BITMAPINFOHEADER* dib_header,FILE *output)
+void save_DIBasXpm(FILE *file,BITMAPINFOHEADER* dib_header,FILE *output)
 	{
 	U32 noofcolors;
 	int noinpalette;

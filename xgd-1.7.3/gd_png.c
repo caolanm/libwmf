@@ -426,6 +426,7 @@ void gdImagePngCtx(gdImagePtr im, gdIOCtx *outfile)
     volatile int transparent = im->transparent;
     volatile int remap = FALSE;
 
+    /* fprintf(stderr, "Inside gdImagePngCtx\n"); */
 
     png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING,
       &gdPngJmpbufStruct, gdPngErrorHandler, NULL);
@@ -571,6 +572,8 @@ void gdImagePngCtx(gdImagePtr im, gdIOCtx *outfile)
     }
     /* 1.6.3: maybe we should give that memory BACK! TBB */
         png_destroy_write_struct(&png_ptr, &info_ptr);
+
+    /* fprintf(stderr, "Leaving gdImagePngCtx\n"); */
 }
 
 

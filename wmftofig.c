@@ -144,6 +144,7 @@ int writefigheader(FILE *fl)
 {
   fprintf(fl, "#FIG 3.2\n");
   fprintf(fl, "Landscape\nCenter\nMetric\nA4\n100.00\nSingle\n-2\n1200 2\n");
+  return(0);
 }
   
 

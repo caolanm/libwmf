@@ -815,7 +815,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 
 					org_bmp = auxname(prefix);
 
-					fprintf(stderr,"the tempname was %s\n",org_bmp);
+					fprintf(stderr,"The temp name was %s\n",org_bmp);
 
 					wmfdebug(stderr,"the tempname was %s\n",org_bmp);
 
@@ -840,6 +840,20 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 					output = fopen(org_bmp,"w+b");
 
 					get_BITMAPINFOHEADER(dib,&dibheader);
+/*
+fprintf(stderr, "%d\n", dibheader.biSize);
+fprintf(stderr, "%d\n", dibheader.biWidth);
+fprintf(stderr, "%d\n", dibheader.biHeight);
+fprintf(stderr, "biPlanes=%d\n", dibheader.biPlanes);
+fprintf(stderr, "%d\n", dibheader.biBitCount);
+fprintf(stderr, "%d\n", dibheader.biCompression);
+fprintf(stderr, "%d\n", dibheader.biSizeImage);
+fprintf(stderr, "%d\n", dibheader.biXPelsPerMeter);
+fprintf(stderr, "%d\n", dibheader.biYPelsPerMeter);
+fprintf(stderr, "%d\n", dibheader.biClrUsed);
+fprintf(stderr, "%d\n", dibheader.biClrImportant);
+*/
+fprintf(stderr, "calling saveDIBasXpm\n");
 					save_DIBasXpm(dib,&dibheader,output);
 					fclose(output);
 					fclose(dib);
@@ -1115,8 +1129,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 				      if ( (wmfrecord.Parameters[5] != ScaleX(wmfrecord.Parameters[5],cstruct)) 
 					   || (wmfrecord.Parameters[4] != ScaleY(wmfrecord.Parameters[4],cstruct)))
 					{
-					  int scale_x = round(i2f_ScaleX(wmfrecord.Parameters[5],cstruct)/wmfrecord.Parameters[5]);
-					  int scale_y = round(i2f_ScaleY(wmfrecord.Parameters[4],cstruct)/wmfrecord.Parameters[4]);
+					  scale_x = round(i2f_ScaleX(wmfrecord.Parameters[5],cstruct)/wmfrecord.Parameters[5]);
+					  scale_y = round(i2f_ScaleY(wmfrecord.Parameters[4],cstruct)/wmfrecord.Parameters[4]);
 
 					  if (scale_BMP)
 					    {
