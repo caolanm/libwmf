@@ -125,7 +125,7 @@ realcleansub:
 	@echo cleaning libdib in libdib
 	@(cd libdib && $(MAKE) realclean) || exit 1
 	@echo cleaning libxgd in xgd-1.7.3
-	@(cd xgd-1.7.3 && $(MAKE) clean) || exit 1
+	@(cd xgd-1.7.3 && $(MAKE) realclean) || exit 1
 	@echo cleaning libxfig in libxfig
 	@(cd libxfig && $(MAKE) realclean) || exit 1
 
