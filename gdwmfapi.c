@@ -770,7 +770,7 @@ void gd_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
     centerx = (right+left)/2;
     centery = (bottom+top)/2;
 
-   	angle2 = atan2( (double)(centery-ystart)*(right-left),(double)(xstart-centerx)*(bottom-top) );
+    angle2 = atan2( (double)(centery-ystart)*(right-left),(double)(xstart-centerx)*(bottom-top) );
     angle1 = atan2( (double)(centery-yend)*(right-left),(double)(xend-centerx)*(bottom-top) );
 
 

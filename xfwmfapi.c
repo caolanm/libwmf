@@ -252,8 +252,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 
   int c1, c2, c3;
   F_text *text, *t;
-  int width, height, i;
+  int width;
+  int height, i;
   char *facename;
+  float x_shift, y_shift;
 
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -921,37 +923,298 @@ void xf_fill_opaque(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 void xf_draw_simple_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
 	  printf("xf_draw_simple_arc\n");
-	xf_draw_arc(cstruct,wmfrecord,0);
+	xf_draw_arc(cstruct,wmfrecord,ARC_ARC);
 	}
 
 void xf_draw_pie(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
-	xf_draw_arc(cstruct,wmfrecord,2);
+	xf_draw_arc(cstruct,wmfrecord,ARC_PIE);
 	}
 
 void xf_draw_chord(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
-	xf_draw_arc(cstruct,wmfrecord,1);
+	xf_draw_arc(cstruct,wmfrecord,ARC_CHORD);
 	}
 
-void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
-	{
-    int color,flag;
-	U16 tmp;
-    float centerx,centery;
-    float angle1,angle2;
-    float oangle1,oangle2;
-    int width = cstruct->dc->pen->lopnWidth;
+void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int type)
+{
+  F_spline * arc = (F_spline *) malloc(sizeof(F_spline));
+  F_line * line=NULL;
+  double x_center, y_center, x_start, y_start, x_end, y_end;
+  float bottom, right, top, left;
+  float x_ray_start, y_ray_start, x_ray_end, y_ray_end;
+  float width, height;
+  float angle_start, angle_end, * angles, angle_width;
+  int c1, c2, c3;
+  int nb,i;
+
+  /* Point in the half-line originating in the ellipse center and
+     including the arc starting point */
+  y_ray_end   = i2f_NormY(wmfrecord->Parameters[0], cstruct);
+  x_ray_end   = i2f_NormX(wmfrecord->Parameters[1], cstruct);
   
-	printf("xf_draw_arc\n");
-    wmfdebug(stderr,"the Function is %x\n",wmfrecord->Function);
+  /* Point in the half-line originating in the ellipse center and
+     including the arc ending point */
+  y_ray_start = i2f_NormY(wmfrecord->Parameters[2], cstruct);
+  x_ray_start = i2f_NormX(wmfrecord->Parameters[3], cstruct);
 
-	}
+  /* Coordinates of the rectangle in which the ellipse is
+     inscribed. These are also the coordinates of the ellipse's
+     vertices. */
+  bottom = i2f_NormY(wmfrecord->Parameters[4], cstruct);
+  right  = i2f_NormX(wmfrecord->Parameters[5], cstruct);
+  top    = i2f_NormY(wmfrecord->Parameters[6], cstruct);
+  left   = i2f_NormX(wmfrecord->Parameters[7], cstruct);
+
+
+  /* Initialization of the arc as an invisible CHORD*/
+/*   arc->tagged = ??? */
+/*   arc->distrib = ??? */
+  arc->type  = T_OPEN_INTERP;
+  arc->style = SOLID_LINE; 
+  arc->thickness  = 0;
+  arc->pen_color  = BLACK;
+  arc->fill_color = WHITE;
+  arc->fill_style = -1;
+  arc->depth = cstruct->depth--;
+  arc->pen_style  = 0; /*Not used by xfig*/
+  arc->style_val  = 1.0;
+  arc->for_arrow  = NULL;
+  arc->back_arrow = NULL;
+  arc->cap_style  = CAP_BUTT;
+  arc->points     = NULL;
+  arc->sfactors   = NULL;
+  arc->next       = NULL;
+
+
+  /* Computation of the fill color and the fill mode */
+  if (type!=ARC_CHORD)
+    if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL)){
+      c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+      c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+      c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+      arc->fill_color=xf_find_color(c1, c2, c3);
+      
+      arc->fill_style = setbrushstyle(cstruct,cstruct->dc->brush); 
+    }
+    
+
+  /* Set the pen color, style, and thickness, and the line style */
+  if (cstruct->dc->pen->lopnStyle != PS_NULL){
+    c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+    c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
+    arc->pen_color=xf_find_color(c1,c2,c3);
+
+    /* Unused by xfig */
+    arc->pen_style=0;
+
+    /* How to compute thickness ??? */
+    arc->thickness=1;
+
+    /* Line style */
+    arc->style=setlinestyle(cstruct, arc->thickness, &(arc->style_val),&(arc->cap_style),NULL,cstruct->dc->pen);    
+  }
+
+
+  
+  /* Ellipse equations: 
+     x = x_center + (right-left)/2 * cos(theta)
+     y = y_center + (top-bottom)/2 * sin(theta)
+  */
+
+  /* N.B. It does not matter if the height is negative, as long as the
+     whole computation stays COHERENT. */
+
+  /* Ellipse dimensions*/
+  width  = (right-left)/2.0;
+  height = (top-bottom)/2.0;
+  
+  if ((width==0)||(height==0)){
+    fprintf(stderr,"The ellipse is ... aline ! exiting...\n");
+    return;
+  }
+
+  /* Ellipse center */
+  x_center =  left  + width;
+  y_center = bottom + height;
+
+  /* Equation of the half-line originating in the ellipse center and
+     including the arc starting point:
+     x = x_center + u*(x_start-x_center)
+     y = y_center + u*(y_start-y_center)
+  */
+
+
+/*   if (x_start==x_center){ */
+/*     if (((y_start-y_center)*width)>0) */
+/*       angle_start = (double) PI/2.0; */
+/*     else if (((y_start-y_center)*width)<0) */
+/*       angle_start = (double) 3*PI/2.0; */
+/*     else { */
+/*       /* What a joke !*/ 
+/*       angle_start = 0; */
+/*     } */
+/*   } */
+/*   else  */
+
+  /* Coordinates of the starting point*/
+  angle_start = atan2((double)(width*(y_ray_start-y_center)),(double)(height*(x_ray_start-x_center)));
+  x_start = x_center +  width*cos(angle_start);
+  y_start = y_center + height*sin(angle_start);
+
+  /* Angle of the ending point*/
+  angle_end = atan2((double)(width*(y_ray_end-y_center)),(double)(height*(x_ray_end-x_center)));
+  x_end = x_center +  width*cos(angle_end);
+  y_end = y_center + height*sin(angle_end);
+
+  switch(type)
+    {
+    case ARC_ARC:
+      /* We have to draw the line between the two extremities */
+      line=(F_line *)malloc(sizeof(F_line));
+      /*   line->tagged=; */
+      /*   line->distrib=; */
+      line->type=T_POLYLINE;
+      line->style=arc->style;
+      line->thickness=arc->thickness;
+      line->pen_color=arc->pen_color;
+      line->fill_color=WHITE;
+      line->fill_style=-1; /* Not important: this is just a two points line */
+      line->depth=cstruct->depth--; /* So it will be above the filled arc: it won't be hidden*/
+      line->pen_style=arc->pen_style;
+      line->style_val=arc->style_val;
+      line->for_arrow=NULL;
+      line->back_arrow=NULL;
+      line->cap_style=arc->cap_style;
+      line->points=(F_point *) malloc(2*sizeof(F_point));
+      line->join_style=JOIN_MITER;  /* Not important: this is just a two points line */
+      line->radius=0;
+      line->pic=NULL;
+      line->next=NULL;
+      line->points[0].x = round(x_start);
+      line->points[0].y = round(y_start);
+      line->points[0].next = &(line->points[1]);
+      line->points[1].x = round(x_end);
+      line->points[1].y = round(y_end);
+      line->points[1].next = NULL;
+      xf_addpolyline(line);
+      break;
+    case ARC_CHORD:
+      /* This is the basic case: nothing special*/
+      break;
+    case ARC_PIE:
+      /* Here we have to draw the pie, as a three point polyline,
+         possibly filled*/
+      line=(F_line *)malloc(sizeof(F_line));
+      /*   line->tagged=; */
+      /*   line->distrib=; */
+      line->type=T_POLYLINE;
+      line->style=arc->style;
+      line->thickness=arc->thickness;
+      line->pen_color=arc->pen_color;
+      line->fill_color=WHITE;
+      line->fill_style=-1; /* Not important: this is just a two points line */
+      line->depth=cstruct->depth--; /* So it will be above the filled arc: it won't be hidden*/
+      line->pen_style=arc->pen_style;
+      line->style_val=arc->style_val;
+      line->for_arrow=NULL;
+      line->back_arrow=NULL;
+      line->cap_style=arc->cap_style;
+      line->points=(F_point *) malloc(3*sizeof(F_point));
+      line->join_style=JOIN_MITER;  /* Not important: this is just a two points line */
+      line->radius=0;
+      line->pic=NULL;
+      line->next=NULL;
+      line->points[0].x = round(x_start);
+      line->points[0].y = round(y_start);
+      line->points[0].next = &(line->points[1]);
+      line->points[1].x = round(x_center);
+      line->points[1].y = round(y_center);
+      line->points[1].next = &(line->points[2]);
+      line->points[2].x = round(x_end);
+      line->points[2].y = round(y_end);
+      line->points[2].next = NULL;
+      xf_addpolyline(line);
+      break;
+    default:
+      fprintf(stderr,"BUG in xf_draw_arc ARC: unknow type %d ??? \n",type);
+    }
+
+  /* We want no discontinuities in our interval of angles, thus we
+     shift -if necessary- the angles by 2*PI */
+  /* And we know that angle_start is bigger than angle_end (as in a
+     wmf the angles are considered clock-wise */
+  if (angle_start<=0){
+    if (angle_end<=0){
+      if (angle_start > angle_end){
+	/* It's OK */
+      }
+      else {
+	angle_end -= 2*PI;
+      }
+    }
+    else {
+      angle_end -= 2*PI;
+    }
+  }
+  else {
+    if (angle_end<=0){
+      /* It's OK */
+    }
+    else {
+      if (angle_start > angle_end){
+	/* It's OK */
+      }
+      else {
+	angle_end -= 2*PI;
+      }
+    }
+  }
+  if ((x_ray_start==x_ray_end)&&(x_ray_start==x_ray_end)){
+    /* To avoid stupid cases */
+    angle_start = 2*PI;
+    angle_end   = 0;
+  }
+
+  /* The arbitrary heuristic which decides the number of points in the
+     spline */
+  angle_width = angle_start-angle_end;
+  if (angle_width<0)
+    fprintf(stderr,"BUG: the angle shift in xf_draw_arc is wrong...\n");
+  if (round(angle_width*12/PI)>=5)
+    nb = round(angle_width*12/PI);
+  else
+    nb = 5;
+
+  angles = (float *) malloc(sizeof(float)*nb);
+  angles[0]    = angle_start;
+  for(i=1; i<nb-1; i++)
+    angles[i] = angles[0] + ((angles[nb-1]-angles[0])*i)/(nb-1);
+  angles[nb-1] = angle_end;
+
+  /* Finally we compute the spline points */
+  arc->points = (F_point *) malloc(nb*sizeof(F_point));
+  arc->points[0].x = round(x_start);
+  arc->points[0].y = round(y_start);
+  arc->points[0].next = &(arc->points[1]);
+  for(i=1; i<nb-1; i++){
+    arc->points[i].x = round(x_center +  width*cos(angles[i]));
+    arc->points[i].y = round(y_center + height*sin(angles[i]));
+    arc->points[i].next = &(arc->points[i+1]);
+  }
+  arc->points[nb-1].x = round(x_end);
+  arc->points[nb-1].y = round(y_end);
+  arc->points[nb-1].next = NULL;
+
+  xf_addspline(arc);
+}
 
 
 void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
   F_ellipse *ellipse;
+  F_line *line;
   float left, right, top, bottom;
   int c1,c2,c3;
   

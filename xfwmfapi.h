@@ -135,4 +135,7 @@ void set_usespecialtext();
 #define LATEXFONT_SANSSERIF  4 
 #define LATEXFONT_TYPEWRITER 5 
 
+#define ARC_ARC 1
+#define ARC_PIE 2
+#define ARC_CHORD 3
 
