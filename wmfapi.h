@@ -185,7 +185,7 @@ typedef struct _WindowsMetaHeader
 
 #define NB_HATCH_STYLES  6
 
-static const char HatchBrushes[NB_HATCH_STYLES + 1][8] =
+static const unsigned char HatchBrushes[NB_HATCH_STYLES + 1][8] =
 {
 { 0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00 }, /* HS_HORIZONTAL */
 { 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08 }, /* HS_VERTICAL   */

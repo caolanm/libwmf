@@ -5,8 +5,8 @@
 #include <zlib.h>
 #include "gd.h"
 
-extern int gdCosT[1024];
-extern int gdSinT[1024];
+extern int gdCosT[];
+extern int gdSinT[];
 
 static void gdImageBrushApply(gdImagePtr im, int x, int y);
 static void gdImageTileApply(gdImagePtr im, int x, int y);

@@ -1,6 +1,6 @@
 LIBS = -L./libdib -ldib @XPM_LIBS@ @LIBS@ -lm
 
-GDLIBS = -L./libdib -ldib -Lxgd-1.7.3 -lxgd @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lpng -lm 
+GDLIBS = -L./libdib -ldib -Lxgd-1.7.3 -lxgd @XPM_LIBS@ @LIBS@ @TTF_LIBS@ @PNG_CFLAGS@ @PNG_LIBS@ @ZLIB_LIBS@ -lm 
 
 XFLIBS = -L./libxfig -lxfig -L./libdib -ldib @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
 

@@ -1132,13 +1132,14 @@ static RotatedTextItem *XRotRetrieveFromCache(dpy, font, angle, text, align)
 
 
 /* ---------------------------------------------------------------------- */
+#ifndef HAVE_NINT
 static int nint(double x) 
 	{
 	int sign = (x>0);
 
 	return sign*((int)(x*sign+0.5));
 	}
-
+#endif
 
 
 /**************************************************************************/
