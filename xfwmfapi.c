@@ -81,14 +81,14 @@ void *xf_initial_userdata(CSTRUCT *cstruct)
     temp = (clip_Struct *)malloc(sizeof(clip_Struct));
     temp->norect = 0;
 	temp->rects = NULL;
-    printf("xf_initial_userdata ?\n");
+    /* printf("xf_initial_userdata ?\n"); */
     return(temp);
 	}
 
 void xf_restoreUserData(CSTRUCT *cstruct,DC *new)
 	{
 	int i;
-    printf("xf_restore_userdata ?\n");
+    /* printf("xf_restore_userdata ?\n"); */
 
 	}
 
@@ -96,7 +96,7 @@ void xf_copyUserData(CSTRUCT *cstruct,DC *old,DC *new)
     {
 	int i;
     clip_Struct *temp;
-    printf("xf_copy_userdata ?\n");
+    /* printf("xf_copy_userdata ?\n"); */
 
     }
 
@@ -106,27 +106,27 @@ void xf_paint_rgn(CSTRUCT *cstruct,WINEREGION *rgn)
 	int color;
     int flag;
 
-    printf("xf_paint_rgn\n");
+    /* printf("xf_paint_rgn ?\n"); */
     }
 
 
 void xf_flood_fill(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
 	int color;
-	printf("xf_flood_fill\n");
+	/* printf("xf_flood_fill ?\n"); */
 	}
 
 void xf_extflood_fill(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
 	int color;
-	printf("xf_extflood_fill\n");
+	/* printf("xf_extflood_fill ?\n"); */
 	}
 
 
 void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
 	int color,flag;
-	printf("xf_set_pixel\n");
+	/* printf("xf_set_pixel ?\n"); */
 	}
 
 void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
@@ -148,14 +148,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   c3=(cstruct->dc->textcolor[1]& 0x00FF);
   text->color=xf_find_color(c1, c2, c3);
 
+  text->length =  cstruct->realwidth;
+  height       =  cstruct->realheight;
+  text->ascent  = 0;
   text->descent = 0;
 
-  text->length =  cstruct->xpixeling * cstruct->realwidth;
-  text->ascent =  cstruct->ypixeling * cstruct->realheight;
-
-  wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
-  height = text->descent + text->ascent;
-
+  /* if (cstruct->dc->bgmode == TRANSPARENT) */
   switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
       case TA_LEFT:
@@ -177,7 +175,6 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
           y += height / 2;
           break;
     }
-        wmfdebug(stderr,"<>2--the x is %d, the y is %d\n",x,y);
 
   switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
@@ -198,15 +195,6 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000; 
 
-/*
-printf("ht%d\n", cstruct->dc->font->lfHeight);
-printf("width%d\n", cstruct->dc->font->lfWidth);
-printf("esc%d\n", cstruct->dc->font->lfEscapement);
-printf("wt%d\n", cstruct->dc->font->lfWeight);
-printf("it%d\n", cstruct->dc->font->lfItalic);
-printf("ul%d\n", cstruct->dc->font->lfUnderline);
-printf("charset = %d\n", cstruct->dc->font->lfCharSet);
-*/
 
   text->flags = 0x4;  /* PostScript font */
 
@@ -232,9 +220,7 @@ printf("charset = %d\n", cstruct->dc->font->lfCharSet);
   why MS Word formulas look so ugly compared to LaTeX.
   */
 
-
-//  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20;
-  text->size = cstruct->dc->font->lfHeight / (20 * cstruct->ypixeling);
+  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20; 
   text->depth=100;
   text->pen_style=0;
   
@@ -243,7 +229,9 @@ printf("charset = %d\n", cstruct->dc->font->lfCharSet);
 
   /* defined in libxfig/objlist.c */
   xf_addtext(text);
-  printf("xf_addtext: %s\n", text->cstring);
+  printf("xf_addtext: %dx%d+%d+%d %s\n", 
+	text->length, height, 
+	x, y, text->cstring);
 }
 
 /*
@@ -588,6 +576,7 @@ void xf_draw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
       line->style_val=0.00;
       
       xf_addpolyline(line);
+    printf("xf_addpolyline %d\n", line->type);
     }
 }
 
@@ -637,7 +626,8 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   xf_addpolyline(line);
 
   /*  printf("xf_draw_polylines %d\n",wmfrecord->Parameters[0]); */
-  
+  printf("xf_addpolyline %d\n", line->type); 
+ 
 }
 
 void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
@@ -683,6 +673,7 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->style_val=0.00;
 
   xf_addpolyline(line);
+  printf("xf_addpolyline %d\n", line->type); 
 }
 
 
@@ -731,12 +722,13 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->style_val=0.00;
   
   xf_addpolyline(line);
+  printf("xf_addpolyline %d\n", line->type); 
 }
 
 void xf_fill_opaque(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
     int color;
-    printf("xf_fill_opaque\n");
+    /* printf("xf_fill_opaque ?\n"); */
     
 	}
 
@@ -766,7 +758,7 @@ void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
     float oangle1,oangle2;
     int width = cstruct->dc->pen->lopnWidth;
   
-	printf("xf_draw_arc\n");
+	/* printf("xf_draw_arc %d\n", finishtype); */
     wmfdebug(stderr,"the Function is %x\n",wmfrecord->Function);
 
 	}
@@ -776,10 +768,9 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
   int color,flag;
   F_ellipse *ellipse;
+  int left, right, top, bottom;
   int c1,c2,c3;
-  /*
-    printf("xf_draw_ellipse\n");
-  */
+  
   ellipse=(F_ellipse *)malloc(sizeof(F_ellipse));
 
   c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
@@ -796,18 +787,25 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   ellipse->depth=100;
   ellipse->pen_style=0;
   ellipse->style_val=0.00;
-  
-  ellipse->center.x=NormX(wmfrecord->Parameters[3],cstruct)+(NormX(wmfrecord->Parameters[1],cstruct)-NormX(wmfrecord->Parameters[3],cstruct))/2;
-  ellipse->center.y=NormY(wmfrecord->Parameters[2],cstruct)+(NormY(wmfrecord->Parameters[0],cstruct)-NormY(wmfrecord->Parameters[2],cstruct))/2;
-  ellipse->radiuses.x=NormX(wmfrecord->Parameters[1],cstruct)-NormX(wmfrecord->Parameters[3],cstruct);
-  ellipse->radiuses.y=NormY(wmfrecord->Parameters[0],cstruct)-NormY(wmfrecord->Parameters[2],cstruct);
 
-  ellipse->start.x=ellipse->center.x;
-  ellipse->start.y=ellipse->center.y;
-  ellipse->end.x=ellipse->center.x+ellipse->radiuses.x;
-  ellipse->end.y=ellipse->center.y+ellipse->radiuses.y;
+  top    = NormX(wmfrecord->Parameters[0], cstruct);
+  right  = NormX(wmfrecord->Parameters[1], cstruct);
+  bottom = NormX(wmfrecord->Parameters[2], cstruct);
+  left   = NormX(wmfrecord->Parameters[3], cstruct);
+  
+  ellipse->radiuses.x = (right - left) / 2;
+  ellipse->radiuses.y = (top - bottom) / 2;
+
+  ellipse->center.x = left   + ellipse->radiuses.x;
+  ellipse->center.y = bottom + ellipse->radiuses.y;
+
+  ellipse->start.x = ellipse->center.x;
+  ellipse->start.y = ellipse->center.y;
+  ellipse->end.x   = ellipse->center.x + ellipse->radiuses.x;
+  ellipse->end.y   = ellipse->center.y + ellipse->radiuses.y;
 
   xf_addellipse(ellipse);
+  /* printf("xf_addellipse %d\n", ellipse->type); */
 
 }
 
@@ -816,14 +814,14 @@ void xf_draw_round_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     int color;
 	int flag;
 
-	printf("xf_draw_round_rectangle\n");
+	printf("xf_draw_round_rectangle ?\n");
 	}
 
 void xf_draw_rectangle2(CSTRUCT *cstruct,U16 x,U16 y, U16 width, U16 height)
 	{
     int color;
 	int flag;
-	printf("xf_draw_rectangle2\n");
+	printf("xf_draw_rectangle2 ?\n");
 
 	}
 
@@ -833,7 +831,7 @@ void xf_xor_rectangle2(CSTRUCT *cstruct,U16 x,U16 y,U16 width,U16 height)
 	int bcolor,color,ocolor,flag;
 	int srcx, srcy;
 
-	printf("xf_xor_rectangle2\n");
+	printf("xf_xor_rectangle2 ?\n");
 	}
 
 void xf_invert_rectangle2(CSTRUCT *cstruct,U16 x,U16 y,U16 width,U16 height)
@@ -841,7 +839,7 @@ void xf_invert_rectangle2(CSTRUCT *cstruct,U16 x,U16 y,U16 width,U16 height)
 	int mx,my;
 	int color,ocolor;
 
-	printf("xf_invert_rectangle2\n");
+	printf("xf_invert_rectangle2 ?\n");
 	}
 
 
@@ -896,6 +894,7 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->style_val=0.00;
   
   xf_addpolyline(line); 
+  printf("xf_addpolyline %d\n", line->type);
 }
 
 void xf_finish(CSTRUCT *cstruct)
@@ -904,14 +903,14 @@ void xf_finish(CSTRUCT *cstruct)
 
 int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brushin)
 	{
-	  printf("setbrushstyle\n");
+	  printf("setbrushstyle ?\n");
 
 	return(0);
 	}
 
 int setlinestyle(CSTRUCT *cstruct,int color,LOGPEN *pen)
 	{
-	  printf("setlinestyle\n");
+	  printf("setlinestyle ?\n");
 	 
 	return(1);
 	}
@@ -994,7 +993,6 @@ void xf_clip_rect(CSTRUCT *cstruct)
     clip_Struct *temp;
 
 wmfdebug(stderr,"setting clip rects, no is %d\n",rgn->numRects);
-fprintf(stderr,"setting clip rects, no is %d\n",rgn->numRects);
 
         if (!rgn)
                 {
@@ -1021,8 +1019,6 @@ fprintf(stderr,"setting clip rects, no is %d\n",rgn->numRects);
 
                         wmfdebug(stderr,"clipping rect set to +%d+%d %dx%d\n",
                         p_r->x,p_r->y,p_r->x+p_r->width,p_r->y+p_r->height);
-                        fprintf(stderr,"clipping rect set to +%d+%d %dx%d\n",
-                        p_r->x,p_r->y,p_r->x+p_r->width,p_r->y+p_r->height);
                 }
         }
     else
@@ -1035,13 +1031,13 @@ fprintf(stderr,"setting clip rects, no is %d\n",rgn->numRects);
         if (p_rect)
                 free(p_rect);
 
-        printf("xf_clip_rect INCOMPLETE\n");
+        /* printf("xf_clip_rect (?)\n"); */
 	}
 
 void xf_no_clip_rect(CSTRUCT *cstruct)
 	{
 	/*needed, but not implemented*/
-    printf("xf_no_clip_rect NOT IMPL\n");
+    printf("xf_no_clip_rect ?\n");
 	}
 
 

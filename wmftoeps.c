@@ -12,7 +12,7 @@ int main(int argc,char **argv)
   char *in;
   HMETAFILE file;
   int check;
-  float dx, dy;
+  int dx, dy;
   FILE *out;
   CSTRUCT rstruct;
   CSTRUCT *cstruct = &rstruct;
@@ -72,8 +72,8 @@ int main(int argc,char **argv)
   cstruct->preparse = 0;
   PlayMetaFile((void *)cstruct,file);
 
-  dx = cstruct->realwidth; 
-  dy = cstruct->realwidth;
+  dx = (int)(0.06 * cstruct->realwidth); 
+  dy = (int)(0.06 * cstruct->realheight);
 
   writeepsheader(out, argv [1], dx, dy);
   eps_color_to_file(out);  /* If there are user-defined colours? */
@@ -88,24 +88,19 @@ int main(int argc,char **argv)
   return(0);
 }
 
-int writeepsheader(FILE *fl, char *title, double realwidth, double realheight)
+int writeepsheader(FILE *fl, char *title, int width, int height)
 {
   char *hostname;
   size_t len;
   hostname = (char *)malloc(100);
   gethostname(hostname, len);
 
-/* works for formulas, but not otherwise: */
-/*
-  realwidth  = 0.06 * realwidth;
-  realheight = 0.06 * realheight;
-*/
   fprintf(fl, "%%!PS-Adobe-2.0 EPSF-2.0\n");
   fprintf(fl, "%%%%Title: %s\n", title);
   fprintf(fl, "%%%%Creator: libwmf version 0.1.19 cvs\n");
   fprintf(fl, "%%%%CreationDate: %s", ctime(time));
   fprintf(fl, "%%%%For: %s@%s\n", getlogin(), hostname);
-  fprintf(fl, "%%%%BoundingBox: 0 0 %d %d \n",  (int) realwidth, (int) realheight);
+  fprintf(fl, "%%%%BoundingBox: 0 0 %d %d \n",  (int) width, (int) height);
   fprintf(fl, "%%%%Magnification: 1.0000\n");
   fprintf(fl, "%%%%EndComments\n");
   fprintf(fl, "/$F2psDict 200 dict def\n");
@@ -148,7 +143,7 @@ int writeepsheader(FILE *fl, char *title, double realwidth, double realheight)
   fprintf(fl, "end\n");
   fprintf(fl, "save\n");
   fprintf(fl, "\n");
-  fprintf(fl, "0.0 %f translate\n", realheight);
+  fprintf(fl, "0.0 %d translate\n", height);
   fprintf(fl, "1 -1 scale\n");
   fprintf(fl, "\n");
   fprintf(fl, "/cp {closepath} bind def\n");

@@ -512,6 +512,17 @@ void do_pixeling(CSTRUCT *cstruct, HMETAFILE file);
 
 void wmfdebug(FILE *stream,char *fmt, ...);
 
+/* 
+Here the pointer list is defined to the functions that should
+be implemented in every back-end, i.e. X, gd (gif, png), xfig, ...
+
+The names are back-end specific, but the call formats and ordering
+MUST BE IDENTICAL. The PlayMetaFile routines in wmfto<something>
+depend on it.
+
+-- Martin Vermeer (attempted interpretation)
+*/
+
 typedef struct tag_wmf_functions
 	{
 	int (*pixel_width)(CSTRUCT *);
