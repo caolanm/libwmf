@@ -3282,24 +3282,24 @@ rm -f conftest*
 fi
 if eval "test \"`echo '$ac_cv_header_'$ac_safe`\" = yes"; then
   echo "$ac_t""yes" 1>&6
-  echo $ac_n "checking for png_info_init in -lpng""... $ac_c" 1>&6
-echo "configure:3287: checking for png_info_init in -lpng" >&5
-ac_lib_var=`echo png'_'png_info_init | sed 'y%./+-%__p_%'`
+  echo $ac_n "checking for png_free in -lpng""... $ac_c" 1>&6
+echo "configure:3287: checking for png_free in -lpng" >&5
+ac_lib_var=`echo png'_'png_free | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   ac_save_LIBS="$LIBS"
-LIBS="-lpng  $LIBS"
+LIBS="-lpng ${ZLIB_LIBS} -lm $LIBS"
 cat > conftest.$ac_ext <<EOF
 #line 3295 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char png_info_init();
+char png_free();
 
 int main() {
-png_info_init()
+png_free()
 ; return 0; }
 EOF
 if { (eval echo configure:3306: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
@@ -3329,55 +3329,6 @@ EOF
 	    fi
 else
   echo "$ac_t""no" 1>&6
-echo $ac_n "checking for png_info_destroy in -lpng""... $ac_c" 1>&6
-echo "configure:3334: checking for png_info_destroy in -lpng" >&5
-ac_lib_var=`echo png'_'png_info_destroy | sed 'y%./+-%__p_%'`
-if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  ac_save_LIBS="$LIBS"
-LIBS="-lpng ${ZLIB_LIBS} -lm $LIBS"
-cat > conftest.$ac_ext <<EOF
-#line 3342 "configure"
-#include "confdefs.h"
-/* Override any gcc2 internal prototype to avoid an error.  */
-/* We use char because int might match the return type of a gcc2
-    builtin and then its argument prototype would still apply.  */
-char png_info_destroy();
-
-int main() {
-png_info_destroy()
-; return 0; }
-EOF
-if { (eval echo configure:3353: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=yes"
-else
-  echo "configure: failed program was:" >&5
-  cat conftest.$ac_ext >&5
-  rm -rf conftest*
-  eval "ac_cv_lib_$ac_lib_var=no"
-fi
-rm -f conftest*
-LIBS="$ac_save_LIBS"
-
-fi
-if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
-  echo "$ac_t""yes" 1>&6
-  cat >> confdefs.h <<\EOF
-#define HasPNG 1
-EOF
-
-		if test "x${PNG_DIR}" != "x"; then
-		    PNG_CFLAGS="-I${PNG_DIR}/include"
-		    PNG_LIBS="-L${PNG_DIR}/lib -lpng"
-		else
-		    PNG_LIBS="-lpng"
-		fi
-else
-  echo "$ac_t""no" 1>&6
-fi
-
 fi
 
 else
@@ -3394,12 +3345,12 @@ LDFLAGS=${_ldflags}
 
 
 echo $ac_n "checking for working const""... $ac_c" 1>&6
-echo "configure:3398: checking for working const" >&5
+echo "configure:3349: checking for working const" >&5
 if eval "test \"`echo '$''{'ac_cv_c_const'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 3403 "configure"
+#line 3354 "configure"
 #include "confdefs.h"
 
 int main() {
@@ -3448,7 +3399,7 @@ ccp = (char const *const *) p;
 
 ; return 0; }
 EOF
-if { (eval echo configure:3452: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+if { (eval echo configure:3403: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
   rm -rf conftest*
   ac_cv_c_const=yes
 else

@@ -245,22 +245,14 @@ AC_ARG_WITH(png,
 
 AC_CHECK_HEADER(png.h,
     AC_CHECK_HEADER(pngconf.h,
-	AC_CHECK_LIB(png, png_info_init,
+	AC_CHECK_LIB(png, png_free,
 	    AC_DEFINE(HasPNG)
 	    if test "x${PNG_DIR}" != "x"; then
 		PNG_CFLAGS="-I${PNG_DIR}/include"
 		PNG_LIBS="-L${PNG_DIR}/lib -lpng"
 	    else
 		PNG_LIBS="-lpng"
-	    fi,
-	    AC_CHECK_LIB(png, png_info_destroy,
-		AC_DEFINE(HasPNG)
-		if test "x${PNG_DIR}" != "x"; then
-		    PNG_CFLAGS="-I${PNG_DIR}/include"
-		    PNG_LIBS="-L${PNG_DIR}/lib -lpng"
-		else
-		    PNG_LIBS="-lpng"
-		fi, , ${ZLIB_LIBS} -lm))))
+	    fi, , ${ZLIB_LIBS} -lm)))
 
 CPPFLAGS=${_cppflags}
 LDFLAGS=${_ldflags}

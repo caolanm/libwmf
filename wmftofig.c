@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#ifdef __CYGWIN__
+#include <getopt.h>
+#endif
 
 #include "xfwmfapi.h"
 
