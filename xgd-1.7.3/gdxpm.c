@@ -39,7 +39,15 @@ gdImagePtr gdImageCreateFromXpm(char *filename)
 	    return 0;
 
 	number = image.ncolors;
-fprintf(stderr, "gdImageCreateFromXpm: %d colours\n", number);
+	fprintf(stderr, "gdImageCreateFromXpm: %d colours\n", number);
+	/* Gridding the colour cube: */
+	if (number > gdMaxColors) {
+	  for (red = 18; red < gdMaxColors; red += 36)
+	    for (green = 21; green < gdMaxColors; green += 42)
+	      for (blue = 21; blue < gdMaxColors; blue += 42)
+		gdImageColorAllocate(im, red, green, blue);
+	}
+ 	fprintf(stderr, "Colour slots preallocated: %d \n", im->colorsTotal);
 	colors = (int*)malloc(sizeof(int) * number);
 	if (colors == NULL)
 		return(0);
@@ -117,8 +125,8 @@ fprintf(stderr, "gdImageCreateFromXpm: %d colours\n", number);
 				break;
 			}
 
-		if (number > 256) 
-			colors[i] = gdImageColorResolveRich(im,red,green,blue);
+		if (number > gdMaxColors) 
+			colors[i] = gdImageColorClosest(im,red,green,blue);
 		else
 			colors[i] = gdImageColorResolve(im,red,green,blue);
 		if (colors[i] == -1)
