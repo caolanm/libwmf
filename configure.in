@@ -386,7 +386,7 @@ else
 fi
 
 if test "x$no_ttf" = xyes; then
-	AC_MSG_WARN(Could not find ttf library: wmftogif will not have text support: see README)
+	AC_MSG_WARN(Could not find ttf library: wmftopng will not have text support: see README)
 else
 	AC_DEFINE(HAVE_TTF)
 fi

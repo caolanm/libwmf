@@ -3,22 +3,25 @@ ABOUT
 libwmf's homepage is
 http://wvware.sourceforge.net/libwmf.html
 
-and my email for bugs and whatnot is
+and my (MV) email for bugs and whatnot is
 
 martin.vermeer@hut.fi
 
 libwmf is a library for unix like machines that can convert wmf
 files into other formats, currently it supports a gd binding
 to convert to png, and an X one to draw direct to an X window
-or pixmap.
+or pixmap. As a new feature, also the Xfig and encapsulated PostScript
+formats are supported.
 
 WHAT YOU GET
 ============
 xwmf draws wmf files on screen (X)
 use + to zoom in and
 use - to zoom out
-wmftopng converts wmf files to png, can use (and i recommend) truetype fonts
-wmftofig converts wmf files to fig, (new program, needs some work, but very cool)
+wmftopng converts wmf files to png, can use (and I recommend) truetype fonts
+wmftofig converts wmf files to fig, (new program, in active development still, 
+but very cool)
+wmftoeps converts wmf files to eps, (very new, very incomplete)
 
 
 REQUIREMENTS (how text strings in wmf files are handled)
@@ -35,7 +38,7 @@ To compile this code in its entirity you should have the freetype
 library (http://www.freetype.org), and you should have a range
 of truetype fonts, typically the ones supplied with windows.
 
-NOTE: Currently an elaborate set of substitution/fallback rules 
+NOTE 1: Currently an elaborate set of substitution/fallback rules 
 is in effect. You should be safe having times.ttf and/or
 arial.ttf and some symbol font like symbol.ttf (better: 
 eucsym.ttf) on your disc. 
@@ -53,6 +56,22 @@ to it, the fonts should be the standard ttf fonts supplied with
 windows, or the font that the text will be rendered in will
 not be the original font (see above, or source gdwmfapi.c).
 
+NOTE 2: For the Red Hat freetype and freetype-devel packages (at 
+least version 1.3.1-5), you should give the command
+
+./configure --with-ttf=/usr
+
+which sets up /usr as the root directory (<ttfroot>)under which 
+to find both the headers (in /usr/include/freetype/) and the library 
+(in /usr/lib). Configure currently searches <ttfroot>/include and
+<ttfroot>include/freetype and <ttfdir> itself for headers, and
+<ttfroot>/lib and <ttfroot> itself for the library.
+
+For other distro's, find the common <ttfroot> containing both
+header and library files, and give that as a commmand line option to
+./configure. Let me know (MV) if you find a distro where such a common
+root does not exist.
+
 3)
 Without a truetype font server and the standard windows fonts
 then the X binding might render text is a different font than
@@ -68,14 +87,14 @@ release. (Note MV: Frédéric working on this).
 
 INSTALLATION
 ============
+
 it should just be a simple matter of 
 ./configure
 make
 make install
 
 on some machines you might have to have gnu make installed,
-if the make fails try 
-gmake instead.
+if the make fails try gmake instead.
 
 For full functionality you have to have X, freetype and the xpm
 libraries installed.
@@ -85,12 +104,26 @@ If the xpm libraries are not in the standard locations you can use
 to point to the xpm dir location e.g.
 
 If the freetype libraries are not in the standard locations you can use
+
 ./configure --with-ttf=dir
+
 to point to the freetype dir location e.g.
 
-In each case the dir can either be the dir *above* the include and lib dirs
-where the component can be found. Or the actual dir where *both* the lib and
-include files exist.
+./configure --with-ttf=/usr
+
+for Red Hat with freetype and devel version 1.3.1-5, which sets up 
+/usr as the root directory (<ttfroot>)under which 
+to find both the headers (in /usr/include/freetype/) and the library 
+(in /usr/lib). Configure currently searches <ttfroot>/include and
+<ttfroot>include/freetype and <ttfdir> itself for headers, and
+<ttfroot>/lib and <ttfroot> itself for the library.
+
+In this example, freetype.h is in /usr/include/freetype/ and 
+libttf.a in /usr/lib/.
+
+In each case the dir can either be the dir *above* the include/,
+include/freetype/ and lib/ dirs where the component can be found. 
+Or the actual dir within *both* the lib and include files exist.
 
 MORE INFORMATION
 ================
@@ -127,8 +160,8 @@ gcc xwmf.c -lwmf -ldib -lXwmf -L/usr/X11R6/lib -lX11 -lXpm -lm
 all the same except use libXwmf which is the binding for X.
 
 documentation will be included in a later version as to how to
-wrote your own binding for the wmf library, especially wanted
-ones are wmf->fig and wmf->eps.
+write your own binding for the wmf library, especially wanted
+ones are wmf->fig and wmf->eps. (under construction).
 
 some other info as to the current situation.
 
@@ -144,9 +177,9 @@ at least the collection of clipart from msword and msworks
 for win 3.1
 
 the wordtests dir is a set of wmf files outputted from sample runs
-of libwv, the png binding doesnt currently do text, but it
-will once ive merged code from a tcl binding to gd that understands
-the truetype format.
+of libwv. The png binding doesn't currently do text, but it
+will once i've merged code from a tcl binding to gd that understands
+the truetype format. [Has this been done? MV]
 
 It *doesnt* do emf files, i.e 32bit metafile yet, and is surely quite
 buggy at the moment.
@@ -162,9 +195,7 @@ to allow that converter to decode wmf files that are embedded
 in word docs.
 
 the intention is to use it as a library that you can plug
-in modules for other file formats. I imagine that the
-most useful ones would be fig and eps, but i want png
-support first for libwv.
+in modules for other file formats. 
 
 CHANGELOG is the file with the changes and up to date news.
 read it for updates.

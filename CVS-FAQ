@@ -1,8 +1,16 @@
-CVS FREQUENTLY ASKED QUESTIONS
+             CVS FREQUENTLY ASKED QUESTIONS
 
 ...if you want to contribute to the development of 
 wvWare or libwmf in the SourceForge CVS repository.
 
+First of all, you need an *account* (<userid> on SourceForge,
+with a personal password. Then you will have to have 
+ssh (Secure Shell) working. SourceForge's CVS uses ssh for
+secure developer access. See
+
+   http://sourceforge.net/docman/display_doc.php?docid=765&group_id=1
+
+and links therein for the technical details.
 
 1. Add the following lines to your start-up script
    (like .bashrc or whatever)
@@ -36,7 +44,8 @@ will be checked in, you can limit it by using a regular expression
 cvs -d $CVSROOT commit <file-reg-exp>
 
 4. Remember, before commit, always to *first update* your
-local copy, and resolve any possible conflicts that may arise.
+local copy, and resolve any possible conflicts that may arise,
+which will be delineated in the file by >>>> and <<<< markers.
 
 5. For large or "deep" changes, go through a make clean -- make
 [make install] cycle to test that all is OK. Do not modify files
@@ -53,7 +62,7 @@ Removal:
 
 cvs -d $CVSROOT remove <filename-expr>
 
-...and then commit.
+...and only then commit.
 
 7. Useful CVS switches:
 
@@ -61,17 +70,19 @@ cvs -d $CVSROOT remove <filename-expr>
 -n "do as if" (like in make).
 
 8. Use the SourceForge Web interface to study the code history.
-Cool! (There is also a "cvs history" command)
+Cool!
+
+There is also a "cvs history" shell command available.
 
 9. Send a *message* (e.g. containing the CVS comment block) to the
-mailing list, currently one and the same:
+mailing list, currently one and the same for *both* modules 
+wv and libwmf :
 
 wvware-devel@lists.sourceforge.net 
-
-for *both* modules wv and libwmf.
 
 Good luck!
 
 -- 
 "Dom Lachowicz" <cinamod@hotmail.com> 
 Martin Vermeer  <martin.vermeer@hut.fi>
+
