@@ -1,3 +1,5 @@
+	* Vivien: embedded bitmaps "stack" now handled (apparently) 
+	  correctly. cell.wmf works, test.wmf appears to as well!
         * Lots and lots of fixes/development on .fig graphics elements
           output, line styles, colour use, etc etc. "Depth hack".
         * Added use of lpDx[i] (explicit char placement).

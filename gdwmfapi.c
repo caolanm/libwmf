@@ -324,7 +324,7 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
 			(cstruct->dc->textcolor[1]& 0x00FF));
 
 		wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
-		angle = (double)(cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+		angle = (double)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
 
 		if (lpDx == NULL)
 			{
