@@ -1,20 +1,16 @@
-LIBS = -L./libdib -ldib @XPM_LIBS@ @LIBS@ -lm
+LIBS = libdib/libdib.la @XPM_LIBS@ @LIBS@ -lm
 
-GDLIBS = -L./libdib -ldib -Lxgd-1.7.3 -lxgd @XPM_LIBS@ @LIBS@ @TTF_LIBS@ @PNG_CFLAGS@ @PNG_LIBS@ @ZLIB_LIBS@ -lm 
+GDLIBS = libdib/libdib.la xgd-1.7.3/libxgd.la @XPM_LIBS@ @LIBS@ @TTF_LIBS@ @PNG_CFLAGS@ @PNG_LIBS@ @ZLIB_LIBS@ -lm 
 
-XFLIBS = -L./libxfig -lxfig -L./libdib -ldib @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
+XFLIBS = libxfig/libxfig.la libdib/libdib.la @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
 
-EPSLIBS = -L./libxfig -leps -L./libdib -ldib @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
+EPSLIBS = libxfig/libeps.la libdib/libdib.la @XPM_LIBS@ @LIBS@ @TTF_LIBS@ -lm
 
 DOGD = @GD_LIBS@
 
-LDFLAGS = -L. @LDFLAGS@
+LDFLAGS = @LDFLAGS@
 
 CC = @CC@
-
-AR = ar
-
-RANLIB = @RANLIB@
 
 SHELL=/bin/sh
 
@@ -36,81 +32,90 @@ MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 
 SHELL = /bin/sh
 
-.SUFFIXES: .C .o
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
 
 WMFLIBOBJECTS =	\
-	wmfapi.o \
-	stack.o \
-	bytelevel.o
+	wmfapi.lo \
+	stack.lo \
+	bytelevel.lo
 
 GDLIBOBJECTS =	\
-	gdwmfapi.o \
-	wmftt.o
+	gdwmfapi.lo \
+	wmftt.lo
 
 XFLIBOBJECTS =	\
-	xfwmfapi.o 
+	xfwmfapi.lo 
 
 EPSLIBOBJECTS =	\
-	xfwmfapi.o 
+	xfwmfapi.lo 
 
 XLIBOBJECTS =	\
-	Xwmfapi.o \
-	Xtext.o \
-	rotated.o
+	Xwmfapi.lo \
+	Xtext.lo \
+	rotated.lo
 
 TARGETS = wmftopng wmftofig wmftoeps xwmf
 
 all: $(TARGETS)
 
-xwmf: libwmf.a libXwmf.a xwmf.o LIBDIB
-	$(CC) $(LDFLAGS) -o xwmf xwmf.o -L. -lXwmf -lwmf $(LIBS)
+xwmf: libwmf.la libXwmf.la xwmf.o libdib/libdib.la
+	./libtool $(CC) $(LDFLAGS) -o xwmf xwmf.o \
+		libXwmf.la libwmf.la $(LIBS)
 
-wmftopng:	libwmf.a libgdwmf.a wmftopng.o LIBXGD LIBDIB
-	$(CC) $(LDFLAGS) -o wmftopng wmftopng.o -L. -lgdwmf -lwmf $(GDLIBS)
+wmftopng:	libwmf.la libgdwmf.la wmftopng.o \
+		xgd-1.7.3/libxgd.la libdib/libdib.la
+	./libtool $(CC) $(LDFLAGS) -o wmftopng wmftopng.o \
+		libgdwmf.la libwmf.la $(GDLIBS)
 
-wmftofig: libwmf.a libxfwmf.a wmftofig.o LIBXFIG
-	$(CC) $(LDFLAGS) -o wmftofig wmftofig.o -L. -lxfwmf -lwmf $(XFLIBS)
+wmftofig: libwmf.la libxfwmf.la wmftofig.o libxfig/libxfig.la
+	./libtool $(CC) $(LDFLAGS) -o wmftofig wmftofig.o \
+		libxfwmf.la libwmf.la $(XFLIBS)
 
-wmftoeps: libwmf.a libepswmf.a wmftoeps.o LIBXFIG
-	$(CC) $(LDFLAGS) -o wmftoeps wmftoeps.o -L. -lepswmf -lwmf $(EPSLIBS)
+wmftoeps: libwmf.la libepswmf.la wmftoeps.o libxfig/libeps.la
+	./libtool $(CC) $(LDFLAGS) -o wmftoeps wmftoeps.o \
+		libepswmf.la libwmf.la $(EPSLIBS)
 
-libwmf.a:	$(WMFLIBOBJECTS)
-	 $(AR) rc libwmf.a $(WMFLIBOBJECTS) 
-	 $(RANLIB) libwmf.a 
+libwmf.la:	$(WMFLIBOBJECTS)
+	./libtool $(CC) -o libwmf.la $(WMFLIBOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-libgdwmf.a:	$(GDLIBOBJECTS)
-	 $(AR) rc libgdwmf.a $(GDLIBOBJECTS) 
-	 $(RANLIB) libgdwmf.a
+libgdwmf.la:	$(GDLIBOBJECTS)
+	./libtool $(CC) -o libgdwmf.la $(GDLIBOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-libxfwmf.a:	$(XFLIBOBJECTS)
-	 $(AR) rc libxfwmf.a $(XFLIBOBJECTS) 
-	 $(RANLIB) libxfwmf.a
+libxfwmf.la:	$(XFLIBOBJECTS)
+	./libtool $(CC) -o libxfwmf.la $(XFLIBOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-libepswmf.a:	$(EPSLIBOBJECTS)
-	 $(AR) rc libepswmf.a $(EPSLIBOBJECTS) 
-	 $(RANLIB) libepswmf.a
+libepswmf.la:	$(EPSLIBOBJECTS)
+	./libtool $(CC) -o libepswmf.la $(EPSLIBOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-libXwmf.a:	$(XLIBOBJECTS)
-	 $(AR) rc libXwmf.a $(XLIBOBJECTS) 
-	 $(RANLIB) libXwmf.a
+libXwmf.la:	$(XLIBOBJECTS)
+	./libtool $(CC) -o libXwmf.la $(XLIBOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-LIBDIB:
+libdib/libdib.la:
 	@echo making libdib in libdib
 	@(cd libdib && $(MAKE)) || exit 1
 
-LIBXGD:
+xgd-1.7.3/libxgd.la:
 	@echo making libxgd in xgd-1.7.3
 	@(cd xgd-1.7.3 && $(MAKE)) || exit 1
 
-LIBXFIG:
+libxfig/libxfig.la libxfig/libeps.la:
 	@echo making libxfig, libeps in libxfig
 	@(cd libxfig && $(MAKE)) || exit 1
 
-%.o: %.c 
-	$(CC) $(CFLAGS) -c $*.c 
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.lo:
+	./libtool $(CC) $(CFLAGS) -c $<
 
 clean: cleansub
-	rm -rf *.o wmftopng wmftofig wmftoeps xwmf a.out core *.a .pure
+	rm -rf *.o *.lo wmftopng wmftofig wmftoeps xwmf core *.a *.la .libs .pure
 
 cleansub:
 	@echo cleaning libdib in libdib
@@ -131,7 +136,7 @@ installsub:
 distclean: realclean
 
 realclean: realcleansub
-	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o wmftopng wmftofig wmftoeps xwmf a.out *.a core .pure
+	rm -rf config.cache config.status config.log Makefile config.h libtool *.o *.lo wmftopng wmftofig wmftoeps xwmf *.a *.la .libs core .pure
 
 realcleansub:
 	@echo cleaning libdib in libdib
@@ -146,15 +151,16 @@ installdirs:
 	$(libdir)
 
 install: all installdirs installsub
-	$(INSTALL) $(srcdir)/xwmf $(bindir)/xwmf
-	$(INSTALL) $(srcdir)/wmftopng $(bindir)/wmftopng
-	$(INSTALL) $(srcdir)/wmftofig $(bindir)/wmftofig
-	$(INSTALL) $(srcdir)/wmftoeps $(bindir)/wmftoeps
-	$(INSTALL_DATA) $(srcdir)/libwmf.a $(libdir)/libwmf.a
-	$(INSTALL_DATA) $(srcdir)/libgdwmf.a $(libdir)/libgdwmf.a
-	$(INSTALL_DATA) $(srcdir)/libXwmf.a $(libdir)/libXwmf.a
-	$(INSTALL_DATA) $(srcdir)/libxfwmf.a $(libdir)/libxfwmf.a
-	$(INSTALL_DATA) $(srcdir)/libepswmf.a $(libdir)/libepswmf.a
+	./libtool $(INSTALL) $(srcdir)/libwmf.la $(libdir)/libwmf.la
+	./libtool $(INSTALL) $(srcdir)/libgdwmf.la $(libdir)/libgdwmf.la
+	./libtool $(INSTALL) $(srcdir)/libXwmf.la $(libdir)/libXwmf.la
+	./libtool $(INSTALL) $(srcdir)/libxfwmf.la $(libdir)/libxfwmf.la
+	./libtool $(INSTALL) $(srcdir)/libepswmf.la $(libdir)/libepswmf.la
+	./libtool --finish $(libdir)
+	./libtool $(INSTALL) $(srcdir)/xwmf $(bindir)/xwmf
+	./libtool $(INSTALL) $(srcdir)/wmftopng $(bindir)/wmftopng
+	./libtool $(INSTALL) $(srcdir)/wmftofig $(bindir)/wmftofig
+	./libtool $(INSTALL) $(srcdir)/wmftoeps $(bindir)/wmftoeps
 	$(INSTALL_DATA) wmfapi.h $(INCLUDEDIR)/wmfapi.h
 	$(INSTALL_DATA) gdwmfapi.h $(INCLUDEDIR)/gdwmfapi.h
 	$(INSTALL_DATA) Xwmfapi.h $(INCLUDEDIR)/Xwmfapi.h

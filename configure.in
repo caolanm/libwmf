@@ -56,7 +56,7 @@ dnl autoconf stuff ends here
 AC_PROG_CC_NO_G
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
-AC_PROG_RANLIB
+AM_PROG_LIBTOOL
 
 dnl test for X, and Xpm and ttf to get the flags needed to
 dnl compile something to use libwmf

@@ -1,13 +1,11 @@
+top_builddir = ..
+
 #Depending on your system, you will need to modify this makefile.
 
 #If you do not have gcc, change the setting for COMPILER, but you must
 #use an ANSI standard C compiler (NOT the old SunOS 4.1.3 cc
 #compiler; get gcc if you are still using it). 
 COMPILER=@CC@
-
-#If the ar command fails on your system, consult the ar manpage
-#for your system. 
-AR=ar
 
 #If the install command is not in your path, provide
 #an explicit path for it here, or install manually.
@@ -36,12 +34,12 @@ CFLAGS=@CPPFLAGS@ @CFLAGS@ @DEFS@ -I../ @PNG_CFLAGS@ @ZLIB_CFLAGS@ @TTF_CFLAGS@ 
 
 #If you don't have FreeType and/or Xpm fully installed, uncomment this
 #(default).
-LIBS= -lxgd @PNG_LIBS@ @ZLIB_LIBS@ @TTF_LIBS@ @XPM_LIBS@ @X_LIBS@ @X11@ @X_EXTRA_LIBS@ -lm
+LIBS= libxgd.la @PNG_LIBS@ @ZLIB_LIBS@ @TTF_LIBS@ @XPM_LIBS@ @X_LIBS@ @X11@ @X_EXTRA_LIBS@ -lm
 
 #If you do have FreeType and/or Xpm fully installed, uncomment a 
 #variation of this and comment out the line above. Note that
 #Xpm requires X11. See also CFLAGS above.
-#LIBS=-lm -lxgd -lpng -lz -lttf -lXpm -lX11
+#LIBS=-lm libxgd.la -lpng -lz -lttf -lXpm -lX11
 
 #Typical install locations for freetype, zlib, xpm and libpng header files.
 #If yours are somewhere else, change this. 
@@ -49,11 +47,8 @@ INCLUDEDIRS=
 
 #Typical install locations for freetype, zlib, xpm and libpng libraries.
 #If yours are somewhere else, other than a standard location
-#such as /lib or /usr/lib, then change this. Be sure to keep
-#-L. as this allows the gd library itself to be found.
-#Put -L. first so that old versions of the gd library elsewhere
-#on your system can't cause conflicts while building a new one.
-LIBDIRS=-L. @LDFLAGS@
+#such as /lib or /usr/lib, then change this.
+LIBDIRS=@LDFLAGS@
 
 #Location where libxgd.a should be installed by "make install".
 INSTALL_LIB=@libdir@
@@ -75,23 +70,27 @@ VERSION=1.7
 CC=$(COMPILER) $(INCLUDEDIRS)
 LINK=$(CC) $(LIBDIRS) $(LIBS)
 
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
+
 PROGRAMS=$(BIN_PROGRAMS) $(TEST_PROGRAMS)
 
 BIN_PROGRAMS=pngtogd pngtogd2 gdtopng gd2topng gd2copypal gdparttopng webpng
 TEST_PROGRAMS=gdtest gddemo gd2time gdtestttf
 
-all: libxgd.a $(PROGRAMS)
+all: libxgd.la $(PROGRAMS)
 
-install: libxgd.a $(BIN_PROGRAMS)
-	$(INSTALL) libxgd.a $(INSTALL_LIB)/libxgd.a
-	$(INSTALL) pngtogd $(INSTALL_BIN)/pngtogd
-	$(INSTALL) pngtogd2 $(INSTALL_BIN)/pngtogd2
-	$(INSTALL) gdtopng $(INSTALL_BIN)/gdtopng
-	$(INSTALL) gd2topng $(INSTALL_BIN)/gd2topng
-	$(INSTALL) gd2copypal $(INSTALL_BIN)/gd2copypal
-	$(INSTALL) gdparttopng $(INSTALL_BIN)/gdparttopng
-	$(INSTALL) webpng $(INSTALL_BIN)/webpng
-	$(INSTALL) bdftogd $(INSTALL_BIN)/bdftogd
+install: libxgd.la $(BIN_PROGRAMS)
+	../libtool $(INSTALL) libxgd.la $(INSTALL_LIB)/libxgd.la
+	../libtool --finish $(libdir)
+	../libtool $(INSTALL) pngtogd $(INSTALL_BIN)/pngtogd
+	../libtool $(INSTALL) pngtogd2 $(INSTALL_BIN)/pngtogd2
+	../libtool $(INSTALL) gdtopng $(INSTALL_BIN)/gdtopng
+	../libtool $(INSTALL) gd2topng $(INSTALL_BIN)/gd2topng
+	../libtool $(INSTALL) gd2copypal $(INSTALL_BIN)/gd2copypal
+	../libtool $(INSTALL) gdparttopng $(INSTALL_BIN)/gdparttopng
+	../libtool $(INSTALL) webpng $(INSTALL_BIN)/webpng
+	../libtool $(INSTALL) bdftogd $(INSTALL_BIN)/bdftogd
 	$(INSTALL_DATA) gd.h $(INSTALL_INCLUDE)/gd.h
 	$(INSTALL_DATA) gdcache.h $(INSTALL_INCLUDE)/gdcache.h
 	$(INSTALL_DATA) gd_io.h $(INSTALL_INCLUDE)/gd_io.h
@@ -101,54 +100,59 @@ install: libxgd.a $(BIN_PROGRAMS)
 	$(INSTALL_DATA) gdfonts.h $(INSTALL_INCLUDE)/gdfonts.h
 	$(INSTALL_DATA) gdfontt.h $(INSTALL_INCLUDE)/gdfontt.h
 
-gddemo: gddemo.o libxgd.a
-	$(CC) gddemo.o -o gddemo	$(LIBDIRS) $(LIBS)
+gddemo: gddemo.o libxgd.la
+	../libtool $(CC) gddemo.o -o gddemo	$(LIBDIRS) $(LIBS)
 
-pngtogd: pngtogd.o libxgd.a
-	$(CC) pngtogd.o -o pngtogd	$(LIBDIRS) $(LIBS) 
+pngtogd: pngtogd.o libxgd.la
+	../libtool $(CC) pngtogd.o -o pngtogd	$(LIBDIRS) $(LIBS) 
 
-webpng: webpng.o libxgd.a
-	$(CC) webpng.o -o webpng	$(LIBDIRS) $(LIBS)
+webpng: webpng.o libxgd.la
+	../libtool $(CC) webpng.o -o webpng	$(LIBDIRS) $(LIBS)
 
-pngtogd2: pngtogd2.o libxgd.a
-	$(CC) pngtogd2.o -o pngtogd2	$(LIBDIRS) $(LIBS)
+pngtogd2: pngtogd2.o libxgd.la
+	../libtool $(CC) pngtogd2.o -o pngtogd2	$(LIBDIRS) $(LIBS)
 
-gdtopng: gdtopng.o libxgd.a
-	$(CC) gdtopng.o -o gdtopng	$(LIBDIRS) $(LIBS)
+gdtopng: gdtopng.o libxgd.la
+	../libtool $(CC) gdtopng.o -o gdtopng	$(LIBDIRS) $(LIBS)
 
-gd2topng: gd2topng.o libxgd.a
-	$(CC) gd2topng.o -o gd2topng	$(LIBDIRS) $(LIBS)
+gd2topng: gd2topng.o libxgd.la
+	../libtool $(CC) gd2topng.o -o gd2topng	$(LIBDIRS) $(LIBS)
 
-gd2copypal: gd2copypal.o libxgd.a
-	$(CC) gd2copypal.o -o gd2copypal	$(LIBDIRS) $(LIBS)
+gd2copypal: gd2copypal.o libxgd.la
+	../libtool $(CC) gd2copypal.o -o gd2copypal	$(LIBDIRS) $(LIBS)
 
-gdparttopng: gdparttopng.o libxgd.a
-	$(CC) gdparttopng.o -o gdparttopng	$(LIBDIRS) $(LIBS)
+gdparttopng: gdparttopng.o libxgd.la
+	../libtool $(CC) gdparttopng.o -o gdparttopng	$(LIBDIRS) $(LIBS)
 
-gdtest: gdtest.o libxgd.a
-	$(CC) gdtest.o -o gdtest	$(LIBDIRS) $(LIBS)
+gdtest: gdtest.o libxgd.la
+	../libtool $(CC) gdtest.o -o gdtest	$(LIBDIRS) $(LIBS)
 
-gd2time: gd2time.o libxgd.a
-	$(CC) gd2time.o -o gd2time	$(LIBDIRS) $(LIBS)
+gd2time: gd2time.o libxgd.la
+	../libtool $(CC) gd2time.o -o gd2time	$(LIBDIRS) $(LIBS)
 
-gdtestttf: gdtestttf.o libxgd.a
-	$(CC) gdtestttf.o -o gdtestttf	$(LIBDIRS) $(LIBS)
+gdtestttf: gdtestttf.o libxgd.la
+	../libtool $(CC) gdtestttf.o -o gdtestttf	$(LIBDIRS) $(LIBS)
 
-libxgd.a: gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o gd_io_file.o gd_ss.o \
-	gd_io_ss.o gd_png.o gdxpm.o gdfontt.o gdfonts.o gdfontmb.o gdfontl.o \
-	gdfontg.o gdtables.o gdttf.o gdcache.o gdkanji.o \
-	gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h gdfontg.h
-	rm -f libxgd.a
-	$(AR) rc libxgd.a gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
-		gd_io_file.o gd_ss.o gd_io_ss.o gd_png.o gdxpm.o \
-		gdfontt.o gdfonts.o gdfontmb.o gdfontl.o gdfontg.o \
-		gdtables.o gdttf.o gdcache.o gdkanji.o
-	-@RANLIB@ libxgd.a
+libxgd.la: gd.lo gd_gd.lo gd_gd2.lo gd_io.lo gd_io_dp.lo gd_io_file.lo \
+	gd_ss.lo gd_io_ss.lo gd_png.lo gdxpm.lo gdfontt.lo gdfonts.lo \
+	gdfontmb.lo gdfontl.lo gdfontg.lo gdtables.lo gdttf.lo gdcache.lo \
+	gdkanji.lo gd.h gdfontt.h gdfonts.h gdfontmb.h gdfontl.h gdfontg.h
+	../libtool $(CC) -o libxgd.la gd.lo gd_gd.lo gd_gd2.lo gd_io.lo \
+		gd_io_dp.lo gd_io_file.lo gd_ss.lo gd_io_ss.lo gd_png.lo \
+		gdxpm.lo gdfontt.lo gdfonts.lo gdfontmb.lo gdfontl.lo \
+		gdfontg.lo gdtables.lo gdttf.lo gdcache.lo gdkanji.lo \
+		-rpath $(libdir) -version-info 0:0:0
+
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.lo:
+	../libtool $(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o *.a ${PROGRAMS} core 
+	rm -rf *.o *.lo *.a *.la .libs ${PROGRAMS} core 
 
 realclean:
-	rm -f *.o *.a ${PROGRAMS} core Makefile
+	rm -rf *.o *.lo *.a *.la .libs ${PROGRAMS} core Makefile
 
 # Do not delete this line -- make depends on it.

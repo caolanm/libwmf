@@ -1,12 +1,10 @@
+top_builddir = ..
+
 LIBS = @LIBS@
 
-LDFLAGS = @LDFLAGS@ -L.
+LDFLAGS = @LDFLAGS@
 
 CC = @CC@
-
-AR = ar
-
-RANLIB = @RANLIB@
 
 SHELL=/bin/sh
 
@@ -28,33 +26,38 @@ MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 
 SHELL = /bin/sh
 
-.SUFFIXES: .C .o
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
 
 MYOBJECTS = \
-	color.o \
-	objlist.o \
-	fileops.o
+	color.lo \
+	objlist.lo \
+	fileops.lo
 
-all: libsvg.a 
+all: libsvg.la 
 
-libsvg.a:  $(MYOBJECTS)
-	$(AR) rc libsvg.a $(MYOBJECTS)
-	$(RANLIB) libsvg.a 
+libsvg.la:  $(MYOBJECTS)
+	../libtool $(CC) -o libsvg.la $(MYOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $*.c
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.lo:
+	../libtool $(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -rf *.o *.a core
+	rm -rf *.o *.lo *.a *.la .libs core
 
 realclean: 
-	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o *.a core
+	rm -rf *.o *.lo *.a *.la .libs core Makefile
 
 install: all installdirs
-	$(INSTALL_DATA) libsvg.a @libdir@/libsvg.a
+	../libtool $(INSTALL) libsvg.la $(libdir)/libsvg.la
+	../libtool --finish $(libdir)
 
 installdirs:
-	$(MKINSTALLDIRS) @libdir@ \
+	$(MKINSTALLDIRS) $(libdir) \
 	$(INCLUDEDIR)
 
 

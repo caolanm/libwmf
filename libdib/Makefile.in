@@ -1,12 +1,10 @@
+top_builddir = ..
+
 LIBS = @LIBS@
 
-LDFLAGS = @LDFLAGS@ -L.
+LDFLAGS = @LDFLAGS@
 
 CC = @CC@
-
-AR = ar
-
-RANLIB = @RANLIB@
 
 SHELL=/bin/sh
 
@@ -28,38 +26,43 @@ MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 
 SHELL = /bin/sh
 
-.SUFFIXES: .C .o
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
 
 MYOBJECTS = \
-    ../bytelevel.o \
-    bintree.o \
-    dibtoxpm.o
+    ../bytelevel.lo \
+    bintree.lo \
+    dibtoxpm.lo
 
-all: libdib.a test_dibtoxpm
+all: libdib.la test_dibtoxpm
 
-libdib.a:  $(MYOBJECTS)
-	$(AR) rc libdib.a $(MYOBJECTS)
-	$(RANLIB) libdib.a 
+libdib.la:  $(MYOBJECTS)
+	../libtool $(CC) -o libdib.la $(MYOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-test_dibtoxpm:  libdib.a test_dibtoxpm.o
-	$(CC) $(LDFLAGS) -o test_dibtoxpm test_dibtoxpm.o -ldib
+test_dibtoxpm:  libdib.la test_dibtoxpm.o
+	../libtool $(CC) $(LDFLAGS) -o test_dibtoxpm test_dibtoxpm.o libdib.la
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $*.c
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.lo:
+	../libtool $(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -rf *.o *.a test_dibtoxpm a.out core
+	rm -rf *.o *.lo *.a *.la .libs test_dibtoxpm core
 
 realclean: 
-	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o *.a test_dibtoxpm core
+	rm -rf *.o *.lo *.a *.la .libs test_dibtoxpm core Makefile
 
 installdirs:
-	$(MKINSTALLDIRS) @libdir@ \
+	$(MKINSTALLDIRS) $(libdir) \
 	$(INCLUDEDIR)
 
 install: all installdirs
 	$(INSTALL_DATA) dibtoxpm.h $(INCLUDEDIR)/dibtoxpm.h
-	$(INSTALL_DATA) libdib.a @libdir@/libdib.a
+	../libtool $(INSTALL) libdib.la $(libdir)/libdib.la
+	../libtool --finish $(libdir)
 
 
 #  DO  NOT  DELETE THIS LINE -- make depend depends on it.

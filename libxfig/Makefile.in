@@ -1,12 +1,10 @@
+top_builddir = ..
+
 LIBS = @LIBS@
 
-LDFLAGS = @LDFLAGS@ -L.
+LDFLAGS = @LDFLAGS@
 
 CC = @CC@
-
-AR = ar
-
-RANLIB = @RANLIB@
 
 SHELL=/bin/sh
 
@@ -28,44 +26,49 @@ MKINSTALLDIRS = $(srcdir)/mkinstalldirs
 
 SHELL = /bin/sh
 
-.SUFFIXES: .C .o
+.SUFFIXES:
+.SUFFIXES: .c .o .lo
 
 XFOBJECTS = \
-	color.o \
-	objlist.o \
-	fileops.o
+	color.lo \
+	objlist.lo \
+	fileops.lo
 
 EPSOBJECTS = \
-	color.o \
-	objlist.o \
-	epsfileops.o
+	color.lo \
+	objlist.lo \
+	epsfileops.lo
 
 
-all: libxfig.a libeps.a
+all: libxfig.la libeps.la
 
-libxfig.a:  $(XFOBJECTS)
-	$(AR) rc libxfig.a $(XFOBJECTS)
-	$(RANLIB) libxfig.a 
+libxfig.la:  $(XFOBJECTS)
+	../libtool $(CC) -o libxfig.la $(XFOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-libeps.a:  $(EPSOBJECTS)
-	$(AR) rc libeps.a $(EPSOBJECTS)
-	$(RANLIB) libeps.a 
+libeps.la:  $(EPSOBJECTS)
+	../libtool $(CC) -o libeps.la $(EPSOBJECTS) \
+		-rpath $(libdir) -version-info 0:0:0
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $*.c
+.c.o:
+	$(CC) $(CFLAGS) -c $<
+
+.c.lo:
+	../libtool $(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -rf *.o *.a core
+	rm -rf *.o *.lo *.a *.la .libs core
 
 realclean: 
-	rm -rf config.cache config.status config.log Makefile config.h lex.yy.c *.o *.a core
+	rm -rf *.o *.lo *.a *.la .libs core Makefile
 
 install: all installdirs
-	$(INSTALL_DATA) libxfig.a @libdir@/libxfig.a
-	$(INSTALL_DATA) libeps.a @libdir@/libeps.a
+	../libtool $(INSTALL) libxfig.la $(libdir)/libxfig.la
+	../libtool $(INSTALL) libeps.la $(libdir)/libeps.la
+	../libtool --finish $(libdir)
 
 installdirs:
-	$(MKINSTALLDIRS) @libdir@ \
+	$(MKINSTALLDIRS) $(libdir) \
 	$(INCLUDEDIR)
 
 
