@@ -1,9 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "xfwmfapi.h"
 
 extern int list;
+
+void print_help()
+{
+  fprintf(stderr,"\nUsage wmftofig [-b | -l | -t] inputfile.wmf outputfile.fig\n");
+  fprintf(stderr,"\t -b\t The hypothetic white rectangle whithout border which is\n");
+  fprintf(stderr,"\t   \t the background of the image will not be translated.\n");
+  fprintf(stderr,"\t -l\t The information on the distance between the characters (lpDx field)\n");
+  fprintf(stderr,"\t   \t in a string will not be used. The general layout may look worse\n");
+  fprintf(stderr,"\t   \t but the strings may look better.\n");
+  fprintf(stderr,"\t -t\t The texts will be save as ``special''\n\n"); 
+}
+
 
 int main(int argc,char **argv)
 {
@@ -15,14 +28,53 @@ int main(int argc,char **argv)
   CSTRUCT *cstruct = &rstruct;
   XFStruct xfstruct;
   int brect[8];
+  int option;
   
   if (argc < 3)
     {
-      fprintf(stderr,"Usage wmftofig file.wmf output.fig\n");
+      print_help();
+      return(-1);
+    }
+
+  /* Decomposition of the input line */
+
+  do
+    {
+      option = getopt(argc, argv, "blt");
+      switch(option)
+	{
+	case -1:
+	  break;
+	case 'b':
+	  set_pruneframe();
+	  fprintf(stderr,"wmftofig will try to remove the background frame.\n");
+	  fprintf(stderr,"***CAUTION*** this option may prune necessary rectangles.\n");
+	  break;
+	case 'l':
+	  unset_use_lpDx();
+	  break;
+	case 't':
+	  set_usespecialtext();
+	  break;
+	case '?':
+	  print_help();
+	  return(-1);
+	  break;
+	default:
+	  fprintf(stderr,"What is ``%c'' ???\n", option);
+	}
+    }
+  while(option!=-1);
+
+  /* There should remain two unprocessed args: the input and output
+     files*/
+  if ((argc-optind)!=2)
+    {
+      print_help();
       return(-1);
     }
   
-  in = argv[1];
+  in = argv[argc-2];
 
   xf_objlist_init();
 
@@ -54,13 +106,13 @@ int main(int argc,char **argv)
 #endif
       return(-1);
     }
-  out = fopen(argv[2], "w");
+  out = fopen(argv[argc-1], "w");
   if (out == NULL)
     {
       fprintf(stderr,"A problem, couldn't open <%s> for output\n",in);
       return(-1);
     }
-  
+
   xfstruct.fl=out;
   writefigheader(out);
   xf_std_colors();  
@@ -68,8 +120,10 @@ int main(int argc,char **argv)
   cstruct->preparse = 1;
   PlayMetaFile((void *)cstruct, file, 0, NULL);
 
+  fprintf(stderr,"After preparse\n");
+
   cstruct->preparse = 0;
-  PlayMetaFile((void *)cstruct, file, 0, in);
+  PlayMetaFile((void *)cstruct, file, 0, argv[argc-1]);
 
   xf_color_to_file(out);  /* If there are user-defined colours? */
   xf_objlist_tofile(out);
@@ -88,6 +142,4 @@ int writefigheader(FILE *fl)
   fprintf(fl, "Landscape\nCenter\nMetric\nA4\n100.00\nSingle\n-2\n1200 2\n");
 }
   
-  
-
 

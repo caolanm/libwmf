@@ -67,10 +67,10 @@ int main(int argc,char **argv)
   xf_std_colors();  
   
   cstruct->preparse = 1;
-  PlayMetaFile((void *)cstruct,file);
+  PlayMetaFile((void *)cstruct,file,1,NULL);
 
   cstruct->preparse = 0;
-  PlayMetaFile((void *)cstruct,file);
+  PlayMetaFile((void *)cstruct,file,1,NULL);
 
   dx = (int)(0.06 * cstruct->realwidth); 
   dy = (int)(0.06 * cstruct->realheight);

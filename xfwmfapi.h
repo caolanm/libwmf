@@ -1,5 +1,6 @@
 #include "wmfapi.h"
 
+
 typedef struct _xf_Struct
 {
   FILE *fl;
@@ -23,6 +24,7 @@ int norect;
 
 extern wmf_functions xf_wmffunctions;
 extern int list;
+
 
 
 void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
@@ -66,8 +68,71 @@ void xf_extflood_fill(CSTRUCT *,WMFRECORD *);
 
 void xf_finish(CSTRUCT *cstruct);
 int setlinestyle(CSTRUCT *cstruct, int , float*, int*, int*, LOGPEN *pen);
-int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brush);
+int setbrushstyle(CSTRUCT *cstruct,LOGBRUSH *brush);
+
+int  use_lpDx();
+void set_use_lpDx();
+void unset_use_lpDx();
+int  pruneframe();
+void set_pruneframe();
+void unset_pruneframe();
+int  usespecialtext();
+void set_usespecialtext();
+void set_usespecialtext();
 
 
+
+
+#define TIMES_ROMAN 0
+#define TIMES_ITALIC 1
+#define TIMES_BOLD 2
+#define TIMES_BOLDITALIC 3
+
+#define AVANTGARDE_BOOK 4
+#define AVANTGARDE_BOOKOBLIQUE 5
+
+#define AVANTGARDE_DEMI 6
+#define AVANTGARDE_DEMIOBLIQUE 7
+
+#define BOOKMAN_LIGHT 8
+#define BOOKMAN_LIGHTITALIC 9
+#define BOOKMAN_DEMI 10
+#define BOOKMAN_DEMIITALIC 11
+
+#define COURIER 12
+#define COURIER_OBLIQUE    13
+#define COURIER_BOLD 14 
+#define COURIER_BOLDOBLIQUE 15
+
+#define HELVETICA 16
+#define HELVETICA_OBLIQUE 17
+#define HELVETICA_BOLD 18
+#define HELVETICA_BOLDOBLIQUE 19
+
+#define HELVETICA_NARROW 20
+#define HELVETICA_NARROW_OBLIQUE 21
+#define HELVETICA_NARROW_BOLD 22
+#define HELVETICA_NARROW_BOLDOBLIQUE 23
+
+#define NEWCENTURYSCHLBK_ROMAN 24
+#define NEWCENTURYSCHLBK_ITALIC 25
+#define NEWCENTURYSCHLBK_BOLD 26
+#define NEWCENTURYSCHLBK_BOLDITALIC 27
+
+#define PALATINO_ROMAN 28
+#define PALATINO_ITALIC 29
+#define PALATINO_BOLD 30
+#define PALATINO_BOLDITALIC 31
+
+#define SYMBOL_GREEK 32
+#define ZAPFCHANCERY_MEDIUMITALIC 33
+#define ZAPFDINGBATS 34
+
+#define LATEXFONT_DEFAULT    0 
+#define LATEXFONT_ROMAN      1 
+#define LATEXFONT_BOLD       2 
+#define LATEXFONT_ITALIC     3 
+#define LATEXFONT_SANSSERIF  4 
+#define LATEXFONT_TYPEWRITER 5 
 
 

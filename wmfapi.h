@@ -493,19 +493,29 @@ in the parameter array, y's precede x's
 
 
 int NormY(S16 in,CSTRUCT *cstruct);
-float fNormY(float in,CSTRUCT *cstruct);
-int iNormY(float in,CSTRUCT *cstruct);
+int   i2i_NormY(S16 in,CSTRUCT *cstruct);
+float i2f_NormY(S16 in,CSTRUCT *cstruct);
+float f2f_NormY(float in,CSTRUCT *cstruct);
+int   f2i_iNormY(float in,CSTRUCT *cstruct);
+
 int ScaleY(S16 in,CSTRUCT *cstruct);
-float fScaleY(float in, CSTRUCT *cstruct);
-float fScaleiY(int in, CSTRUCT *cstruct);
-int iScaleY(float in, CSTRUCT *cstruct);
+int   i2i_ScaleY(S16 in,CSTRUCT *cstruct);
+float i2f_ScaleY(S16 in, CSTRUCT *cstruct);
+float f2f_ScaleY(float in, CSTRUCT *cstruct);
+int   f2i_ScaleY(float in, CSTRUCT *cstruct);
+
 int NormX(S16 in,CSTRUCT *cstruct);
-float fNormX(float in,CSTRUCT *cstruct);
-int iNormX(float in,CSTRUCT *cstruct);
+int   i2i_NormX(S16 in,CSTRUCT *cstruct);
+float i2f_NormX(S16 in,CSTRUCT *cstruct);
+float f2f_NormX(float in,CSTRUCT *cstruct);
+int   f2i_NormX(float in,CSTRUCT *cstruct);
+
 int ScaleX(S16 in,CSTRUCT *cstruct);
-float fScaleX(float in, CSTRUCT *cstruct);
-float fScaleiX(int in, CSTRUCT *cstruct);
-int iScaleX(float in, CSTRUCT *cstruct);
+int   i2i_ScaleX(S16 in,CSTRUCT *cstruct);
+float i2f_ScaleX(S16 in, CSTRUCT *cstruct);
+float f2f_ScaleX(float in, CSTRUCT *cstruct);
+int   f2i_ScaleX(float in, CSTRUCT *cstruct);
+
 float floatabs(float in);
 U16 AldusChecksum(PLACEABLEMETAHEADER *pmh);
 
@@ -516,7 +526,7 @@ WMFHEAD *GetRealMetaFile(FILE *filein);
 void wmfinit(CSTRUCT *cstruct);
 
 void parseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height);
-int PlayMetaFile(void *,HMETAFILE file,int hard_convert,char *prefix);
+int PlayMetaFile(void *,HMETAFILE file,int scale_BMP,char *prefix);
 WMFHEAD *GetRealMetaFile(FILE *filein);
 void do_pixeling(CSTRUCT *cstruct, HMETAFILE file);
 
@@ -524,6 +534,11 @@ void do_pixeling(CSTRUCT *cstruct, HMETAFILE file);
 
 void wmfdebug(FILE *stream,char *fmt, ...);
 char* auxname(char * prefix);
+
+
+void AddWindowExt(int width, int height, CSTRUCT *cstruct, HMETAFILE file);
+void AddWindowOrg(int width, int height, CSTRUCT *cstruct, HMETAFILE file);
+void initiate_pixelling(CSTRUCT *cstruct, HMETAFILE file);
 
 /* 
 Here the pointer list is defined to the functions that should
@@ -656,6 +671,5 @@ S16 OffsetRgn(WINEREGION *rgn, S16 x, S16 y );
 #undef MIN
 #endif
 #define MIN(a,b) (((a) < (b)) ? (a) : (b))
-
 
 #endif

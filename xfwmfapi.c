@@ -75,6 +75,61 @@ wmf_functions xf_wmffunctions =
       xf_finish
     };
 
+int uselpdx = 1;
+
+int use_lpDx()
+{
+  return uselpdx;
+}  
+
+void set_use_lpDx()
+{
+  uselpdx = 1;
+}  
+
+void unset_use_lpDx()
+{
+  uselpdx = 0;
+}  
+
+
+int frametobepruned = 0;
+
+int pruneframe()
+{
+  return frametobepruned;
+}  
+
+void set_pruneframe()
+{
+  frametobepruned = 1;
+}  
+
+void unset_pruneframe()
+{
+  frametobepruned = 0;
+}  
+
+int specialtext = 0;
+
+int usespecialtext()
+{
+  return specialtext;
+}
+
+void set_usespecialtext()
+{
+  specialtext = 1;
+}
+
+void unset_usespecialtext()
+{
+  specialtext = 0;
+}
+
+
+
+
 void *xf_initial_userdata(CSTRUCT *cstruct)
 {
     clip_Struct *temp;
@@ -102,12 +157,72 @@ void xf_copyUserData(CSTRUCT *cstruct,DC *old,DC *new)
 
 
 void xf_paint_rgn(CSTRUCT *cstruct,WINEREGION *rgn)
-    {
-	int color;
-    int flag;
+{
+  F_point *points;
+  F_line *line;
+  int c1, c2, c3, np, i;
+  int x1, y1, x2, y2;
+  
+  /* Allocation */
+  line=(F_line *)malloc(sizeof(F_line));
 
-    /* printf("xf_paint_rgn ?\n"); */
-    }
+  /* Default values (invisible rectangle) */
+  line->type=T_BOX;
+  line->style=SOLID_LINE;
+  line->thickness=0;
+  line->pen_color=BLACK;
+  line->fill_color=WHITE;
+  line->depth=cstruct->depth--;
+  line->pen_style=0;
+  line->fill_style=-1; /* not filled */
+  line->style_val=0.0; 
+  line->join_style=JOIN_MITER;
+  line->cap_style=CAP_BUTT;
+  line->radius=0;      
+  line->for_arrow=NULL; 
+  line->back_arrow=NULL; 
+    
+
+  /* Set the fill color and the fill mode */
+  if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL)){
+    c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+    c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+    line->fill_color=xf_find_color(c1, c2, c3);
+
+    /* The fill style/pattern should be computed somewhere... */
+    line->fill_style = setbrushstyle(cstruct,cstruct->dc->brush);
+/*     line->fill_style=20; */
+  }
+    
+
+  /* Computation of the points */
+  np=5;
+  line->points=(F_point *) malloc(np*sizeof(F_point));
+
+
+  x1=i2i_NormX(rgn->extents.left,cstruct);
+  y1=i2i_NormY(rgn->extents.top,cstruct);
+  x2=i2i_NormX(rgn->extents.right,cstruct);
+  y2=i2i_NormY(rgn->extents.bottom,cstruct);
+
+  line->points[0].x=line->points[3].x=line->points[4].x=x1;
+  line->points[0].y=line->points[1].y=line->points[4].y=y1;
+  line->points[1].x=line->points[2].x=x2;
+  line->points[2].y=line->points[3].y=y2;
+
+  for (i=0; i<np; i++){
+    if (i<np-1)
+      line->points[i].next=&(line->points[i+1]);
+    else
+      line->points[i].next=NULL;
+  }
+
+	
+  xf_addpolyline(line); 
+  
+  printf("xf_paint_rgn: correct ?\n"); 
+}
 
 
 void xf_flood_fill(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
@@ -155,6 +270,28 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
   height = text->descent + text->ascent;
+
+
+/*   fprintf(stderr,"\nHeight: %d, Width: %d, Escapement: %d, Orientation: %d, Weight: %d, \n", */
+/*           cstruct->dc->font->lfHeight, */
+/*           cstruct->dc->font->lfWidth, */
+/*           cstruct->dc->font->lfEscapement, */
+/*           cstruct->dc->font->lfOrientation, */
+/*           cstruct->dc->font->lfWeight); */
+/*   fprintf(stderr,"Italic: %d, Underline: %d, StrikeOut: %d, CharSet: %d, OutPrecision: %d, \n", */
+/*           cstruct->dc->font->lfItalic, */
+/*           cstruct->dc->font->lfUnderline, */
+/*           cstruct->dc->font->lfStrikeOut, */
+/*           cstruct->dc->font->lfCharSet, */
+/*           cstruct->dc->font->lfOutPrecision); */
+/*   fprintf(stderr,"ClipPrecision: %d, Quality: %d, PitchAndFamily: %d\n", */
+/*           cstruct->dc->font->lfClipPrecision, */
+/*           cstruct->dc->font->lfQuality, */
+/*           cstruct->dc->font->lfPitchAndFamily); */
+/*   fprintf(stderr,"FaceName: %s \tString:%s\n", */
+/* 	  cstruct->dc->font->lfFaceName,  */
+/* 	  str); */
+
 
   /* 
   Compute text starting position.
@@ -215,38 +352,116 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
 
   text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000; 
 
+
+
+  /***************
+   Select the font
+  ***************/
+		   
   facename = cstruct->dc->font->lfFaceName;
-  /* fprintf(stderr, "%s\n", facename); */
 
-  text->flags = 0x4;  /* PostScript font */
+  if (!usespecialtext())
+    text->flags = 0x4;  /* PostScript font */
+  else
+    text->flags = 0x6;  /* PostScript font and special text */
 
-  text->font = 0;   				     /* Times Roman */
-  if (strstr(facename, "Arial"))   text->font = 16;  /* Sans Serif */
-  if (strstr(facename, "Courier")) text->font = 12;  /* Typewriter */
+  text->font = TIMES_ROMAN;   				     /* Times Roman */
+  if (strstr(facename, "Arial"))              text->font = HELVETICA;  /* Sans Serif */
+  if (strstr(facename, "Courier"))            text->font = COURIER;  /* Typewriter */
+  if (strstr(facename, "Gill Sans"))          text->font = AVANTGARDE_BOOK; 
+  if (strstr(facename, "Bookman Old Style"))  text->font = BOOKMAN_LIGHT; 
+  if (strstr(facename, "News Gothic"))        text->font = HELVETICA_NARROW; 
+  if (strstr(facename, "Courier New"))        text->font = COURIER; 
+  if (strstr(facename, "Century Schoolbook")) text->font = NEWCENTURYSCHLBK_ROMAN; 
+  if (strstr(facename, "Lucida Bright"))      text->font = PALATINO_ROMAN; 
+  if (strstr(facename, "Times New Roman"))    text->font = TIMES_ROMAN; 
+  if (strstr(facename, "Monotype Corsiva"))   text->font = ZAPFCHANCERY_MEDIUMITALIC; 
+  if (strstr(facename, "Sym"))                text->font = SYMBOL_GREEK;
+  if (strstr(facename, "Symbol"))             text->font = SYMBOL_GREEK; 
+  
 
-  if (cstruct->dc->font->lfItalic  == 1) text->font += 1; /* Not in facename */
-  if (strstr(facename, "Bold"))          text->font += 2; /* ? */
-
-  if (strstr(facename, "Sym")) text->font = 32;
-
-  /* if (cstruct->dc->font->lfWeight   > 0) text->font = 2; ? */ 
+  /* Not in facename */
+  /* Set the text in italic if 1) this was not already the case; 2)
+     this is possible */
+  if (cstruct->dc->font->lfItalic  == 1)
+    if ((text->font%2==0)&&(0<=text->font)&&(text->font<=30))
+      text->font += 1; 
+  
+  /* Switch the text to bold if necessary and if possible*/
+  switch(cstruct->dc->font->lfWeight)
+    {
+    case 400:
+      /*normal*/
+      text->font+=0;
+      break;
+    case 700:
+      /*bold*/
+      switch (text->font)
+	{
+	  /* Obvious cases*/
+	case TIMES_ROMAN:
+	case TIMES_ITALIC:
+	case COURIER:
+	case COURIER_OBLIQUE:
+	case HELVETICA:
+	case HELVETICA_OBLIQUE:
+	case HELVETICA_NARROW:
+	case HELVETICA_NARROW_OBLIQUE:
+	case NEWCENTURYSCHLBK_ROMAN:
+	case NEWCENTURYSCHLBK_ITALIC:
+	case PALATINO_ROMAN:
+	case PALATINO_ITALIC:
+	  text->font+=2;
+	  break;
+	  
+	  /* Questionable cases*/
+	case AVANTGARDE_BOOK:
+	case AVANTGARDE_BOOKOBLIQUE:
+	case BOOKMAN_LIGHT:
+	case BOOKMAN_LIGHTITALIC:
+	  text->font+=2;
+	  break;
+	default:
+	  fprintf(stderr,"Impossible to set text %s to bold: font not available.\n",str);
+	  /*font unchanged: no bold version available*/
+	}
+      break;
+    default:
+      fprintf(stderr,"Unknown font weight: %d\n",cstruct->dc->font->lfWeight);
+    }
 
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
+
+
+  /****************
+   Size Computation
+  ****************/		
+
   /* 
   The 20 is semi-empirical. Twips per inch point? 
   The use of lfHeight to make big parentheses explains btw
   why MS Word formulas look so ugly compared to LaTeX.
   */
+/*   text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20;  */
+  
 
-  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20; 
+  /* Semi-empirical new size computation: linear scale with 300
+     corresponding to size 18, shifted to minimize rounding problems.*/
+  text->size = (i2f_ScaleY(cstruct->dc->font->lfHeight,cstruct)+8.34)/16.67;
+/*   fprintf(stderr,"From (%d,%d) to %d for %s\n",  */
+/* 	  cstruct->dc->font->lfHeight, */
+/* 	  i2i_ScaleY(cstruct->dc->font->lfHeight,cstruct), */
+/* 	  text->size, */
+/* 	  str); */
+
   text->depth=cstruct->depth--;
   text->pen_style=0;
   
   text->cstring=(char *)malloc(strlen(str)+1);
-  strncpy(text->cstring, str, strlen(str)); 
+  strncpy(text->cstring, str, strlen(str)+1); 
 
-  if (lpDx) 
+  if ((lpDx!=NULL) && (use_lpDx())) 
     {
       for (i = width = 0; i < strlen(str); i++) 
         {
@@ -258,11 +473,11 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
           t->cstring=(char *)malloc(2);
           sprintf(t->cstring, "%c\n", text->cstring [i]);
           xf_addtext(t);
-          /*
-          printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
+          
+          /* printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
 		t->length, height, 
-		t->base_x, y, t->cstring, i);
-	  */
+		t->base_x, y, t->cstring, i);*/
+	  
           width += ScaleX(lpDx[i], cstruct);
         }
     }
@@ -270,11 +485,11 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
     {
       /* defined in libxfig/objlist.c */
       xf_addtext(text);
-      /*
-      printf("xf_addtext: %dx%d+%d+%d %s\n", 
+      
+      /*printf("xf_addtext: %dx%d+%d+%d %s\n", 
 	text->length, height, 
-	x, y, text->cstring);
-      */
+	x, y, text->cstring);*/
+      
     }
 }
 
@@ -426,137 +641,12 @@ int xf_mm_height(CSTRUCT *cstruct)
     {
 	return(SCREEN_HEIGHT_MM);
     }
-#if 0
-void xf_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U16 dest_w,U16 dest_h,char *filename,U32 dwROP)
-    {
-	xfImagePtr im;
-	int x,y;
-	int c1,c2,color;
-	U8 r,g,b;
-	U8 r2,g2,b2;
-	int done=1;
-	im = xfImageCreateFromXpm(filename);
-
-	if (dest_w > im->sx)
-        dest_w = im->sx;
-
-    if (dest_h > im->sy)
-        dest_h = im->sy;
-
-
-	switch (dwROP)
-		{
-		case SRCCOPY:
-		xfImageCopy(((XFStruct *)(cstruct->userdata))->im_out, im,  NormX(dest_x,cstruct), NormY(dest_y,cstruct),
-			src_x, src_y, dest_w,dest_h);
-			break;
-		case PATCOPY:
-        case DSTINVERT:
-        case PATINVERT:
-        case BLACKNESS:
-        case WHITENESS:
-            xf_parseROP(cstruct,dwROP,NormX(dest_x,cstruct), NormY(dest_y,cstruct),dest_w,
-                dest_h);
-			break;
-		default:
-			done=0;
-		}
-
-	if (!(done))
-		{
-		for(y=0;y<dest_h;y++)
-			for(x=0;x<dest_w;x++)
-				{
-				c1 = xfImageGetPixel(((XFStruct *)(cstruct->userdata))->im_out,x+NormX(dest_x,cstruct),y+NormY(dest_y,cstruct));
-				c2 = xfImageGetPixel(im,x+src_x,y+src_y);
-
-				switch (dwROP)
-					{
-					case SRCAND:
-						r = im->red[c2] & ((XFStruct *)(cstruct->userdata))->im_out->red[c1];
-						g = im->green[c2] & ((XFStruct *)(cstruct->userdata))->im_out->green[c1];
-						b = im->blue[c2] & ((XFStruct *)(cstruct->userdata))->im_out->blue[c1];
-						break;
-					case NOTSRCCOPY:
-						r = im->red[c2];
-						g = im->green[c2];
-						b = im->blue[c2];
-						r = ~r;
-						g = ~g;
-						b = ~b;
-						wmfdebug(stderr,"color is %6X %6X %6X - %6X  %6X %6X\n",im->red[c2],im->green[c2],im->blue[c2],r,g,b);
-						break;
-					case SRCERASE:
-						r = im->red[c2]; 
-						g = im->green[c2]; 
-						b = im->blue[c2]; 
-						r2 = ((XFStruct *)(cstruct->userdata))->im_out->red[c1];
-						g2 = ((XFStruct *)(cstruct->userdata))->im_out->green[c1];
-						b2 = ((XFStruct *)(cstruct->userdata))->im_out->blue[c1];
-						r2 = ~r2;
-						g2 = ~g2;
-						b2 = ~b2;
-						r = r & r2;
-						g = g & g2;
-						b = b & b2;
-						break;
-					case SRCINVERT:
-						r = im->red[c2];
-						g = im->green[c2];
-						b = im->blue[c2];
-						r2 = ((XFStruct *)(cstruct->userdata))->im_out->red[c1];
-						g2 = ((XFStruct *)(cstruct->userdata))->im_out->green[c1];
-						b2 = ((XFStruct *)(cstruct->userdata))->im_out->blue[c1];
-						r = r ^ r2;
-						g = g ^ g2;
-						b = b ^ b2;
-						break;
-					case SRCPAINT:
-					case NOTSRCERASE:
-						r = im->red[c2];
-						g = im->green[c2];
-						b = im->blue[c2];
-						r2 = ((XFStruct *)(cstruct->userdata))->im_out->red[c1];
-						g2 = ((XFStruct *)(cstruct->userdata))->im_out->green[c1];
-						b2 = ((XFStruct *)(cstruct->userdata))->im_out->blue[c1];
-						r = r | r2;
-						g = g | g2;
-						b = b | b2;
-						break;
-					case MERGEPAINT:
-						r = im->red[c2];
-						g = im->green[c2];
-						b = im->blue[c2];
-						r2 = ((XFStruct *)(cstruct->userdata))->im_out->red[c1];
-						g2 = ((XFStruct *)(cstruct->userdata))->im_out->green[c1];
-						b2 = ((XFStruct *)(cstruct->userdata))->im_out->blue[c1];
-						r = (~r) | r2;
-						g = (~g) | g2;
-						b = (~b) | b2;
-						break;
-					default:
-						r = im->red[c2];
-						g = im->green[c2];
-						b = im->blue[c2];
-						break;
-					}
-
-				color = xfImageColorResolve(((XFStruct *)(cstruct->userdata))->im_out,r,g,b);
-				xfImageSetPixel(((XFStruct *)(cstruct->userdata))->im_out,x+NormX(dest_x,cstruct),y+NormY(dest_y,cstruct),color);
-				}
-		}
-
-
-			
-	xfImageDestroy(im);
-    }
-#endif
 
 
 void xf_set_pmf_size(CSTRUCT *cstruct,HMETAFILE file)
     {
     float pixperin;
-    printf("xf_set_pmf_size\n");
+/*     printf("xf_set_pmf_size\n"); */
     pixperin = ((float)SCREEN_WIDTH_PIXELS)/(SCREEN_WIDTH_MM/MM_PER_INCH);
     cstruct->xpixeling= file->pmh->Inch/pixperin;
     cstruct->realwidth = (abs(file->pmh->Right-file->pmh->Left)/(float)file->pmh->Inch)*pixperin;
@@ -599,8 +689,8 @@ void xf_draw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
       line->points=(F_point *) malloc(np*sizeof(F_point));
       for (j=0; j<np; j++)
 	{
-	  line->points[j].x=NormX(wmfrecord->Parameters[++i],cstruct);
-	  line->points[j].y=NormY(wmfrecord->Parameters[++i],cstruct);
+	  line->points[j].x=i2i_NormX(wmfrecord->Parameters[++i],cstruct);
+	  line->points[j].y=i2i_NormY(wmfrecord->Parameters[++i],cstruct);
 	  if (j<np-1)
 	    line->points[j].next=&(line->points[j+1]);
 	  else
@@ -648,8 +738,8 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
   for (i=0; i<np; i++)
     {
-      line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
-      line->points[i].y=NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
+      line->points[i].x=i2i_NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
+      line->points[i].y=i2i_NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
       if (i<np-1)
 	line->points[i].next=&(line->points[i+1]);
       else
@@ -679,6 +769,8 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   int x,y;
   int np=2;
 	
+/*   fprintf(stderr,"xf_draw_line\n"); */
+
   line=(F_line *)malloc(sizeof(F_line));
 
   /* Fill out defaults for F_line: invisible line */
@@ -702,11 +794,10 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->pic=NULL;
   line->next=NULL;
 
-
   /* Compute the color of the line.   */
-  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
-  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+  c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+  c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+  c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
   line->pen_color=xf_find_color(c1, c2, c3);
   
   /* Unused by xfig */
@@ -723,8 +814,8 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->points[0].x = currentx;
   line->points[0].y = currenty;
   line->points[0].next = &(line->points[1]);
-  line->points[1].x = NormX(wmfrecord->Parameters[1],cstruct);
-  line->points[1].y = NormY(wmfrecord->Parameters[0],cstruct);
+  line->points[1].x = i2i_NormX(wmfrecord->Parameters[1],cstruct);
+  line->points[1].y = i2i_NormY(wmfrecord->Parameters[0],cstruct);
   line->points[1].next = NULL;
 
   xf_addpolyline(line);
@@ -767,13 +858,23 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   np=wmfrecord->Parameters[0];
   line->points=(F_point *) malloc((np+1)*sizeof(F_point));
   for (i=0; i<np; i++){
-    line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
-    line->points[i].y=NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
+    line->points[i].x=i2i_NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
+    line->points[i].y=i2i_NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
     line->points[i].next=&(line->points[i+1]); 
   }
-  line->points[np].x=NormX(wmfrecord->Parameters[1],cstruct);
-  line->points[np].y=NormY(wmfrecord->Parameters[2],cstruct);
+  line->points[np].x=i2i_NormX(wmfrecord->Parameters[1],cstruct);
+  line->points[np].y=i2i_NormY(wmfrecord->Parameters[2],cstruct);
   line->points[np].next=NULL;
+
+
+/*   fprintf(stderr,"Polygon: (%d,%d)*(%d,%d) from (%d,%d)*(%d,%d) by %f,%f in %f,%f\n", */
+/* 	  line->points[0].x, line->points[0].y,  */
+/* 	  line->points[2].x, line->points[2].y, */
+/* 	  wmfrecord->Parameters[1],wmfrecord->Parameters[2], */
+/* 	  wmfrecord->Parameters[5],wmfrecord->Parameters[6], */
+/* 	  cstruct->xpixeling,cstruct->ypixeling, */
+/* 	  cstruct->realwidth,cstruct->realheight */
+/* 	  ); */
 
 
   /* Set the fill color and the fill style */
@@ -784,8 +885,8 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     line->fill_color=xf_find_color(c1, c2, c3);
 
     /* The fill style/pattern should be computed somewhere... */
-    /* setbrushstyle(cstruct,color,cstruct->dc->brush);       */
-    line->fill_style=20;
+    line->fill_style=setbrushstyle(cstruct,cstruct->dc->brush); 
+/*     line->fill_style=20; */
   }
 
   /* Set the pen color, style, and thickness, and the line style */
@@ -879,8 +980,7 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     ellipse->fill_color=xf_find_color(c1, c2, c3);
 
     /* The fill style/pattern should be computed somewhere... */
-    /* setbrushstyle(cstruct,color,cstruct->dc->brush);       */
-    ellipse->fill_style=20;
+    ellipse->fill_style=setbrushstyle(cstruct,cstruct->dc->brush);      
   }
 
   /* Set the pen color, style, and thickness, and the line style */
@@ -902,10 +1002,10 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
   /* Computations of the ellipse dimensions */
 
-  top    = fNormY(wmfrecord->Parameters[0], cstruct);
-  right  = fNormX(wmfrecord->Parameters[1], cstruct);
-  bottom = fNormY(wmfrecord->Parameters[2], cstruct);
-  left   = fNormX(wmfrecord->Parameters[3], cstruct);
+  top    = i2f_NormY(wmfrecord->Parameters[0], cstruct);
+  right  = i2f_NormX(wmfrecord->Parameters[1], cstruct);
+  bottom = i2f_NormY(wmfrecord->Parameters[2], cstruct);
+  left   = i2f_NormX(wmfrecord->Parameters[3], cstruct);
 
   if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
     ellipse->radiuses.x = round((right - left) / 2);
@@ -932,12 +1032,109 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 }
 
 void xf_draw_round_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
-	{
-    int color;
-	int flag;
+{
+  F_point *points;
+  F_line *line;
+  int c1, c2, c3, np, i;
+  int x1, y1, x2, y2;
+  
+  /* Allocation */
+  line=(F_line *)malloc(sizeof(F_line));
+  
+  /* Default values (invisible rounded rectangle) */
+  line->type=T_ARC_BOX;
+  line->style=SOLID_LINE;
+  line->thickness=0;
+  line->pen_color=BLACK;
+  line->fill_color=WHITE;
+  line->depth=cstruct->depth--;
+  line->pen_style=0;
+  line->fill_style=-1; /* not filled */
+  line->style_val=0.0; 
+  line->join_style=JOIN_MITER;
+  line->cap_style=CAP_BUTT;
+  line->radius=0;      
+  line->for_arrow=NULL; 
+  line->back_arrow=NULL; 
+    
 
-	printf("xf_draw_round_rectangle ?\n");
-	}
+
+  /* Set the fill color and the fill mode */
+  if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL)){
+    c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+    c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+    line->fill_color=xf_find_color(c1, c2, c3);
+
+    /* The fill style/pattern should be computed somewhere... */
+    line->fill_style = setbrushstyle(cstruct,cstruct->dc->brush);
+/*     line->fill_style=20; */
+  }
+    
+
+  /* Set the pen color, style, and thickness, and the line style */
+  if (cstruct->dc->pen->lopnStyle != PS_NULL){
+    c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+    c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
+    line->pen_color=xf_find_color(c1,c2,c3);
+
+    /* Unused by xfig */
+    line->pen_style=0;
+
+    /* How to compute thickness ??? */
+    /* line->thickness=cstruct->dc->pen->lopnWidth; gives too large thicknesses */
+    line->thickness=1;
+
+    /* Line style */
+    line->style=setlinestyle(cstruct, line->thickness, &(line->style_val),&(line->cap_style),&(line->join_style),cstruct->dc->pen);    
+  }
+
+  
+
+
+  /* Computation of the points */
+  np=5;
+  
+  line->points=(F_point *) malloc(np*sizeof(F_point));
+
+  if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
+      x1=i2i_NormX(wmfrecord->Parameters[5],cstruct);
+      y1=i2i_NormY(wmfrecord->Parameters[4],cstruct);
+      x2=i2i_NormX(wmfrecord->Parameters[3],cstruct);
+      y2=i2i_NormY(wmfrecord->Parameters[2],cstruct);
+  }
+  else{
+    /* cstruct->dc->pen->lopnWidth/2.0 replaced by line->thickness. Is it correct ? */
+    x1=i2i_NormX(wmfrecord->Parameters[5]+line->thickness,cstruct);
+    y1=i2i_NormY(wmfrecord->Parameters[4]+line->thickness,cstruct);
+    x2=i2i_NormX(wmfrecord->Parameters[3]-line->thickness,cstruct);
+    y2=i2i_NormY(wmfrecord->Parameters[2]-line->thickness,cstruct);
+  }
+
+  line->points[0].x=line->points[3].x=line->points[4].x=x1;
+  line->points[0].y=line->points[1].y=line->points[4].y=y1;
+  line->points[1].x=line->points[2].x=x2;
+  line->points[2].y=line->points[3].y=y2;
+
+  for (i=0; i<np; i++){
+    if (i<np-1)
+      line->points[i].next=&(line->points[i+1]);
+    else
+      line->points[i].next=NULL;
+  }
+
+  /* Computation of the radius */
+  /* In the fig format, we just set the radius. Hence a rough
+     approximation. */
+  line->radius = round(( i2f_ScaleX(wmfrecord->Parameters[1],cstruct)
+			+i2f_ScaleY(wmfrecord->Parameters[2],cstruct)
+			)/2.0);
+	
+  xf_addpolyline(line); 
+
+  printf("xf_draw_round_rectangle ?\n");
+}
 
 void xf_draw_rectangle2(CSTRUCT *cstruct,U16 x,U16 y, U16 width, U16 height)
 	{
@@ -969,7 +1166,6 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
   F_point *points;
   F_line *line;
-  FILE *fl;
   int c1, c2, c3, np, i;
   int x1, y1, x2, y2;
   
@@ -1002,8 +1198,8 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     line->fill_color=xf_find_color(c1, c2, c3);
 
     /* The fill style/pattern should be computed somewhere... */
-    /*line->fill_style = setbrushstyle(cstruct,color,cstruct->dc->brush); */
-    line->fill_style=20;
+    line->fill_style = setbrushstyle(cstruct,cstruct->dc->brush); 
+/*     line->fill_style=20; */
   }
     
 
@@ -1032,17 +1228,17 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->points=(F_point *) malloc(np*sizeof(F_point));
 
   if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
-      x1=NormX(wmfrecord->Parameters[3],cstruct);
-      y1=NormY(wmfrecord->Parameters[2],cstruct);
-      x2=NormX(wmfrecord->Parameters[1],cstruct);
-      y2=NormY(wmfrecord->Parameters[0],cstruct);
+      x1=i2i_NormX(wmfrecord->Parameters[3],cstruct);
+      y1=i2i_NormY(wmfrecord->Parameters[2],cstruct);
+      x2=i2i_NormX(wmfrecord->Parameters[1],cstruct);
+      y2=i2i_NormY(wmfrecord->Parameters[0],cstruct);
   }
   else{
     /* cstruct->dc->pen->lopnWidth/2.0 replaced by line->thickness. Is it correct ? */
-    x1=iNormX(wmfrecord->Parameters[3]+line->thickness,cstruct);
-    y1=iNormY(wmfrecord->Parameters[2]+line->thickness,cstruct);
-    x2=iNormX(wmfrecord->Parameters[1]-line->thickness,cstruct);
-    y2=iNormY(wmfrecord->Parameters[0]-line->thickness,cstruct);
+    x1=i2i_NormX(wmfrecord->Parameters[3]+line->thickness,cstruct);
+    y1=i2i_NormY(wmfrecord->Parameters[2]+line->thickness,cstruct);
+    x2=i2i_NormX(wmfrecord->Parameters[1]-line->thickness,cstruct);
+    y2=i2i_NormY(wmfrecord->Parameters[0]-line->thickness,cstruct);
   }
 
   line->points[0].x=line->points[3].x=line->points[4].x=x1;
@@ -1061,6 +1257,23 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 /*   if ((line->fill_style==-1)&(line->thickness==0)) */
 /*     fprintf(stderr,"xf_draw_rectangle: invisible rectangle !!!\n"); */
 
+/*   fprintf(stderr,"Rectangle: (%d,%d)*(%d,%d) from (%d,%d)*(%d,%d) by %f,%f in %f,%f\n", */
+/* 	  line->points[0].x, line->points[0].y,  */
+/* 	  line->points[2].x, line->points[2].y, */
+/* 	  wmfrecord->Parameters[3],wmfrecord->Parameters[2], */
+/* 	  wmfrecord->Parameters[1],wmfrecord->Parameters[0], */
+/* 	  cstruct->xpixeling,cstruct->ypixeling, */
+/* 	  cstruct->realwidth,cstruct->realheight */
+/* 	  ); */
+
+
+  /* If required by the user, the white rectangle underlying all the
+     figure is not translated. */
+  if ((line->thickness==0)&&(line->fill_color==WHITE)&&(pruneframe()))
+    if (((line->points[2].x-line->points[0].x)==(round(cstruct->realwidth))) &&
+	((line->points[2].y-line->points[0].y)==(round(cstruct->realheight))))
+      return;
+	
   xf_addpolyline(line); 
 }
 
@@ -1068,15 +1281,75 @@ void xf_finish(CSTRUCT *cstruct)
 	{
 	}
 
-int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brushin)
-	{
-	  printf("setbrushstyle\n");
+int setbrushstyle(CSTRUCT *cstruct,LOGBRUSH *brush)
+{
+  int fill_style=-1; /*Not filled*/
+  Pixmap pixmap;
+/*   XpmAttributes attributes; */
+/*   XColor acolor; */
+/*   XGCValues values; */
 
-	return(0);
+
+/*   printf("setbrushstyle: correct ?\n"); */
+  wmfdebug(stderr,"setting fill style %d\n",brush->lbStyle);
+
+  if (brush->lbStyle == BS_NULL)
+    return fill_style;
+
+ 
+  switch(brush->lbStyle)
+    {
+    case BS_NULL:
+      fill_style=-1;
+      break;
+    case BS_SOLID:
+      fill_style=20;
+      break;
+    case BS_HATCHED:
+      switch(brush->lbHatch)
+	{
+	case HS_HORIZONTAL:
+	  fill_style = 49;
+	  break;
+	case HS_VERTICAL:
+	  fill_style = 50;
+	  break;
+	case HS_FDIAGONAL:
+	  fill_style = 45;
+	  break;
+	case HS_BDIAGONAL:
+	  fill_style = 44;
+	  break;
+	case HS_CROSS:
+	  fill_style = 51;
+	  break;
+	case HS_DIAGCROSS:
+	  fill_style = 46;
+	default:
+	  fill_style = 20;
+	  fprintf(stderr,"Unsupported Hatching: %d\n",brush->lbHatch);
+	  break;
 	}
+      break;
+    case BS_DIBPATTERN:
+      if (brush->pointer == NULL)
+	{
+	  fill_style = -1;
+	  fprintf(stderr,"How to tile with an unexisting DIB ?.\n");
+	}
+      else
+	{
+	  fill_style = -1;
+	  fprintf(stderr,"How to tile with a DIB ?.\n");
+	}
+    }
+
+  return fill_style;
+}
+
 
 int setlinestyle(CSTRUCT *cstruct, int thickness, float *style_val, int * cap_style, int * join_style, LOGPEN *pen){
-  printf("setlinestyle\n");
+/*   printf("setlinestyle\n"); */
   /* almost exhaustive... are ROP2 relevant ? */
 
   if (cap_style!=NULL)
@@ -1255,8 +1528,8 @@ wmfdebug(stderr,"setting clip rects, no is %d\n",rgn->numRects);
                         }
         for(p_r = p_rect; pRect < pEndRect; pRect++, p_r++)
                 {
-            p_r->x = NormX(pRect->left,cstruct);
-            p_r->y = NormY(pRect->top,cstruct);
+            p_r->x = i2i_NormX(pRect->left,cstruct);
+            p_r->y = i2i_NormY(pRect->top,cstruct);
             p_r->width = ScaleX(pRect->right - pRect->left,cstruct);
             p_r->height = ScaleY(pRect->bottom - pRect->top,cstruct);
 
@@ -1293,7 +1566,7 @@ void xf_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U
   /*   line->distrib=; */
   line->type=T_PICTURE;
   line->style=SOLID_LINE;
-  line->thickness=0;
+  line->thickness=0; 
   line->pen_color=BLACK;
   line->fill_color=WHITE;
   line->fill_style=-1;
@@ -1311,21 +1584,25 @@ void xf_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U
   line->next=NULL;
 
   line->points=(F_point *) malloc((5)*sizeof(F_point));
-  line->points[0].x=NormX(dest_x,cstruct);
-  line->points[0].y=NormY(dest_y,cstruct);
+  line->points[0].x=i2i_NormX(dest_x,cstruct);
+  line->points[0].y=i2i_NormY(dest_y,cstruct);
   line->points[0].next=&(line->points[1]); 
-  line->points[1].x=NormX(dest_x,cstruct)+dest_w;
-  line->points[1].y=NormY(dest_y,cstruct);
+  line->points[1].x=i2i_NormX(dest_x,cstruct)+dest_w;
+  line->points[1].y=i2i_NormY(dest_y,cstruct);
   line->points[1].next=&(line->points[2]); 
-  line->points[2].x=NormX(dest_x,cstruct)+dest_w;
-  line->points[2].y=NormY(dest_y,cstruct)+dest_h;
+  line->points[2].x=i2i_NormX(dest_x,cstruct)+dest_w;
+  line->points[2].y=i2i_NormY(dest_y,cstruct)+dest_h;
   line->points[2].next=&(line->points[3]); 
-  line->points[3].x=NormX(dest_x,cstruct);
-  line->points[3].y=NormY(dest_y,cstruct)+dest_h;
+  line->points[3].x=i2i_NormX(dest_x,cstruct);
+  line->points[3].y=i2i_NormY(dest_y,cstruct)+dest_h;
   line->points[3].next=&(line->points[4]); 
-  line->points[4].x=NormX(dest_x,cstruct);
-  line->points[4].y=NormY(dest_y,cstruct);
+  line->points[4].x=i2i_NormX(dest_x,cstruct);
+  line->points[4].y=i2i_NormY(dest_y,cstruct);
   line->points[4].next=NULL;
+
+/*   fprintf(stderr,"XPM: (%d,%d)*(%d,%d)\n", */
+/* 	  line->points[0].x, line->points[0].y,  */
+/* 	  line->points[2].x, line->points[2].y); */
 
   xf_addpolyline(line);
 }
