@@ -12,6 +12,7 @@ int main(int argc,char **argv)
 	char *in = argv[1];
 	HMETAFILE file;
 	int check;
+	int scale_BMP;
 	Display *display;
 	Pixmap mydraw;
 	CSTRUCT rstruct;
@@ -19,7 +20,20 @@ int main(int argc,char **argv)
 	XEvent ourevent;
 	XSetWindowAttributes attrib;
 	XStruct xstruct;
-	
+
+	if ((argc < 2) || (argc > 3)) {
+		fprintf(stderr, "Usage: xwmf file.wmf [scale-bmp]\n");
+	}
+
+	if (argc = 3) {
+		if (strcmp(argv[2],"scale-bmp") == 0) 
+			scale_BMP = 1;
+		else
+			scale_BMP = 0;
+		}
+	else
+			scale_BMP = 0;
+
 	display = XOpenDisplay(NULL);
 
 	if (display == NULL)
@@ -55,7 +69,7 @@ int main(int argc,char **argv)
 
 
 	cstruct->preparse = 1;
-	PlayMetaFile((void *)cstruct,file,1,NULL);
+	PlayMetaFile((void *)cstruct,file,scale_BMP,NULL);
 
  	mydraw = XCreatePixmap(display, DefaultRootWindow(display), cstruct->realwidth, cstruct->realheight,DefaultDepth(display,DefaultScreen(display)));
 	attrib.event_mask = ExposureMask|KeyPressMask;
@@ -77,7 +91,7 @@ int main(int argc,char **argv)
 		XNextEvent(display,&ourevent);
 		if (ourevent.type == Expose)
 			{
-			PlayMetaFile((void *)cstruct,file,1,NULL);
+			PlayMetaFile((void *)cstruct,file,scale_BMP,NULL);
 			}
 		else if (ourevent.type==4)
 			break;
@@ -87,7 +101,7 @@ int main(int argc,char **argv)
 		{
 		XNextEvent(display,&ourevent);
 		if (ourevent.type == Expose && !ourevent.xexpose.count)
-			PlayMetaFile((void *)cstruct,file,1,NULL);
+			PlayMetaFile((void *)cstruct,file,scale_BMP,NULL);
 		else if(ourevent.type == KeyPress)
 			{
 			char str[256];
