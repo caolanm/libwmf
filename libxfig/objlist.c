@@ -7,11 +7,19 @@
 #include "resources.h"
 #include "object.h"
 
+/*
+Here the xf_add* routines are defined,
+which are called from libwmf/xfwmfapi.c.
+They each add an xfig object into a linked list,
+which xf_objlist_tofile then all outputs.
+
+*/
+
 typedef struct xf_object
 {
-  int code;
-  void *point;
-  struct xf_object *next;
+  int code;			/* Code of the object */
+  void *point;			/* Pointer to object  */
+  struct xf_object *next;	/* Pointer to successor */
 } Xfig_object;
 
 Xfig_object *head;
@@ -24,6 +32,10 @@ void xf_objlist_init(void)
 }
 
 void xf_objlist_add(int code, void *point)
+/* 
+Builds linked list of objects. Object pointers are void
+to allow generic handling of all types. 
+*/
 {
   if (head==NULL)
     {
@@ -64,8 +76,18 @@ void xf_addspline(F_spline *sppoint)
   xf_objlist_add(O_SPLINE, (void *)sppoint);
 }
 
+void xf_addtext(F_text *txtpoint)
+{
+  xf_objlist_add(O_TEXT, (void *)txtpoint);
+}
+
+
 void xf_objlist_tofile(FILE *fl)
 {
+/*
+Output routine. Here the xf_write_* routines in
+fileops.c are called.
+*/
   Xfig_object *trv;
 
   trv=head;
@@ -85,6 +107,10 @@ void xf_objlist_tofile(FILE *fl)
 	  break;
 	case O_SPLINE:
 	  xf_write_spline(fl, (F_spline *)(trv->point));
+	  break;
+	case O_TEXT:
+	  /* I am sure something rotten is happening here with pointers */
+	  xf_write_text(fl, (F_text *)(trv->point));
 	  break;
 	default:
 	  fprintf(stderr," unhandled type %d\n", trv->code);

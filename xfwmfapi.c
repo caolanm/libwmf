@@ -167,8 +167,50 @@ void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
 void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
 {
-  printf("xf_draw_text\n");
+  /* This is ALMOST right... somebody look into finishing this */
+
+  int color,flag;
+  int c1, c2, c3;
+  F_text *text;
+  int dx, dy;
+	
+  text=(F_text *)malloc(sizeof(F_text));
+
+  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+  color=xf_find_color(c1, c2, c3);
+
+ /* flag=setlinestyle(cstruct,0,cstruct->dc->pen); */
+
+ /* printf("%f", arect->right); segfaults */
+/*
+  dx = arect->right - arect->left;
+  dy = arect->top   - arect->bottom; / * these segfault too * /
+*/
+
+  text->ascent = xf_mm_width(cstruct);
+  text->length = xf_mm_height(cstruct);
+  text->base_x = (int) x;
+  text->base_y = (int) y;
+  
+  /* Fill out defaults for F_text */
+  text->type=T_LEFT_JUSTIFIED;
+  text->font=0;   /* default */
+  text->size=12;
+  text->color=color;
+  text->depth=100;
+  text->pen_style=0;
+  text->angle=0.00;
+  text->flags=flags;
+  text->cstring = str; /* ? getting junk... */
+
+  /* defined in libxfig/objlist.c */
+  xf_addtext(text);
+
+  printf("xf_draw_text called\n");
 }
+
 /*
 void xf_draw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpdx)
 */
@@ -220,7 +262,6 @@ void xf_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,U16
 
 		if (fontfile == NULL)
 			return;
-
 		color = xfImageColorResolve(((XFStruct *)(cstruct->userdata))->im_out, (cstruct->dc->textcolor[0]& 0x00FF), ((cstruct->dc->textcolor[0]& 0xFF00)>>8), (cstruct->dc->textcolor[1]& 0x00FF));
 
 		wmfdebug(stderr,"Escapement is %d\n",cstruct->dc->font->lfEscapement/10);
