@@ -204,7 +204,7 @@ void xf_write_text(FILE *fl, F_text *text)
 */
    fprintf(fl, "%d %d m\n" , \
 	text->base_x, text->base_y);
-   fprintf(fl, "gs 1 -1 sc %f rot ", 57.297 * text->angle);
+   fprintf(fl, "gs 1 -1 sc %f rot ", 180 * text->angle / M_PI);
    fprintf(fl, "(");
    for (i = 0; i<strlen(text->cstring);i++)
      {

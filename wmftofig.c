@@ -40,6 +40,7 @@ int main(int argc,char **argv)
       file = GetPlaceableMetaFile(in);
       if (file != NULL)
 	wmffunctions->set_pmf_size(cstruct,file);
+      fprintf(stderr, "We have a PLACEABLE metafile here ;-)\n");
     }
   else
     file = GetMetaFile(in);

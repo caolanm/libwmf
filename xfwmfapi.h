@@ -8,6 +8,13 @@ typedef struct _xf_Struct
   int last_color_used;
 } XFStruct;
 
+typedef struct _rect_struct
+{
+/* Compared to XRectangle, use long just in case. */
+long x, y;
+unsigned long width, height;
+} xf_Rectangle;
+
 typedef struct _clip_Struct
 {
 int *rects;

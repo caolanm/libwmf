@@ -81,12 +81,14 @@ void *xf_initial_userdata(CSTRUCT *cstruct)
     temp = (clip_Struct *)malloc(sizeof(clip_Struct));
     temp->norect = 0;
 	temp->rects = NULL;
+    printf("xf_initial_userdata ?\n");
     return(temp);
 	}
 
 void xf_restoreUserData(CSTRUCT *cstruct,DC *new)
 	{
 	int i;
+    printf("xf_restore_userdata ?\n");
 
 	}
 
@@ -94,6 +96,7 @@ void xf_copyUserData(CSTRUCT *cstruct,DC *old,DC *new)
     {
 	int i;
     clip_Struct *temp;
+    printf("xf_copy_userdata ?\n");
 
     }
 
@@ -146,8 +149,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   text->color=xf_find_color(c1, c2, c3);
 
   text->descent = 0;
-  text->length =  cstruct->realwidth;
-  text->ascent =  cstruct->realheight;
+
+  text->length =  cstruct->xpixeling * cstruct->realwidth;
+  text->ascent =  cstruct->ypixeling * cstruct->realheight;
+
   wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
   height = text->descent + text->ascent;
 
@@ -191,7 +196,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   text->base_x = x;
   text->base_y = y;
 
-  text->angle = 2 * 3.1415 * cstruct->dc->font->lfOrientation / 10000; 
+  text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000; 
 
 /*
 printf("ht%d\n", cstruct->dc->font->lfHeight);
@@ -226,7 +231,10 @@ printf("charset = %d\n", cstruct->dc->font->lfCharSet);
   The use of lfHeight to make big parentheses explains btw
   why MS Word formulas look so ugly compared to LaTeX.
   */
-  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20;
+
+
+//  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20;
+  text->size = cstruct->dc->font->lfHeight / (20 * cstruct->ypixeling);
   text->depth=100;
   text->pen_style=0;
   
@@ -235,7 +243,7 @@ printf("charset = %d\n", cstruct->dc->font->lfCharSet);
 
   /* defined in libxfig/objlist.c */
   xf_addtext(text);
-printf("addtext: %s\n", text->cstring);
+  printf("xf_addtext: %s\n", text->cstring);
 }
 
 /*
@@ -977,6 +985,7 @@ void xf_setpenstyle(CSTRUCT *cstruct,LOGPEN *pen,DC *currentDC)
 
 void xf_clip_rect(CSTRUCT *cstruct)
 	{
+	xf_Rectangle *p_rect, *p_r;
 	/*needed, but not implemented*/
     WINEREGION *rgn = cstruct->dc->hClipRgn;
     RECT *pRect,*pEndRect;
@@ -984,15 +993,55 @@ void xf_clip_rect(CSTRUCT *cstruct)
 	int i;
     clip_Struct *temp;
 
-    printf("xf_clip_rect\n");
+wmfdebug(stderr,"setting clip rects, no is %d\n",rgn->numRects);
+fprintf(stderr,"setting clip rects, no is %d\n",rgn->numRects);
 
+        if (!rgn)
+                {
+                fprintf(stderr,"clipping error\n");
+                return;
+                }
+        if (rgn->numRects > 0)
+        {
+        pRect = rgn->rects;
+        pEndRect = rgn->rects + rgn->numRects;
 
+        p_rect = (xf_Rectangle *)malloc(sizeof(xf_Rectangle) * rgn->numRects );
+                if(!p_rect)
+                        {
+                        fprintf(stderr, "Can't alloc buffer\n");
+                        return;
+                        }
+        for(p_r = p_rect; pRect < pEndRect; pRect++, p_r++)
+                {
+            p_r->x = NormX(pRect->left,cstruct);
+            p_r->y = NormY(pRect->top,cstruct);
+            p_r->width = ScaleX(pRect->right - pRect->left,cstruct);
+            p_r->height = ScaleY(pRect->bottom - pRect->top,cstruct);
 
+                        wmfdebug(stderr,"clipping rect set to +%d+%d %dx%d\n",
+                        p_r->x,p_r->y,p_r->x+p_r->width,p_r->y+p_r->height);
+                        fprintf(stderr,"clipping rect set to +%d+%d %dx%d\n",
+                        p_r->x,p_r->y,p_r->x+p_r->width,p_r->y+p_r->height);
+                }
+        }
+    else
+        p_rect = NULL;
+
+/* Hmmm... std X function. 
+        XSetClipRectangles(((XStruct *)(cstruct->userdata))->display,(GC)cstruct->dc->userdata,0,0,pXrect,rgn->numRects,YXBanded);
+        XFlush(((XStruct *)(cstruct->userdata))->display);
+*/
+        if (p_rect)
+                free(p_rect);
+
+        printf("xf_clip_rect INCOMPLETE\n");
 	}
 
 void xf_no_clip_rect(CSTRUCT *cstruct)
 	{
 	/*needed, but not implemented*/
+    printf("xf_no_clip_rect NOT IMPL\n");
 	}
 
 
