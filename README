@@ -1,10 +1,11 @@
 ABOUT
 =====
 libwmf's homepage is
-http://www.csn.ul.ie/~caolan/docs/libwmf.html
+http://wvware.sourceforge.net/libwmf.html
 
 and my email for bugs and whatnot is
-Caolan.McNamara@ul.ie
+
+martin.vermeer@hut.fi
 
 libwmf is a library for unix like machines that can convert wmf
 files into other formats, currently it supports a gd binding
