@@ -537,7 +537,7 @@ int i;
         for(i=0;i<im->clipping_no;i++)
             {
             if ((x < im->clipping_rects[0+(i*4)]) || (x > im->clipping_rects[2+(i*4)]) ||
-                (y > im->clipping_rects[1+(i*4)]) || (y < im->clipping_rects[3+(i*4)]))
+                (y < im->clipping_rects[1+(i*4)]) || (y > im->clipping_rects[3+(i*4)]))
                     {
 		    fprintf(stderr,"point refused %d %d\n", x, y);
                     if (x < im->clipping_rects[0+(i*4)])
@@ -545,9 +545,9 @@ int i;
 		    if (x > im->clipping_rects[2+(i*4)])
 			fprintf(stderr,"x > xright\n");
 		    if (y > im->clipping_rects[1+(i*4)])
-			fprintf(stderr,"y > ybottom\n");
-                    if (y < im->clipping_rects[3+(i*4)])
 			fprintf(stderr,"y < ytop\n");
+                    if (y > im->clipping_rects[3+(i*4)])
+			fprintf(stderr,"y > ybottom\n");
  
 		    fprintf(stderr,"+------%6d------+\n", 
 			im->clipping_rects[3+(i*4)]);
@@ -1361,8 +1361,8 @@ void gdImageFilledPolygon(gdImagePtr im, gdPointPtr p, int n, int c)
 		qsort(im->polyInts, ints, sizeof(int), gdCompareInt);
 
 		for (i=0; (i < (ints)); i+=2) {
-			gdImageLine(im, im->polyInts[i], y,
-				im->polyInts[i+1], y, c);
+		  gdImageLine(im, im->polyInts[i], y,
+			      im->polyInts[i+1], y, c);
 		}
 	}
 }

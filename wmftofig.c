@@ -120,7 +120,7 @@ int main(int argc,char **argv)
   cstruct->preparse = 1;
   PlayMetaFile((void *)cstruct, file, 0, NULL);
 
-  fprintf(stderr,"After preparse\n");
+/*   fprintf(stderr,"After preparse\n"); */
 
   cstruct->preparse = 0;
   PlayMetaFile((void *)cstruct, file, 0, argv[argc-1]);

@@ -182,12 +182,14 @@ void gd_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 /*
 void gd_draw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpdx)
 */
-void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
+/* void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y) */
+void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int x,int y)
 {
   int dummy;
   int size;
   int frombaseline=0;
   int ascent, descent, height, length, width;
+  int org_x=x, org_y=y;
   FILE *in;
   gdImagePtr im;
   char *fontfile = NULL;
@@ -240,61 +242,71 @@ void gd_draw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16
     }
   else
     {
-      x_width = i2f_ScaleX(cstruct->realwidth, cstruct);
-      y_width = i2f_ScaleY(cstruct->realwidth, cstruct);
+      /* In this case, we set the width to ``0'', which is equivalent
+         to set the text left-aligned, whatever the justification
+         wanted*/
+      x_width = 0;
+      y_width = 0;
     }
 
-
-
-  if (cstruct->dc->textalign & TA_UPDATECP)
-    {
-      x = currentx;
-      y = currenty;
-    } /* Is this right ??? */
+/*   if (cstruct->dc->textalign & TA_UPDATECP) */
+/*     { */
+/*       x = currentx; */
+/*       y = currenty; */
+/*     } */ /* Is this right ??? */
 
   switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
-      case TA_LEFT:
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-	    currentx = round(x + x_width*cosa - x_height*sina);
-	    currenty = round(y - y_width*sina - y_height*cosa);
-/* 	    currentx = x + length; */
-/* 	    currenty = y - height; */
-          }
-          break;
-      case TA_RIGHT:
-          x = round(x - x_width*cosa + x_height*sina);
-          y = round(y + y_width*sina + y_height*cosa);
-/*           x -= length; */
-/*           y += height; */
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-              currentx = x;
-              currenty = y;
-          }
-          break;
-      case TA_CENTER:
-          x = round(x - x_width*cosa/2.0 + x_height*sina/2.0);
-          y = round(y + y_width*sina/2.0 + y_height*cosa/2.0);
-/*           x -= length / 2; */
-/*           y += height / 2; */
-          break;
+    case TA_LEFT:
+      /* Nothing to do, this is the default case! */
+      break;
+    case TA_RIGHT:
+      x = round(x - x_width*cosa);
+      y = round(y + y_width*sina);
+      /*           x -= length; */
+      /*           y += height; */
+      break;
+    case TA_CENTER:
+      x = round(x - x_width*cosa/2.0);
+      y = round(y + y_width*sina/2.0);
+      /*           x -= length / 2; */
+      /*           y += height / 2; */
+      break;
+    default:
+      fprintf(stderr,"gd_draw_text: unknown justification: %d\n",
+	      cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER));
     }
 
   switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
-      case TA_TOP:
-	  x +=  round(x_height*sina); 
-          y +=  round(y_height*cosa);
-/*           x -=  0; */
-/*           y +=  ascent; */
-          break;
-      case TA_BOTTOM:
-/*           x += 0; */
-/*           y -= descent; */
-          break;
-      case TA_BASELINE:
-          break;
+    case TA_TOP:
+      x +=  round(x_height*sina); 
+      y +=  round(y_height*cosa);
+      /*           x -=  0; */
+      /*           y +=  ascent; */
+      break;
+    case TA_BOTTOM:
+      /* Nothing to do: this is the default case */
+      break;
+    case TA_BASELINE:
+      break;
+    default:
+      fprintf(stderr,"gd_draw_text: unknown ``vertical'' positionning: %d\n",
+	      cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE));
     }
+  
+/*   fprintf(stderr,"(%d,%d) |-> (%d,%d)\t Align: %d\t%s\n",org_x,org_y,x,y,cstruct->dc->textalign,str);  */
+
+
+  /* The starting point (x,y) can change, but the relative
+     position of the starting and ending points deos not change
+     !*/
+  if (cstruct->dc->textalign & TA_UPDATECP) {
+    currentx = round(x + x_width*cosa - x_height*sina);
+    currenty = round(y - y_width*sina - y_height*cosa);
+  }
+
+
 
         /* 
 	Semi-empirical factor. I suspect this is 72/100, where 72 is
@@ -692,6 +704,7 @@ void gd_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	int i;
 	int color,flag;
 	
+
 	points = (gdPoint*) malloc((wmfrecord->Parameters[0])*sizeof(gdPoint));
 	for(i=1;i<wmfrecord->Parameters[0]+1;i++)
 		{
@@ -699,6 +712,7 @@ void gd_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 		points[i-1].y = NormY(wmfrecord->Parameters[i*2],cstruct);
 		wmfdebug(stderr,"origpoints-> %d %d\n",points[i-1].x,points[i-1].y);
 		}
+
 		
 	if (cstruct->dc->brush->lbStyle != BS_NULL)
 		{
@@ -1118,9 +1132,21 @@ void gd_invert_rectangle2(CSTRUCT *cstruct,U16 x,U16 y,U16 width,U16 height)
 
 
 void gd_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
-	{
-    int color;
-	int flag;
+{
+  int color;
+  int flag;
+  
+/*   fprintf(stderr,"Rectangle: (%d,%d)+(%d,%d) from (%d,%d)*(%d,%d) by %f,%f in %f,%f\n", */
+/* 	  NormX(wmfrecord->Parameters[3],cstruct),  */
+/* 	  NormY(wmfrecord->Parameters[2],cstruct), */
+/* 	  NormX(wmfrecord->Parameters[1],cstruct), */
+/* 	  NormY(wmfrecord->Parameters[0],cstruct), */
+/* 	  wmfrecord->Parameters[3],wmfrecord->Parameters[2], */
+/* 	  wmfrecord->Parameters[1],wmfrecord->Parameters[0], */
+/* 	  cstruct->xpixeling,cstruct->ypixeling, */
+/* 	  cstruct->realwidth,cstruct->realheight */
+/* 	  ); */
+  
 
 	if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL))
 		{
@@ -1369,81 +1395,96 @@ void gd_setpenstyle(CSTRUCT *cstruct,LOGPEN *pen,DC *currentDC)
 	}
 
 void gd_clip_rect(CSTRUCT *cstruct)
+{
+  /*needed, but not implemented*/
+  WINEREGION *rgn = cstruct->dc->hClipRgn;
+  RECT *pRect,*pEndRect;
+  FILE *out;
+  int i;
+  clip_Struct *temp;
+
+  fprintf(stderr,"clipping\n");
+  
+  if (!rgn)
+    {
+      wmfdebug(stderr,"clipping error\n");
+      return;
+    }
+
+  if ( ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects != NULL)
+    {
+      free(((GDStruct *)(cstruct->userdata))->im_out->clipping_rects);
+      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects=NULL;
+      ((GDStruct *)(cstruct->userdata))->im_out->clipping_no=0;
+    }
+
+  wmfdebug(stderr,"setting clip rects, no is %d\n",rgn->numRects);
+  
+  if (rgn->numRects > 0)
+    {
+      ((GDStruct *)(cstruct->userdata))->im_out->clipping_no = rgn->numRects;
+      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects = (int *)malloc(sizeof(int) * 4 * rgn->numRects);
+      pRect = rgn->rects;
+
+      
+      for(i = 0; i < rgn->numRects ; i++,pRect++)
 	{
-	/*needed, but not implemented*/
-    WINEREGION *rgn = cstruct->dc->hClipRgn;
-    RECT *pRect,*pEndRect;
-	FILE *out;
-	int i;
-    clip_Struct *temp;
 
-	fprintf(stderr,"clipping\n");
+	  /* As clip rectangles are not all stored correctly, we check... */
+	  if (NormX(pRect->left,cstruct)<=NormX(pRect->right,cstruct))
+	    {
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[0+(i*4)] = NormX(pRect->left,cstruct);
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[2+(i*4)] = NormX(pRect->right,cstruct);
+	    }
+	  else
+	    {
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[0+(i*4)] = NormX(pRect->right,cstruct);
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[2+(i*4)] = NormX(pRect->left,cstruct);
+	    }
 
-    if (!rgn)
-        {
-        wmfdebug(stderr,"clipping error\n");
-        return;
-        }
-
-	if ( ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects != NULL)
-		{
-		free(((GDStruct *)(cstruct->userdata))->im_out->clipping_rects);
-		((GDStruct *)(cstruct->userdata))->im_out->clipping_rects=NULL;
-		((GDStruct *)(cstruct->userdata))->im_out->clipping_no=0;
-		}
-
-	wmfdebug(stderr,"setting clip rects, no is %d\n",rgn->numRects);
-
-    if (rgn->numRects > 0)
-        {
-		((GDStruct *)(cstruct->userdata))->im_out->clipping_no = rgn->numRects;
-		((GDStruct *)(cstruct->userdata))->im_out->clipping_rects = (int *)malloc(sizeof(int) * 4 * rgn->numRects);
-		pRect = rgn->rects;
-		
-        for(i = 0; i < rgn->numRects ; i++,pRect++)
-            {
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[0+(i*4)] = NormX(pRect->left,cstruct);
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[1+(i*4)] = NormY(pRect->top,cstruct);
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[2+(i*4)] = /*NormX(pRect->left,cstruct) + ScaleX(pRect->right-pRect->left,cstruct)*/NormX(pRect->right,cstruct);
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[3+(i*4)] = /*NormY(pRect->top,cstruct) + ScaleY(pRect->bottom-pRect->top,cstruct)*/NormY(pRect->bottom,cstruct);
-			wmfdebug(stderr,"clipping rect set to %d %d %d %d\n",NormX(pRect->left,cstruct),
-			NormY(pRect->top,cstruct),
-			NormX(pRect->right,cstruct),
-			NormY(pRect->bottom,cstruct));
-
-			#if 0
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[0+(i*4)] = 100;
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[1+(i*4)] = -10000;
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[2+(i*4)] = +10000;
-            ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[3+(i*4)] = +10000;
-			#endif
-            }
-        }
-
-    if ((clip_Struct *)cstruct->dc->userdata)
-		{
-    	if (((clip_Struct *)cstruct->dc->userdata)->norect)
-			free(((clip_Struct *)cstruct->dc->userdata)->rects);
-		}
-
-    temp = (clip_Struct *)malloc(sizeof(clip_Struct));
-    temp->norect = ((GDStruct *)(cstruct->userdata))->im_out->clipping_no;
-    temp->rects = (int *)malloc(sizeof(int) * temp->norect *4);
-    for (i=0;i<temp->norect*4;i++)
-        temp->rects[i] = ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[i];
-    cstruct->dc->userdata = (void *)temp;
-		
-
-	out = fopen("output2.png", "wb");
-    if (out == NULL)
-        {
-        fprintf(stderr,"A problem, couldn't open for output\n");
-        return;
-        }
-    /* write png */
-    gdImagePng(((GDStruct *)(cstruct->userdata))->im_out, out);
-    fclose(out);
+	  if (NormY(pRect->top,cstruct)<=NormY(pRect->bottom,cstruct))
+	    {
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[1+(i*4)] = NormY(pRect->top,cstruct);
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[3+(i*4)] = NormY(pRect->bottom,cstruct);
+	    }
+	  else
+	    {
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[1+(i*4)] = NormY(pRect->bottom,cstruct);
+	      ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[3+(i*4)] = NormY(pRect->top,cstruct);
+	    }
+	  
+	  wmfdebug(stderr,"clipping rect set to %d %d %d %d\n",
+		   ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[0+(i*4)],
+		   ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[1+(i*4)],
+		   ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[2+(i*4)],
+		   ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[3+(i*4)]);
 	}
+    }
+
+  if ((clip_Struct *)cstruct->dc->userdata)
+    {
+      if (((clip_Struct *)cstruct->dc->userdata)->norect)
+	free(((clip_Struct *)cstruct->dc->userdata)->rects);
+    }
+  
+  temp = (clip_Struct *)malloc(sizeof(clip_Struct));
+  temp->norect = ((GDStruct *)(cstruct->userdata))->im_out->clipping_no;
+  temp->rects = (int *)malloc(sizeof(int) * temp->norect *4);
+  for (i=0;i<temp->norect*4;i++)
+    temp->rects[i] = ((GDStruct *)(cstruct->userdata))->im_out->clipping_rects[i];
+  cstruct->dc->userdata = (void *)temp;
+  
+
+  out = fopen("output2.png", "wb");
+  if (out == NULL)
+    {
+      fprintf(stderr,"A problem, couldn't open for output\n");
+      return;
+    }
+  /* write png */
+  gdImagePng(((GDStruct *)(cstruct->userdata))->im_out, out);
+  fclose(out);
+}
 
 void gd_no_clip_rect(CSTRUCT *cstruct)
 	{

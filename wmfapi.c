@@ -29,12 +29,12 @@ int ScaleX(S16 in,CSTRUCT *cstruct)
 	return( abs( round( in/cstruct->xpixeling)));
 	}
 
-int i2i_ScaleX(S16 in,CSTRUCT *cstruct)
+int i2i_ScaleX(int in,CSTRUCT *cstruct)
 	{
 	return( abs( round( in/cstruct->xpixeling)));
 	}
 
-float i2f_ScaleX(S16 in,CSTRUCT *cstruct)
+float i2f_ScaleX(int in,CSTRUCT *cstruct)
 	{
 	return( floatabs( in/cstruct->xpixeling ) );
 	}
@@ -54,12 +54,12 @@ int NormX(S16 in,CSTRUCT *cstruct)
 	return( abs( round( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg)));
 	}
 
-int i2i_NormX(S16 in,CSTRUCT *cstruct)
+int i2i_NormX(int in,CSTRUCT *cstruct)
 	{
 	return( abs( round( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg)));
 	}
 
-float i2f_NormX(S16 in,CSTRUCT *cstruct)
+float i2f_NormX(int in,CSTRUCT *cstruct)
 	{
 	return( floatabs( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg));
 	}
@@ -79,7 +79,7 @@ int ScaleY(S16 in,CSTRUCT *cstruct)
 	return( abs( round( in/cstruct->ypixeling)));
 	}
 
-int i2i_ScaleY(S16 in,CSTRUCT *cstruct)
+int i2i_ScaleY(int in,CSTRUCT *cstruct)
 	{
 	return( abs( round( in/cstruct->ypixeling)));
 	}
@@ -89,7 +89,7 @@ float f2f_ScaleY(float in, CSTRUCT *cstruct)
 	return( floatabs( in/cstruct->ypixeling ) );
 	}
 
-float i2f_ScaleY(S16 in, CSTRUCT *cstruct)
+float i2f_ScaleY(int in, CSTRUCT *cstruct)
 	{
 	return( floatabs( in/cstruct->ypixeling ) );
 	}
@@ -104,12 +104,12 @@ int NormY(S16 in,CSTRUCT *cstruct)
 	return( abs( round( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg)));
 	}
 
-int i2i_NormY(S16 in,CSTRUCT *cstruct)
+int i2i_NormY(int in,CSTRUCT *cstruct)
 	{
 	return( abs( round( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg)));
 	}
 
-float i2f_NormY(S16 in,CSTRUCT *cstruct)
+float i2f_NormY(int in,CSTRUCT *cstruct)
 	{
 	return( floatabs( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg));
 	}
@@ -1217,11 +1217,14 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 
 					str[wmfrecord.Parameters[0]] = '\0';
 					wmfdebug(stderr,"string is %s\n",str);
-
+					
+/* 					fprintf(stderr,"(%d,%d) |-> ", */
+/* 						wmfrecord.Parameters[wmfrecord.Size-4],  */
+/* 						wmfrecord.Parameters[wmfrecord.Size-5]); */
 					if (wmffunctions->draw_text)
 						wmffunctions->draw_text(cstruct,str,NULL,0,NULL,
-						NormX(wmfrecord.Parameters[wmfrecord.Size-4],cstruct),
-						NormY(wmfrecord.Parameters[wmfrecord.Size-5],cstruct));
+									NormX(wmfrecord.Parameters[wmfrecord.Size-4],cstruct),
+									NormY(wmfrecord.Parameters[wmfrecord.Size-5],cstruct));
 					
 					if (str!=NULL)
 						free(str);
@@ -1283,8 +1286,14 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file,int scale_BMP,char *prefix)
 					else
 						lpDx = NULL;
 
+/* 					fprintf(stderr,"(%d,%d) |-> ", */
+/* 						wmfrecord.Parameters[wmfrecord.Size-1],  */
+/* 						wmfrecord.Parameters[wmfrecord.Size-0]); */
+
 					if (wmffunctions->draw_text)
-						wmffunctions->draw_text(cstruct,str,arect,wmfrecord.Parameters[3],lpDx,NormX(wmfrecord.Parameters[1],cstruct),NormY(wmfrecord.Parameters[0],cstruct));
+						wmffunctions->draw_text(cstruct,str,arect,wmfrecord.Parameters[3],lpDx,
+									NormX(wmfrecord.Parameters[1],cstruct),
+									NormY(wmfrecord.Parameters[0],cstruct));
 					if (wmfrecord.Parameters[3] & 0x0004)
 						{
 						/*
@@ -1479,19 +1488,24 @@ recommended approach in today's font world.
 					if (wmffunctions->copyUserData)
 						wmffunctions->copyUserData(cstruct,pDC,currentDC);
 
-					currentDC->pen = pDC->pen;
+
 					currentDC->brush = pDC->brush;
+					currentDC->pen = pDC->pen;
 					currentDC->font = pDC->font;
-					currentDC->polyfillmode = ALTERNATE;
+					currentDC->key = 0; /*seems unused...*/
+					currentDC->next = NULL;
 					currentDC->textcolor[0]=0;
 					currentDC->textcolor[1]=1;
-					currentDC->charextra = 0;
-					currentDC->breakextra = 0;
-					currentDC->bgmode = OPAQUE;
 					currentDC->bgcolor[0] = 65535;
 					currentDC->bgcolor[1] = 65535;
+					currentDC->textalign=0;
+					currentDC->bgmode = OPAQUE;
+					currentDC->polyfillmode = ALTERNATE;
+					currentDC->charextra = 0;
+					currentDC->breakextra = 0;
 					currentDC->ROPmode = R2_COPYPEN;
 					currentDC->hClipRgn = NULL;
+					currentDC->hVisRgn = NULL;
 					wmfdebug(stderr,"after pushing there are %d dcs\n",len_c_stk(&DCstack));
 					break;
 				case META_RESTOREDC:	/*not completed*/

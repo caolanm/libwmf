@@ -493,26 +493,26 @@ in the parameter array, y's precede x's
 
 
 int NormY(S16 in,CSTRUCT *cstruct);
-int   i2i_NormY(S16 in,CSTRUCT *cstruct);
-float i2f_NormY(S16 in,CSTRUCT *cstruct);
+int   i2i_NormY(int in,CSTRUCT *cstruct);
+float i2f_NormY(int in,CSTRUCT *cstruct);
 float f2f_NormY(float in,CSTRUCT *cstruct);
 int   f2i_iNormY(float in,CSTRUCT *cstruct);
 
 int ScaleY(S16 in,CSTRUCT *cstruct);
-int   i2i_ScaleY(S16 in,CSTRUCT *cstruct);
-float i2f_ScaleY(S16 in, CSTRUCT *cstruct);
+int   i2i_ScaleY(int in,CSTRUCT *cstruct);
+float i2f_ScaleY(int in, CSTRUCT *cstruct);
 float f2f_ScaleY(float in, CSTRUCT *cstruct);
 int   f2i_ScaleY(float in, CSTRUCT *cstruct);
 
 int NormX(S16 in,CSTRUCT *cstruct);
-int   i2i_NormX(S16 in,CSTRUCT *cstruct);
-float i2f_NormX(S16 in,CSTRUCT *cstruct);
+int   i2i_NormX(int in,CSTRUCT *cstruct);
+float i2f_NormX(int in,CSTRUCT *cstruct);
 float f2f_NormX(float in,CSTRUCT *cstruct);
 int   f2i_NormX(float in,CSTRUCT *cstruct);
 
 int ScaleX(S16 in,CSTRUCT *cstruct);
-int   i2i_ScaleX(S16 in,CSTRUCT *cstruct);
-float i2f_ScaleX(S16 in, CSTRUCT *cstruct);
+int   i2i_ScaleX(int in,CSTRUCT *cstruct);
+float i2f_ScaleX(int in, CSTRUCT *cstruct);
 float f2f_ScaleX(float in, CSTRUCT *cstruct);
 int   f2i_ScaleX(float in, CSTRUCT *cstruct);
 
@@ -568,7 +568,7 @@ typedef struct tag_wmf_functions
 	void (*draw_round_rectangle)(CSTRUCT *,WMFRECORD *);
 	void (*draw_line)(CSTRUCT*,WMFRECORD*);
 	void (*draw_polylines)(CSTRUCT *,WMFRECORD *);
-	void (*draw_text)(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y);
+	void (*draw_text)(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int x,int y);
 	void (*set_pixel)(CSTRUCT *,WMFRECORD *);
 	void (*flood_fill)(CSTRUCT *,WMFRECORD *);
 	void (*ext_flood_fill)(CSTRUCT *,WMFRECORD *);

@@ -26,7 +26,7 @@ void Xdraw_round_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
 void Xdraw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
 void Xdraw_rectangle2(CSTRUCT *cstruct,U16 x, U16 y, U16 width, U16 height,U32 dwROP);
 void Xdraw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
-void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y);
+void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int x,int y);
 void Xset_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
 void Xfill_opaque(CSTRUCT *cstruct,WMFRECORD *wmfrecord);
 void XparseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height);

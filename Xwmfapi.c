@@ -396,13 +396,25 @@ void Xclip_rect(CSTRUCT *cstruct)
 			}
         for(pXr = pXrect; pRect < pEndRect; pRect++, pXr++)
         	{
-            pXr->x = NormX(pRect->left,cstruct);
-            pXr->y = NormY(pRect->top,cstruct);
-            pXr->width = ScaleX(pRect->right - pRect->left,cstruct);
-            pXr->height = ScaleY(pRect->bottom - pRect->top,cstruct);
+		  /* As the clipping rects are not always stored in
+                     the right order, we test... */
+		  if (NormX(pRect->left,cstruct)<=NormX(pRect->right,cstruct))
+		    pXr->x = NormX(pRect->left,cstruct);
+		  else
+		    pXr->x = NormX(pRect->right,cstruct);
 
-			wmfdebug(stderr,"clipping rect set to %d %d %d %d\n",
-			pXr->x,pXr->y,pXr->x+pXr->width,pXr->y+pXr->height);
+		  if (NormY(pRect->top,cstruct)<=NormY(pRect->bottom,cstruct))
+		    pXr->y = NormY(pRect->top,cstruct);
+		  else
+		    pXr->y = NormY(pRect->bottom,cstruct);
+		  
+		  /* The "abs" are in case, one day we remove them from ScaleX... */
+		  pXr->width  = abs(ScaleX(pRect->right - pRect->left,cstruct));
+		  pXr->height = abs(ScaleY(pRect->bottom - pRect->top,cstruct));
+
+
+		  wmfdebug(stderr,"clipping rect set to %d %d %d %d\n",
+			   pXr->x,pXr->y,pXr->x+pXr->width,pXr->y+pXr->height);
         	}
     	}
     else
@@ -486,7 +498,7 @@ void Xdraw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	}
 
 /*void Xdraw_text(CSTRUCT *cstruct,char *str,WMFRECORD *wmfrecord,U16 *lpDx)*/
-void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
+void Xdraw_text(CSTRUCT *cstruct,char *str,RECT *arect,U16 flags,U16 *lpDx,int x,int y)
 	{
 	XCharStruct charstuff;
 	int dummy;
@@ -931,8 +943,21 @@ void Xdraw_rectangle2(CSTRUCT *cstruct,U16 x, U16 y, U16 width, U16 height,U32 d
 
 	
 void Xdraw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
-	{
-	XGCValues val,oldval;
+{
+  XGCValues val,oldval;
+
+/*   fprintf(stderr,"Rectangle: (%d,%d)+(%d,%d) from (%d,%d)*(%d,%d) by %f,%f in %f,%f\n", */
+/* 	  NormX(wmfrecord->Parameters[3],cstruct),  */
+/* 	  NormY(wmfrecord->Parameters[2],cstruct), */
+/* 	  NormX(wmfrecord->Parameters[1],cstruct), */
+/* 	  NormY(wmfrecord->Parameters[0],cstruct), */
+/* 	  wmfrecord->Parameters[3],wmfrecord->Parameters[2], */
+/* 	  wmfrecord->Parameters[1],wmfrecord->Parameters[0], */
+/* 	  cstruct->xpixeling,cstruct->ypixeling, */
+/* 	  cstruct->realwidth,cstruct->realheight */
+/* 	  ); */
+
+
 	if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL))
 		{
 		wmfdebug(stderr,"style is %d, code is %x %x %x %x\n",cstruct->dc->brush->lbStyle,wmfrecord->Parameters[0],wmfrecord->Parameters[1],wmfrecord->Parameters[2],wmfrecord->Parameters[3]);

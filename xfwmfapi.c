@@ -244,7 +244,8 @@ void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	/* printf("xf_set_pixel ?\n"); */
 	}
 
-void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y)
+void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,int x,int y)
+/* void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S16 x,S16 y) */
 {
   /* 
   The important CSTRUCT, DC, LOGFONTA are documented in wmfapi.h.
@@ -254,12 +255,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   F_text *text, *t;
   int width;
   int height, i;
+  int bold;
+  int org_x=x, org_y=y;
   char *facename;
   float sina, cosa;
   float x_width=0, y_width=0;
   float x_height, y_height;
-
-/*   fprintf(stderr,"X: %d, Y: %d\t%s ",x,y,str); */
 
   text=(F_text *)malloc(sizeof(F_text));
 
@@ -326,6 +327,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   if (strstr(facename, "Century Schoolbook")) text->font = NEWCENTURYSCHLBK_ROMAN; 
   if (strstr(facename, "Lucida Bright"))      text->font = PALATINO_ROMAN; 
   if (strstr(facename, "Times New Roman"))    text->font = TIMES_ROMAN; 
+  if (strstr(facename, "Times"))              text->font = TIMES_ROMAN; 
   if (strstr(facename, "Monotype Corsiva"))   text->font = ZAPFCHANCERY_MEDIUMITALIC; 
   if (strstr(facename, "Sym"))                text->font = SYMBOL_GREEK;
   if (strstr(facename, "Symbol"))             text->font = SYMBOL_GREEK; 
@@ -337,49 +339,57 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   if (cstruct->dc->font->lfItalic  == 1)
     if ((text->font%2==0)&&(0<=text->font)&&(text->font<=30))
       text->font += 1; 
-  
+
+
+  /* Checking whether the text should be in bold*/
+  bold = 0;
+  if (strstr(facename, "bold")) bold=1;
+  if (bold==0)
+    switch(cstruct->dc->font->lfWeight)
+      {
+      case 400:
+	/*normal*/
+	bold=0;
+	break;
+      case 700:
+	/*bold*/
+	bold=1;
+	break;
+      default:
+	fprintf(stderr,"Unknown font weight: %d\n",cstruct->dc->font->lfWeight);
+      }
+
   /* Switch the text to bold if necessary and if possible*/
-  switch(cstruct->dc->font->lfWeight)
-    {
-    case 400:
-      /*normal*/
-      text->font+=0;
-      break;
-    case 700:
-      /*bold*/
-      switch (text->font)
-	{
-	  /* Obvious cases*/
-	case TIMES_ROMAN:
-	case TIMES_ITALIC:
-	case COURIER:
-	case COURIER_OBLIQUE:
-	case HELVETICA:
-	case HELVETICA_OBLIQUE:
-	case HELVETICA_NARROW:
-	case HELVETICA_NARROW_OBLIQUE:
-	case NEWCENTURYSCHLBK_ROMAN:
-	case NEWCENTURYSCHLBK_ITALIC:
-	case PALATINO_ROMAN:
-	case PALATINO_ITALIC:
-	  text->font+=2;
-	  break;
+  if (bold)
+    switch (text->font)
+      {
+	/* Obvious cases*/
+      case TIMES_ROMAN:
+      case TIMES_ITALIC:
+      case COURIER:
+      case COURIER_OBLIQUE:
+      case HELVETICA:
+      case HELVETICA_OBLIQUE:
+      case HELVETICA_NARROW:
+      case HELVETICA_NARROW_OBLIQUE:
+      case NEWCENTURYSCHLBK_ROMAN:
+      case NEWCENTURYSCHLBK_ITALIC:
+      case PALATINO_ROMAN:
+      case PALATINO_ITALIC:
+	text->font+=2;
+	break;
 	  
-	  /* Questionable cases*/
-	case AVANTGARDE_BOOK:
-	case AVANTGARDE_BOOKOBLIQUE:
-	case BOOKMAN_LIGHT:
-	case BOOKMAN_LIGHTITALIC:
-	  text->font+=2;
-	  break;
-	default:
-	  fprintf(stderr,"Impossible to set text %s to bold: font not available.\n",str);
-	  /*font unchanged: no bold version available*/
-	}
-      break;
-    default:
-      fprintf(stderr,"Unknown font weight: %d\n",cstruct->dc->font->lfWeight);
-    }
+	/* Questionable cases*/
+      case AVANTGARDE_BOOK:
+      case AVANTGARDE_BOOKOBLIQUE:
+      case BOOKMAN_LIGHT:
+      case BOOKMAN_LIGHTITALIC:
+	text->font+=2;
+	break;
+      default:
+	fprintf(stderr,"Impossible to set text %s to bold: font not available.\n",str);
+	/*font unchanged: no bold version available*/
+      }
 
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
@@ -419,7 +429,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   /* text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; */
   sina =  sin(text->angle);
   cosa =  cos(text->angle);
-  /* fprintf(stderr,"angle: %f ",text->angle); */
+
 
   /* Compute text starting position.  Have explicit character cell 
   offsets (x,y) in logical coordinates */
@@ -433,13 +443,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
       for (i = 0; i < strlen(str); i++) width += lpDx[i];
       x_width = i2f_ScaleX(width, cstruct);
       y_width = i2f_ScaleY(width, cstruct);
-      /*       text->length = width; */ /*Commented out as very dangerous*/
 
 
-       if (cstruct->dc->textalign & TA_UPDATECP){ 
- 	x = currentx; 
- 	y = currenty;
-       } /* Are we forgetting the parameters value ??? 
+/*       if (cstruct->dc->textalign & TA_UPDATECP){  */
+/*  	x = currentx;  */
+/*  	y = currenty; */
+/*       } */ /* Are we forgetting the parameters value ??? 
 	    no, this is *necessary* to process Steven Oney's test
             file correctly. Don't remove! */ 
 
@@ -447,26 +456,21 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
       switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
 	{
 	case TA_LEFT:
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-	    currentx = round(x + x_width*cosa - x_height*sina);
-	    currenty = round(y - y_width*sina - y_height*cosa);
-          }
+	  /* Nothing to do: the default is left justified */
           break;
 	case TA_RIGHT:
-          x = round(x - x_width*cosa + x_height*sina);
-          y = round(y + y_width*sina + y_height*cosa);
-          if (cstruct->dc->textalign & TA_UPDATECP) {
-	    currentx = x;
-	    currenty = y;
-          }
+          x = round(x - x_width*cosa);
+          y = round(y + y_width*sina);
           break;
 	case TA_CENTER:
-          x = round(x - x_width*cosa/2.0 + x_height*sina/2.0);
-          y = round(y + y_width*sina/2.0 + y_height*cosa/2.0);
+          x = round(x - x_width*cosa/2.0);
+          y = round(y + y_width*sina/2.0);
           break;
+	default:
 	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown justification: %d\n",
 		  cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER));
 	}
+
 
       /* ``vertical'' positionning */
       switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
@@ -474,22 +478,31 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 	case TA_TOP:
 	  x +=  round(x_height*sina); 
           y +=  round(y_height*cosa);
-/* 	  fprintf(stderr,"TA_TOP (%d,%d)\n",x,y); */
           break;
 	case TA_BOTTOM:
           /* As xfig bottom set things, nothing to change*/
-/* 	  fprintf(stderr,"TA_BOTTOM (%d,%d)\n",x,y); */
           break;
 	case TA_BASELINE:
-/* 	  fprintf(stderr,"TA_BASELINE (%d,%d)\n",x,y); */
+	  /* What's that ? */
           break;
 	default:
 	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown ``vertical'' positionning: %d\n",
 		  cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE));
 	}
-  
+
+
+      /* The starting point (x,y) can change, but the relative
+         position of the starting and ending points deos not change
+         !*/
+          if (cstruct->dc->textalign & TA_UPDATECP) {
+	    currentx = round(x + x_width*cosa - x_height*sina);
+	    currenty = round(y - y_width*sina - y_height*cosa);
+	  }
+
       text->base_x = x;
       text->base_y = y;
+
+      /* fprintf(stderr,"(%d,%d) |-> (%d,%d)\t Align: %d\t%s\n",org_x,org_y,x,y,cstruct->dc->textalign,str);  */
 
 
       /* Text output, character by character*/
@@ -521,29 +534,18 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   else
     {
       
-      /* ??? I would hace said currnetx = x...*/
-/*       if (cstruct->dc->textalign & TA_UPDATECP) */
-/* 	{ */
-/* 	  x = currentx; */
-/* 	  y = currenty; */
-/* 	} */
-
-
       /* Justification*/
       /* Here xfig is going to do the positionning. */
       switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
 	{
 	case TA_LEFT:
 	  text->type=T_LEFT_JUSTIFIED;
-/* 	  fprintf(stderr,"LEFT (%d,%d) ",x,y); */
           break;
 	case TA_RIGHT:
 	  text->type=T_RIGHT_JUSTIFIED;
-/* 	  fprintf(stderr,"RIGHT (%d,%d) ",x,y); */
           break;
 	case TA_CENTER:
 	  text->type=T_CENTER_JUSTIFIED;
-/* 	  fprintf(stderr,"CENTER (%d,%d) ",x,y); */
           break;
 	default:
 	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown justification: %d\n",
@@ -557,14 +559,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 	case TA_TOP:
 	  x +=  round(x_height*sina); 
           y +=  round(y_height*cosa);
-/* 	  fprintf(stderr,"TA_TOP (%d,%d)\n",x,y); */
           break;
 	case TA_BOTTOM:
           /* As xfig bottom set things, nothing to change*/
-/* 	  fprintf(stderr,"TA_BOTTOM (%d,%d)\n",x,y); */
           break;
 	case TA_BASELINE:
-/* 	  fprintf(stderr,"TA_BASELINE (%d,%d)\n",x,y); */
+	  /* What's that ? */
           break;
 	default:
 	  fprintf(stderr,"xf_draw_text (whithout lpDx): unknown ``vertical'' positionning: %d\n",
@@ -573,6 +573,9 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
   
       text->base_x = x;
       text->base_y = y;
+
+      /* fprintf(stderr,"(%d,%d) |-> (%d,%d)\t Align: %d\t%s\n",org_x,org_y,x,y,cstruct->dc->textalign,str);  */
+
 
       /* defined in libxfig/objlist.c */
       xf_addtext(text);
@@ -1548,7 +1551,7 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     line->fill_color=xf_find_color(c1, c2, c3);
 
     /* The fill style/pattern should be computed somewhere... */
-    line->fill_style = setbrushstyle(cstruct,cstruct->dc->brush); 
+    line->fill_style = setbrushstyle(cstruct,cstruct->dc->brush);
 /*     line->fill_style=20; */
   }
     

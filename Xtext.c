@@ -176,7 +176,6 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
     /* angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; */
     sina =  sin(angle);
     cosa =  cos(angle);
-    fprintf(stderr, "angle=%f\n", angle);
 
     switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
@@ -210,19 +209,22 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
     switch( cstruct->dc->textalign & (TA_TOP | TA_BOTTOM | TA_BASELINE) )
     {
       case TA_TOP:
-		x +=  round(sina*ascent);
-		y +=  round(cosa*ascent);
+	/*  x += round(sina*ascent); was more intuittive by the
+            formula below seems to be better...*/
+	x +=  round(sina*ascent)+round(sina*descent);
+	y +=  round(cosa*ascent)+round(cosa*descent);
 /* 		x -=  0; */
 /* 		y +=  ascent; */
-		fprintf(stderr,"<>top3--the x is %d, the y is %d\n",x,y);
-		break;
+	fprintf(stderr,"<>top3--the x is %d, the y is %d\n",x,y);
+	break;
       case TA_BOTTOM:
-		x -=  round(sina*descent);
-		y -=  round(cosa*descent);
+	/* See the comment under case TA_TOP */
+/* 	x -=  round(sina*descent); */
+/* 	y -=  round(cosa*descent); */
 /* 		x += 0; */
 /* 		y -= descent; */
-		fprintf(stderr,"<>bottom4--the x is %d, the y is %d\n",x,y);
-		break;
+	fprintf(stderr,"<>bottom4--the x is %d, the y is %d\n",x,y);
+	break;
       case TA_BASELINE:
 		fprintf(stderr,"<>baseline5--the x is %d, the y is %d\n",x,y);
 		  break;
