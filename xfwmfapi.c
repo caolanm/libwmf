@@ -415,11 +415,11 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,S
 
 
   /* Text angle */
-  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+  text->angle = (float)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+  /* text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; */
   sina =  sin(text->angle);
   cosa =  cos(text->angle);
-/*   fprintf(stderr,"angle: %f ",text->angle); */
-
+  /* fprintf(stderr,"angle: %f ",text->angle); */
 
   /* Compute text starting position.  Have explicit character cell 
   offsets (x,y) in logical coordinates */

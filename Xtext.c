@@ -172,9 +172,11 @@ int ExtTextOut(CSTRUCT *cstruct, S16 x, S16 y, U16 flags,
     ywidth =  0;
 
     /* angle at which the text is drawn*/
-    angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+    angle = (float)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+    /* angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; */
     sina =  sin(angle);
     cosa =  cos(angle);
+    fprintf(stderr, "angle=%f\n", angle);
 
     switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
