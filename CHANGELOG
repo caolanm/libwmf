@@ -1,3 +1,6 @@
+    * Changed licence on libdib/bintree.c and libdib/dibtoxpm.c 
+      to LGPL, according to Caolán's email.
+v 0.1.21
     * F.J. Franklin patch cleaning up header files (add common.h, region.h).
     * F.J. Franklin patch improves TTF config.
 	* Bob Bell syntax fixes. 

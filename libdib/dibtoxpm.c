@@ -1,8 +1,11 @@
 /*
-Caolan.McNamara@ul.ie
-http://www.csn.ul.ie/~caolan
+Caolan McNamara <caolan@skynet.ie>
 
-Released under the GPL, see COPYING
+Released under the LGPL, see ../COPYING
+
+Current maintainer:
+martin.vermeer@hut.fi
+ 
 */
 
 
