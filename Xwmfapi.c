@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "Xwmfapi.h"
+#include "common.h"
 
 #define FINAL 4
 

@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "wmfapi.h"
+#include "region.h"
 #include "stack.h"
 #include "dibtoxpm.h"
 #include "version.h"
@@ -1846,7 +1847,7 @@ WMFHEAD *GetRealMetaFile(FILE *filein)
 	head->HeaderSize = wmfReadU16bit(filein);
 	if (head->HeaderSize != 9)
 		{
-		fprintf(stderr,"This isnt a wmf file at all\n");
+		fprintf(stderr,"This isnt a wmf file at all: %d\n", head->HeaderSize);
 		free(head);
 		return(NULL);
 		}

@@ -185,18 +185,6 @@ typedef struct _WindowsMetaHeader
 
 #define NB_HATCH_STYLES  6
 
-static const unsigned char HatchBrushes[NB_HATCH_STYLES + 1][8] =
-{
-{ 0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00 }, /* HS_HORIZONTAL */
-{ 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08 }, /* HS_VERTICAL   */
-{ 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 }, /* HS_FDIAGONAL  */
-{ 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 }, /* HS_BDIAGONAL  */
-{ 0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08 }, /* HS_CROSS      */
-{ 0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81 }, /* HS_DIAGCROSS  */
-{ 0xee, 0xbb, 0xee, 0xbb, 0xee, 0xbb, 0xee, 0xbb }  /* Hack for DKGRAY */
-};
-
-
 /* Pen Styles */
 #define PS_SOLID            0
 #define PS_DASH             1       /* -------  */
@@ -222,12 +210,6 @@ static const unsigned char HatchBrushes[NB_HATCH_STYLES + 1][8] =
 #define PS_COSMETIC         0x00000000
 #define PS_GEOMETRIC        0x00010000
 #define PS_TYPE_MASK        0x000F0000
-
-static const char PEN_dash[]       = { 5,3 };      /* -----   -----   -----  */
-static const char PEN_dot[]        = { 2,2 };      /* --  --  --  --  --  -- */
-static const char PEN_dashdot[]    = { 4,3,2,3 };  /* ----   --   ----   --  */
-static const char PEN_dashdotdot[] = { 4,2,2,2,2,2 }; /* ----  --  --  ----  */
-static const char PEN_alternate[]  = { 1,1 };      /* FIXME */
 
 /* Object Definitions for EnumObjects() */
 #define OBJ_PEN             1
@@ -593,10 +575,6 @@ extern wmf_functions *wmffunctions;
 
 typedef void (*voidProcp)();
 
-static void REGION_SubtractRegion(WINEREGION *regD, WINEREGION *regM, WINEREGION *regS );
-
-static void REGION_SubtractO (WINEREGION *pReg, RECT *r1, RECT *r1End, RECT *r2, RECT *r2End, U16 top, U16 bottom);
-
 void SetRectRgn(WINEREGION *rgn, S16 left, S16 top, S16 right, S16 bottom );
 S16 CombineRgn(WINEREGION *destObj, WINEREGION *src1Obj, WINEREGION *src2Obj, S16 mode);
 #define EMPTY_REGION(pReg) { \
@@ -605,22 +583,6 @@ S16 CombineRgn(WINEREGION *destObj, WINEREGION *src1Obj, WINEREGION *src2Obj, S1
     (pReg)->extents.right = (pReg)->extents.bottom = 0; \
     (pReg)->type = NULLREGION; \
  }
-static void REGION_CopyRegion(WINEREGION *dst, WINEREGION *src);
-
-static S16 REGION_Coalesce (
-	WINEREGION *pReg, /* Region to coalesce */
-	S16  prevStart,  /* Index of start of previous band */
-	S16 curStart    /* Index of start of current band */
-	);
-
-static void REGION_RegionOp(
-	WINEREGION *newReg, /* Place to store result */
-	WINEREGION *reg1,   /* First region in operation */
-	WINEREGION *reg2,   /* 2nd region in operation */
-	void (*overlapFunc)(),     /* Function to call for over-lapping bands */
-	void (*nonOverlap1Func)(), /* Function to call for non-overlapping bands in region 1 */
-	void (*nonOverlap2Func)()  /* Function to call for non-overlapping bands in region 2 */
-	);
 
 #define MEMCHECK(reg, rect, firstrect){\
         if ((reg)->numRects >= ((reg)->size - 1)){\
@@ -634,15 +596,6 @@ static void REGION_RegionOp(
        }
 
 #define REGION_NOT_EMPTY(pReg) pReg->numRects
-
-static void REGION_UnionO (WINEREGION *pReg, RECT *r1, RECT *r1End, RECT *r2, RECT *r2End, S16 top, S16 bottom);
-static void REGION_UnionNonO (WINEREGION *pReg, RECT *r, RECT *rEnd, S16 top, S16 bottom);
-static void REGION_UnionNonO (WINEREGION *pReg, RECT *r, RECT *rEnd, S16 top, S16 bottom);
-static void REGION_UnionRegion(WINEREGION *newReg, WINEREGION *reg1, WINEREGION *reg2);
-static void REGION_SubtractNonO1 (WINEREGION *pReg, RECT *r, RECT *rEnd, U16 top, U16 bottom);
-static void REGION_SetExtents (WINEREGION *pReg);
-static void REGION_IntersectRegion(WINEREGION *newReg, WINEREGION *reg1, WINEREGION *reg2);
-static void REGION_IntersectO(WINEREGION *pReg,  RECT *r1, RECT *r1End, RECT *r2, RECT *r2End, S16 top, S16 bottom);
 
 S16 CLIPPING_IntersectClipRect( CSTRUCT *cstruct, S16 left, S16 top, S16 right, S16 bottom, U16 flags );
 S16 OffsetRgn(WINEREGION *rgn, S16 x, S16 y );
