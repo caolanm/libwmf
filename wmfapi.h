@@ -497,12 +497,14 @@ float fNormY(float in,CSTRUCT *cstruct);
 int iNormY(float in,CSTRUCT *cstruct);
 int ScaleY(S16 in,CSTRUCT *cstruct);
 float fScaleY(float in, CSTRUCT *cstruct);
+float fScaleiY(int in, CSTRUCT *cstruct);
 int iScaleY(float in, CSTRUCT *cstruct);
 int NormX(S16 in,CSTRUCT *cstruct);
 float fNormX(float in,CSTRUCT *cstruct);
 int iNormX(float in,CSTRUCT *cstruct);
 int ScaleX(S16 in,CSTRUCT *cstruct);
 float fScaleX(float in, CSTRUCT *cstruct);
+float fScaleiX(int in, CSTRUCT *cstruct);
 int iScaleX(float in, CSTRUCT *cstruct);
 float floatabs(float in);
 U16 AldusChecksum(PLACEABLEMETAHEADER *pmh);
@@ -514,13 +516,14 @@ WMFHEAD *GetRealMetaFile(FILE *filein);
 void wmfinit(CSTRUCT *cstruct);
 
 void parseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height);
-int PlayMetaFile(void *,HMETAFILE file);
+int PlayMetaFile(void *,HMETAFILE file,int hard_convert,char *prefix);
 WMFHEAD *GetRealMetaFile(FILE *filein);
 void do_pixeling(CSTRUCT *cstruct, HMETAFILE file);
 
 
 
 void wmfdebug(FILE *stream,char *fmt, ...);
+char* auxname(char * prefix);
 
 /* 
 Here the pointer list is defined to the functions that should

@@ -65,7 +65,7 @@ void xf_extflood_fill(CSTRUCT *,WMFRECORD *);
 
 
 void xf_finish(CSTRUCT *cstruct);
-int setlinestyle(CSTRUCT *cstruct,int color,float*,LOGPEN *pen);
+int setlinestyle(CSTRUCT *cstruct, int , float*, int*, int*, LOGPEN *pen);
 int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brush);
 
 

@@ -55,7 +55,7 @@ int main(int argc,char **argv)
 
 
 	cstruct->preparse = 1;
-	PlayMetaFile((void *)cstruct,file);
+	PlayMetaFile((void *)cstruct,file,1,NULL);
 
  	mydraw = XCreatePixmap(display, DefaultRootWindow(display), cstruct->realwidth, cstruct->realheight,DefaultDepth(display,DefaultScreen(display)));
 	attrib.event_mask = ExposureMask|KeyPressMask;
@@ -77,7 +77,7 @@ int main(int argc,char **argv)
 		XNextEvent(display,&ourevent);
 		if (ourevent.type == Expose)
 			{
-			PlayMetaFile((void *)cstruct,file);
+			PlayMetaFile((void *)cstruct,file,1,NULL);
 			}
 		else if (ourevent.type==4)
 			break;
@@ -87,7 +87,7 @@ int main(int argc,char **argv)
 		{
 		XNextEvent(display,&ourevent);
 		if (ourevent.type == Expose && !ourevent.xexpose.count)
-			PlayMetaFile((void *)cstruct,file);
+			PlayMetaFile((void *)cstruct,file,1,NULL);
 		else if(ourevent.type == KeyPress)
 			{
 			char str[256];

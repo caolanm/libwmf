@@ -56,22 +56,6 @@ to it, the fonts should be the standard ttf fonts supplied with
 windows, or the font that the text will be rendered in will
 not be the original font (see above, or source gdwmfapi.c).
 
-NOTE 2: For the Red Hat freetype and freetype-devel packages (at 
-least version 1.3.1-5), you should give the command
-
-./configure --with-ttf=/usr
-
-which sets up /usr as the root directory (<ttfroot>)under which 
-to find both the headers (in /usr/include/freetype/) and the library 
-(in /usr/lib). Configure currently searches <ttfroot>/include and
-<ttfroot>include/freetype and <ttfdir> itself for headers, and
-<ttfroot>/lib and <ttfroot> itself for the library.
-
-For other distro's, find the common <ttfroot> containing both
-header and library files, and give that as a commmand line option to
-./configure. Let me know (MV) if you find a distro where such a common
-root does not exist.
-
 3)
 Without a truetype font server and the standard windows fonts
 then the X binding might render text is a different font than
@@ -124,6 +108,12 @@ libttf.a in /usr/lib/.
 In each case the dir can either be the dir *above* the include/,
 include/freetype/ and lib/ dirs where the component can be found. 
 Or the actual dir within *both* the lib and include files exist.
+
+For other distro's, find the common <ttfroot> containing both
+header and library files, and give that as a commmand line option to
+./configure. Let me know (MV) if you find a distro where such a common
+root does not exist.
+
 
 MORE INFORMATION
 ================

@@ -11,14 +11,19 @@
 wmf_functions *wmffunctions;
 
 int currentx=0,currenty=0,newleft=0,newtop=0;
-
+int n_aux_files=0;
 
 int ScaleX(S16 in,CSTRUCT *cstruct)
 	{
-	return( abs( in/cstruct->xpixeling ) );
+	return( abs( round( in/cstruct->xpixeling)));
 	}
 
 float fScaleX(float in,CSTRUCT *cstruct)
+	{
+	return( floatabs( in/cstruct->xpixeling ) );
+	}
+
+float fScaleiX(int in,CSTRUCT *cstruct)
 	{
 	return( floatabs( in/cstruct->xpixeling ) );
 	}
@@ -30,7 +35,7 @@ int iScaleX(float in,CSTRUCT *cstruct)
 
 int NormX(S16 in,CSTRUCT *cstruct)
 	{
-	return( abs( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg) );
+	return( abs( round( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg)));
 	}
 
 float fNormX(float in,CSTRUCT *cstruct)
@@ -45,10 +50,15 @@ int iNormX(float in,CSTRUCT *cstruct)
 
 int ScaleY(S16 in,CSTRUCT *cstruct)
 	{
-	return( abs( in/cstruct->ypixeling ) );
+	return( abs( round( in/cstruct->ypixeling)));
 	}
 
 float fScaleY(float in, CSTRUCT *cstruct)
+	{
+	return( floatabs( in/cstruct->ypixeling ) );
+	}
+
+float fScaleiY(int in, CSTRUCT *cstruct)
 	{
 	return( floatabs( in/cstruct->ypixeling ) );
 	}
@@ -60,7 +70,7 @@ int iScaleY(float in, CSTRUCT *cstruct)
 
 int NormY(S16 in,CSTRUCT *cstruct)
 	{
-	return( abs( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg) );
+	return( abs( round( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg)));
 	}
 
 float fNormY(float in,CSTRUCT *cstruct)
@@ -231,7 +241,7 @@ void do_pixeling(CSTRUCT *cstruct, HMETAFILE file)
 			
 	}
 
-int PlayMetaFile(void* vcstruct,HMETAFILE file)
+int PlayMetaFile(void* vcstruct,HMETAFILE file,int hard_convert,char *prefix)
 	{
 	int i,j;
 	char *wmfstring;
@@ -660,7 +670,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 							wmfrecord.Parameters[3]*((float)ScaleY(wmfrecord.Parameters[5],cstruct)/(float)wmfrecord.Parameters[5]),
 							wmfrecord.Parameters[8],wmfrecord.Parameters[7],ScaleX(wmfrecord.Parameters[6],cstruct),ScaleY(wmfrecord.Parameters[5],cstruct),
 							tempstring,SRCCOPY);
-						unlink(tempstring);
+						/*unlink(tempstring);*/
 						}
 					else
 						{
@@ -670,8 +680,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 							wmfrecord.Parameters[6],wmfrecord.Parameters[5], /*?*/
 							tempstring,SRCCOPY);
 						}
-					unlink(temps);
-					free(temps);
+					/*unlink(temps);*/
+					/*free(temps);*/
 					fclose(dib);
 					break;
 				case META_FLOODFILL:
@@ -704,13 +714,14 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 						}
 					rewind(dib);
 
-					tempstring = tmpnam(NULL);
+					tempstring = auxname(prefix);
+/* 					tempstring = tmpnam(NULL); */
 					temps = (char *)malloc(strlen(tempstring)+1);
 					if (temps == NULL)
-						{
-						fprintf(stderr,"couldnt alloc %d bytes\n",strlen(tempstring)+1);
-						return(-1);
-						}
+					  {
+					    fprintf(stderr,"couldn't alloc %d bytes\n",strlen(tempstring)+1);
+					    return(-1);
+					  }
 					strcpy(temps,tempstring);
 					
 					wmfdebug(stderr,"the tempname was %s\n",temps);
@@ -719,7 +730,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 
 					currentDC->brush->pointer = (void *)temps;
 
-					output = fopen(temps,"w+b");
+					output = fopen(temps,"w+");
+/* 					output = fopen(temps,"w+b"); */
 
 					get_BITMAPINFOHEADER(dib,&dibheader);
 					save_DIBasXpm(dib,&dibheader,output);
@@ -735,45 +747,64 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 					cstruct->dc = currentDC; 
 
 					if ( (wmfrecord.Parameters[4] != ScaleX(wmfrecord.Parameters[8],cstruct)) 
-						|| (wmfrecord.Parameters[3] != ScaleY(wmfrecord.Parameters[7],cstruct)))
-						{
-						wmfdebug(stderr,"scaling to %d %d\n",ScaleX(wmfrecord.Parameters[8],cstruct),ScaleY(wmfrecord.Parameters[7],cstruct));
-						wmfdebug(stderr,"scaling is %f %f\n",(float)ScaleX(wmfrecord.Parameters[8],cstruct)/(float)wmfrecord.Parameters[4],
-							(float)ScaleY(wmfrecord.Parameters[7],cstruct)/(float)wmfrecord.Parameters[3]);
-						tempstring = tmpnam(NULL);
-						sprintf(buffer,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmtoxpm > %s",temps,
-							(float)ScaleX(wmfrecord.Parameters[8],cstruct)/(float)wmfrecord.Parameters[4],
-							(float)ScaleY(wmfrecord.Parameters[7],cstruct)/(float)wmfrecord.Parameters[3],
-							tempstring);
-						fprintf(stderr,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmtoxpm > %s",temps,
-							(float)ScaleX(wmfrecord.Parameters[8],cstruct)/(float)wmfrecord.Parameters[4],
-							(float)ScaleY(wmfrecord.Parameters[7],cstruct)/(float)wmfrecord.Parameters[3],
-							tempstring);
+					     || (wmfrecord.Parameters[3] != ScaleY(wmfrecord.Parameters[7],cstruct)))
+					  {
+					    float scale_x = fScaleiX(wmfrecord.Parameters[8],cstruct)/wmfrecord.Parameters[4];
+					    float scale_y = fScaleiY(wmfrecord.Parameters[7],cstruct)/wmfrecord.Parameters[3];
+					    wmfdebug(stderr,"scaling to %d %d\n",
+						     ScaleX(wmfrecord.Parameters[8],cstruct),
+						     ScaleY(wmfrecord.Parameters[7],cstruct));
+					    wmfdebug(stderr,"scaling is %f %f\n",scale_x,scale_y);
+
+					    if (hard_convert)
+					      {
+						fprintf(stderr,"forbidden zone...\n");
+						tempstring = auxname(prefix);
+						/* 						tempstring = tmpnam(NULL); */
+						
+						sprintf(buffer,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmtoxpm > %s",
+							temps, scale_x, scale_y, tempstring);
+						fprintf(stderr,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmtoxpm > %s",
+							temps, scale_x, scale_y, tempstring);
 						if (0 != system(buffer))
-							{
-							sprintf(buffer,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmquant 256 | ppmtoxpm > %s",temps,
-								(float)ScaleX(wmfrecord.Parameters[8],cstruct)/(float)wmfrecord.Parameters[4],
-								(float)ScaleY(wmfrecord.Parameters[7],cstruct)/(float)wmfrecord.Parameters[3],
-								tempstring);
-							system(buffer);
-							}
+						  {
+						    sprintf(buffer,"xpmtoppm %s | pnmscale -xscale %f -yscale %f | ppmquant 256 | ppmtoxpm > %s",
+							    temps, scale_x, scale_y, tempstring);
+						    system(buffer);
+						    /* 						      unlink(temps); */
+						      }
 
 						if (wmffunctions->copy_xpm)
-							wmffunctions->copy_xpm(cstruct,wmfrecord.Parameters[6]*((float)ScaleX(wmfrecord.Parameters[8],cstruct)/(float)wmfrecord.Parameters[4]),
-							wmfrecord.Parameters[5]*((float)ScaleY(wmfrecord.Parameters[7],cstruct)/(float)wmfrecord.Parameters[3]),
-							wmfrecord.Parameters[10],wmfrecord.Parameters[9],ScaleX(wmfrecord.Parameters[4],cstruct),ScaleY(wmfrecord.Parameters[3],cstruct),
-							tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
-						unlink(tempstring);
-						}
-					else
-						{
+						  wmffunctions->copy_xpm(cstruct,
+									 wmfrecord.Parameters[6]*scale_x,
+									 wmfrecord.Parameters[5]*scale_y,
+									 wmfrecord.Parameters[10],wmfrecord.Parameters[9],
+									 ScaleX(wmfrecord.Parameters[4],cstruct),
+									 ScaleY(wmfrecord.Parameters[3],cstruct),
+									 tempstring,
+									 wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
+						/* 						    unlink(tempstring); */
+						    }
+					    else
+					      {
 						if (wmffunctions->copy_xpm)
-							wmffunctions->copy_xpm(cstruct,wmfrecord.Parameters[6],wmfrecord.Parameters[5],
-							wmfrecord.Parameters[10],wmfrecord.Parameters[9],
-							wmfrecord.Parameters[4],wmfrecord.Parameters[3],
-							tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
-						}
-					unlink(temps);
+						  wmffunctions->copy_xpm(cstruct,
+									 wmfrecord.Parameters[6]*scale_x,
+									 wmfrecord.Parameters[5]*scale_y,
+									 wmfrecord.Parameters[10],wmfrecord.Parameters[9],
+									 ScaleX(wmfrecord.Parameters[4],cstruct),
+									 ScaleY(wmfrecord.Parameters[3],cstruct),
+									 tempstring,
+									 wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
+					      }
+					  }
+					else
+					  if (wmffunctions->copy_xpm)
+					    wmffunctions->copy_xpm(cstruct,wmfrecord.Parameters[6],wmfrecord.Parameters[5],
+								   wmfrecord.Parameters[10],wmfrecord.Parameters[9],
+								   wmfrecord.Parameters[4],wmfrecord.Parameters[3],
+								   tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
+					
 					break;
 				case META_SETTEXTJUSTIFICATION:
 					wmfdebug(stderr,"TEXT JUST breakcount is %d extra space is %d\n",wmfrecord.Parameters[0],wmfrecord.Parameters[1]);
@@ -850,7 +881,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 							wmfrecord.Parameters[9], wmfrecord.Parameters[8],
 								ScaleX(wmfrecord.Parameters[3],cstruct),ScaleY(wmfrecord.Parameters[2],cstruct),
 								tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
-						unlink(tempstring);
+						/*unlink(tempstring);*/
 						}
 					else
 						{
@@ -859,8 +890,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 								wmfrecord.Parameters[8],wmfrecord.Parameters[3],wmfrecord.Parameters[2],
 								tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
 						}
-					unlink(temps);
-					free(temps);
+					/*unlink(temps);*/
+					/*free(temps);*/
 					break;
 				case META_SETSTRETCHBLTMODE:	/*not all that important really*/
 					break;
@@ -938,7 +969,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 								wmfrecord.Parameters[7], wmfrecord.Parameters[6],
 									ScaleX(wmfrecord.Parameters[5],cstruct),ScaleY(wmfrecord.Parameters[4],cstruct),
 									tempstring,wmfrecord.Parameters[0]+((U32)wmfrecord.Parameters[1]<<16));
-							unlink(tempstring);
+							/*unlink(tempstring);*/
 							}
 						else
 							{
@@ -948,8 +979,8 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 
 							}
 	
-						unlink(temps);
-						free(temps);
+						/*unlink(temps);*/
+						/*free(temps);*/
 						}
 					break;
 				case META_PIE:
@@ -1236,7 +1267,7 @@ recommended approach in today's font world.
 						{
 						if (objects[wmfrecord.Parameters[0]].obj.brush.pointer != NULL)
 							{
-							unlink((char *)objects[wmfrecord.Parameters[0]].obj.brush.pointer);
+/* 							unlink((char *)objects[wmfrecord.Parameters[0]].obj.brush.pointer); */
 							free(objects[wmfrecord.Parameters[0]].obj.brush.pointer);
 							}
 						}
@@ -1437,7 +1468,7 @@ recommended approach in today's font world.
 			{
 			if (objects[i].obj.brush.pointer != NULL)
 				{
-				unlink((char *)objects[i].obj.brush.pointer);
+/* 				unlink((char *)objects[i].obj.brush.pointer); */
 				free(objects[i].obj.brush.pointer);
 				}
 			}
@@ -1452,6 +1483,9 @@ recommended approach in today's font world.
 		free(objects);
 
 	do_pixeling(cstruct,file);
+
+/* 	if (!cstruct->preparse) */
+/* 	  for(;;){int i=0;} */
 
 	return(0);
 	}
@@ -2783,3 +2817,19 @@ void wmfdebug(FILE *stream,char *fmt, ...)
     fflush(stream);
     #endif
     }
+
+char* auxname(char * prefix)
+{
+  int size;
+  char * filename;
+
+  if (prefix==NULL)
+    return tmpnam(NULL);
+
+  size = strlen(prefix)+2+log(n_aux_files+1);
+  filename = (char *) malloc(sizeof(char)*size);
+  n_aux_files++;
+  sprintf(filename,"%s-%d\0",prefix,n_aux_files);
+  fprintf(stderr,"(%s)\n",filename);
+  return filename;
+}

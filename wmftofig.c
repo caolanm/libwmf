@@ -66,14 +66,15 @@ int main(int argc,char **argv)
   xf_std_colors();  
   
   cstruct->preparse = 1;
-  PlayMetaFile((void *)cstruct,file);
+  PlayMetaFile((void *)cstruct, file, 0, NULL);
 
   cstruct->preparse = 0;
-  PlayMetaFile((void *)cstruct,file);
+  PlayMetaFile((void *)cstruct, file, 0, in);
 
   xf_color_to_file(out);  /* If there are user-defined colours? */
   xf_objlist_tofile(out);
   fclose(out);
+
 
   free(file->pmh);
   free(file->wmfheader);

@@ -68,13 +68,13 @@ int main(int argc,char **argv)
 		}
 
 	cstruct->preparse = 1;
-	PlayMetaFile((void *)cstruct,file);
+	PlayMetaFile((void *)cstruct,file,1,NULL);
 
 	gdstruct.im_out = gdImageCreate(cstruct->realwidth, cstruct->realheight);
 	gdImageColorResolve(gdstruct.im_out, 0xff, 0xff, 0xff);
 	
 	cstruct->preparse = 0;
-	PlayMetaFile((void *)cstruct,file);
+	PlayMetaFile((void *)cstruct,file,1,NULL);
 
 	out = fopen(argv[2], "wb");
 	if (out == NULL)

@@ -175,7 +175,7 @@ enum pictypes {
 #define PicSuccess	1
 #define FileInvalid    -2
 typedef struct f_pic {
-#if 0
+#if 1
     char	    file[PATH_MAX];
     enum pictypes   subtype;
     int		    flipped;

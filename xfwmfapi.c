@@ -65,7 +65,7 @@ wmf_functions xf_wmffunctions =
       xf_set_pmf_size,
       xf_clip_rect,
       xf_no_clip_rect,
-      NULL, /* xf_copy_xpm */
+      xf_copy_xpm,
       xf_paint_rgn,
       NULL,
       xf_copyUserData,
@@ -262,7 +262,7 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
           printf("xf_addtext: %dx%d+%d+%d %s [%d]\n", 
 		t->length, height, 
 		t->base_x, y, t->cstring, i);
-          */
+	  */
           width += ScaleX(lpDx[i], cstruct);
         }
     }
@@ -674,46 +674,58 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 
 void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
-  int color,bgcolor,flag;
   int c1, c2, c3;
   F_line *line;
-  int loop;
   int x,y;
   int np=2;
 	
   line=(F_line *)malloc(sizeof(F_line));
-  line->points=(F_point *) malloc(np*sizeof(F_point));
 
+  /* Fill out defaults for F_line: invisible line */
+/*   line->tagged=; */
+/*   line->distrib=; */
+  line->type=T_POLYLINE;
+  line->style=SOLID_LINE;
+  line->thickness=0;
+  line->pen_color=BLACK;
+  line->fill_color=WHITE;
+  line->fill_style=-1;
+  line->depth=cstruct->depth--;
+  line->pen_style=0;
+  line->style_val=0.00;
+  line->for_arrow=NULL;
+  line->back_arrow=NULL;
+  line->cap_style=CAP_BUTT;
+  line->points=(F_point *) malloc(np*sizeof(F_point));
+  line->join_style=JOIN_MITER;
+  line->radius=0;
+  line->pic=NULL;
+  line->next=NULL;
+
+
+  /* Compute the color of the line.   */
   c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
   c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
   c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
-  color=xf_find_color(c1, c2, c3);
+  line->pen_color=xf_find_color(c1, c2, c3);
   
-  c1=(cstruct->dc->bgcolor[0]& 0x00FF);
-  c2=((cstruct->dc->bgcolor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->bgcolor[1]& 0x00FF);
-  bgcolor=xf_find_color(c1, c2, c3);
+  /* Unused by xfig */
+  line->pen_style=0;
 
-  /* Correct ? Big bugs around !!! */
-  flag=setlinestyle(cstruct,0,&(line->style_val),cstruct->dc->pen);
+  /* How to compute thickness from cstruct->dc->pen->lopnWidth ??? */
+  line->thickness=1;
 
+  /* Line style */
+  line->style=setlinestyle(cstruct, line->thickness, &(line->style_val),&(line->cap_style),&(line->join_style),cstruct->dc->pen);
+
+
+  /* The coordinates of the line */
   line->points[0].x = currentx;
   line->points[0].y = currenty;
   line->points[0].next = &(line->points[1]);
   line->points[1].x = NormX(wmfrecord->Parameters[1],cstruct);
   line->points[1].y = NormY(wmfrecord->Parameters[0],cstruct);
   line->points[1].next = NULL;
-
-  /* Fill out defaults for F_line */
-  line->type=T_POLYLINE;
-  line->style=SOLID_LINE;
-  line->thickness=1;
-  line->pen_color=BLACK;
-  line->fill_color=color;
-  line->fill_style=-1;
-  line->depth=cstruct->depth--;
-  line->pen_style=0;
-  line->style_val=0.00;
 
   xf_addpolyline(line);
 }
@@ -732,6 +744,8 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line=(F_line *)malloc(sizeof(F_line));
 
   /* Fill out defaults for F_line: invisible polygon */
+/*   line->tagged=; */
+/*   line->distrib=; */
   line->type=T_POLYGON;
   line->style=SOLID_LINE;
   line->thickness=0;
@@ -741,18 +755,26 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->depth=cstruct->depth--;
   line->pen_style=0;
   line->style_val=0.00;
+  line->for_arrow=NULL;
+  line->back_arrow=NULL;
+  line->cap_style=CAP_BUTT;
+  line->join_style=JOIN_MITER;
+  line->radius=0;
+  line->pic=NULL;
+  line->next=NULL;
 
-
+  /* The vertices of the polygon. The last one is a copy of the first one.   */
   np=wmfrecord->Parameters[0];
-  line->points=(F_point *) malloc(np*sizeof(F_point));
+  line->points=(F_point *) malloc((np+1)*sizeof(F_point));
   for (i=0; i<np; i++){
     line->points[i].x=NormX(wmfrecord->Parameters[((i+1)*2)-1],cstruct);
     line->points[i].y=NormY(wmfrecord->Parameters[(i+1)*2],cstruct);
-    if (i<np-1)
-      line->points[i].next=&(line->points[i+1]);
-    else
-      line->points[i].next=NULL;
+    line->points[i].next=&(line->points[i+1]); 
   }
+  line->points[np].x=NormX(wmfrecord->Parameters[1],cstruct);
+  line->points[np].y=NormY(wmfrecord->Parameters[2],cstruct);
+  line->points[np].next=NULL;
+
 
   /* Set the fill color and the fill style */
   if (cstruct->dc->brush->lbStyle != BS_NULL){
@@ -777,7 +799,7 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     line->pen_style=0;
 
     /* Line style */
-    line->style=setlinestyle(cstruct,color,&(line->style_val),cstruct->dc->pen);
+    line->style=setlinestyle(cstruct, line->thickness, &(line->style_val),&(line->cap_style),&(line->join_style),cstruct->dc->pen);
 
     /* How to compute thickness from cstruct->dc->pen->lopnWidth ??? */
     line->thickness=1;
@@ -871,11 +893,11 @@ void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     /* Unused by xfig */
     ellipse->pen_style=0;
 
-    /* Line style */
-    ellipse->style=setlinestyle(cstruct,ellipse->pen_color,&(ellipse->style_val),cstruct->dc->pen);
-
     /* How to compute thickness from cstruct->dc->pen->lopnWidth ??? */
     ellipse->thickness=1;
+
+    /* Line style */
+    ellipse->style=setlinestyle(cstruct, ellipse->thickness, &(ellipse->style_val),NULL,NULL,cstruct->dc->pen);
   }
 
   /* Computations of the ellipse dimensions */
@@ -964,11 +986,11 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->pen_style=0;
   line->fill_style=-1; /* not filled */
   line->style_val=0.0; 
-  line->join_style=0;  /*??*/
-  line->cap_style=0;   /*??*/
-  line->radius=0;      /*?? */
-  line->for_arrow=NULL; /*?? */
-  line->back_arrow=NULL; /*?? */
+  line->join_style=JOIN_MITER;
+  line->cap_style=CAP_BUTT;
+  line->radius=0;      
+  line->for_arrow=NULL; 
+  line->back_arrow=NULL; 
     
 
 
@@ -995,14 +1017,12 @@ void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
     /* Unused by xfig */
     line->pen_style=0;
 
-    /* Line style */
-    line->style = setlinestyle(cstruct,line->pen_color,\
-		&(line->style_val),\
-		cstruct->dc->pen);
-    
     /* How to compute thickness ??? */
     /* line->thickness=cstruct->dc->pen->lopnWidth; gives too large thicknesses */
     line->thickness=1;
+
+    /* Line style */
+    line->style=setlinestyle(cstruct, line->thickness, &(line->style_val),&(line->cap_style),&(line->join_style),cstruct->dc->pen);    
   }
 
 
@@ -1055,44 +1075,86 @@ int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brushin)
 	return(0);
 	}
 
-int setlinestyle(CSTRUCT *cstruct,int color,float *style_val,LOGPEN *pen){
+int setlinestyle(CSTRUCT *cstruct, int thickness, float *style_val, int * cap_style, int * join_style, LOGPEN *pen){
   printf("setlinestyle\n");
-  /* Far from being exhaustive */
+  /* almost exhaustive... are ROP2 relevant ? */
 
-  switch(pen->lopnStyle & PS_STYLE_MASK)
-    {
-    case PS_SOLID:
-      return(SOLID_LINE);
+  if (cap_style!=NULL)
+    switch(pen->lopnStyle & PS_ENDCAP_MASK){
+    case PS_ENDCAP_SQUARE:
+      *cap_style = CAP_PROJECT;
       break;
-      
-    case PS_DASH: 
-      return(DASH_LINE);
+    case PS_ENDCAP_ROUND:
+      *cap_style = CAP_ROUND;
       break;
-      
-    case PS_DOT: 
-      return(DOTTED_LINE);
-      break;
-	
-    case PS_DASHDOT:
-      return(DASH_DOT_LINE);
-      break;
-
-    case PS_DASHDOTDOT:
-      return(DASH_2_DOTS_LINE);
-      break;
-
-    case PS_ALTERNATE:
-      *style_val=1.0;
-      return(DOTTED_LINE);
-      break;
+    case PS_ENDCAP_FLAT:
     default:
-      fprintf(stderr,"setlinestyle: unsupported style (%d,%d)\n",pen->lopnStyle,
-	      pen->lopnStyle & PS_STYLE_MASK);
-      return(DEFAULT); 
-      break;
+      *cap_style = CAP_BUTT;
     }
-}	 
 
+  if (join_style!=NULL)
+    switch(pen->lopnStyle & PS_JOIN_MASK)
+      {
+      case PS_JOIN_BEVEL:
+	*join_style = JOIN_BEVEL;
+	break;
+      case PS_JOIN_ROUND:
+	*join_style = JOIN_ROUND;
+	break;
+      case PS_JOIN_MITER:
+      default:
+	*join_style = JOIN_MITER;
+      }
+
+
+  if (style_val==NULL){
+    fprintf(stderr,"Error in setlinestyle: argument style_val should not be NULL!!!");
+    return(SOLID_LINE);
+  }
+  else
+    switch(pen->lopnStyle & PS_STYLE_MASK)
+      {
+      case PS_SOLID:
+	*style_val = 0.0;
+	return(SOLID_LINE);
+	break;
+      
+      case PS_DASH:
+	*style_val = 2.0 + 2*thickness;
+	return(DASH_LINE);
+	break;
+      
+      case PS_DOT: 
+	*style_val = 1.5 + 1.5*thickness;
+	return(DOTTED_LINE);
+	break;
+	
+      case PS_DASHDOT:
+	*style_val = 2.0 + 2*thickness;
+	return(DASH_DOT_LINE);
+	break;
+
+      case PS_DASHDOTDOT:
+	*style_val = 2.0 + 2*thickness;
+	return(DASH_2_DOTS_LINE);
+	break;
+
+      case PS_INSIDEFRAME:
+	/* There is nothing to do in this case... */
+	return(SOLID_LINE);
+	break;
+
+      case PS_ALTERNATE:
+	*style_val=1.0*thickness;
+	return(DOTTED_LINE);
+	break;
+      default:
+	fprintf(stderr,"setlinestyle: unsupported style (%d,%d)\n",pen->lopnStyle,
+		pen->lopnStyle & PS_STYLE_MASK);
+	return(SOLID_LINE); 
+	break;
+      }
+}	 
 
 
 void xf_parseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height)
@@ -1222,3 +1284,48 @@ void xf_no_clip_rect(CSTRUCT *cstruct)
 	}
 
 
+void xf_copy_xpm(CSTRUCT *cstruct,U16 src_x, U16 src_y, U16 dest_x, U16 dest_y,U16 dest_w,U16 dest_h,char *filename,U32 dwROP)
+{
+  F_line * line=(F_line *)malloc(sizeof(F_line));
+
+  /* Fill out defaults for F_line: imported-picture bounding-box */
+  /*   line->tagged=; */
+  /*   line->distrib=; */
+  line->type=T_PICTURE;
+  line->style=SOLID_LINE;
+  line->thickness=0;
+  line->pen_color=BLACK;
+  line->fill_color=WHITE;
+  line->fill_style=-1;
+  line->depth=cstruct->depth--;
+  line->pen_style=0;
+  line->style_val=0.00;
+  line->for_arrow=NULL;
+  line->back_arrow=NULL;
+  line->cap_style=CAP_BUTT;
+  line->join_style=JOIN_MITER;
+  line->radius=0;
+  line->pic= (F_pic *) malloc(sizeof(F_pic));
+  strcpy(line->pic->file,filename);
+  line->pic->flipped=0;
+  line->next=NULL;
+
+  line->points=(F_point *) malloc((5)*sizeof(F_point));
+  line->points[0].x=NormX(dest_x,cstruct);
+  line->points[0].y=NormY(dest_y,cstruct);
+  line->points[0].next=&(line->points[1]); 
+  line->points[1].x=NormX(dest_x,cstruct)+dest_w;
+  line->points[1].y=NormY(dest_y,cstruct);
+  line->points[1].next=&(line->points[2]); 
+  line->points[2].x=NormX(dest_x,cstruct)+dest_w;
+  line->points[2].y=NormY(dest_y,cstruct)+dest_h;
+  line->points[2].next=&(line->points[3]); 
+  line->points[3].x=NormX(dest_x,cstruct);
+  line->points[3].y=NormY(dest_y,cstruct)+dest_h;
+  line->points[3].next=&(line->points[4]); 
+  line->points[4].x=NormX(dest_x,cstruct);
+  line->points[4].y=NormY(dest_y,cstruct);
+  line->points[4].next=NULL;
+
+  xf_addpolyline(line);
+}

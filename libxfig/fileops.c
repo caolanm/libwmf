@@ -36,6 +36,10 @@ void xf_write_polyline(FILE *fl, F_line *line)
 	line->fill_style, \
 	line->style_val, \
 	np);
+
+  if(line->type==T_PICTURE)
+    fprintf(fl,"\n\t%d %s", line->pic->flipped, line->pic->file);
+
   
   for (i=0; i<np; i++)
     {
