@@ -26,7 +26,33 @@ int xf_std_colors()
   xf_put_color(5, 0xff, 0x00, 0xff); /* Magenta */
   xf_put_color(6, 0xff, 0x00, 0xff); /* Yellow  */
   xf_put_color(7, 0xff, 0xff, 0xff); /* White   */
-  num_used = 8;
+
+  xf_put_color(8,  0.000,0.000,0.560);
+  xf_put_color(9,  0.000,0.000,0.690);
+  xf_put_color(10, 0.000,0.000,0.820);
+  xf_put_color(11, 0.530,0.810,1.000);
+  xf_put_color(12, 0.000,0.560,0.000);
+  xf_put_color(13, 0.000,0.690,0.000);
+  xf_put_color(14, 0.000,0.820,0.000);
+  xf_put_color(15, 0.000,0.560,0.560);
+  xf_put_color(16, 0.000,0.690,0.690);
+  xf_put_color(17, 0.000,0.820,0.820);
+  xf_put_color(18, 0.560,0.000,0.000);
+  xf_put_color(19, 0.690,0.000,0.000);
+  xf_put_color(20, 0.820,0.000,0.000);
+  xf_put_color(21, 0.560,0.000,0.560);
+  xf_put_color(22, 0.690,0.000,0.690);
+  xf_put_color(23, 0.820,0.000,0.820);
+  xf_put_color(24, 0.500,0.190,0.000);
+  xf_put_color(25, 0.630,0.250,0.000);
+  xf_put_color(26, 0.750,0.380,0.000);
+  xf_put_color(27, 1.000,0.500,0.500);
+  xf_put_color(28, 1.000,0.630,0.630);
+  xf_put_color(29, 1.000,0.750,0.750);
+  xf_put_color(30, 1.000,0.880,0.880);
+  xf_put_color(31, 1.000,0.840,0.000);
+
+  num_used = 32;
 }
 
 int xf_put_color(int num, int c1, int c2, int c3)
