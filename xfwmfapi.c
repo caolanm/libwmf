@@ -283,11 +283,12 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,i
   y_height = i2f_ScaleY(cstruct->dc->font->lfHeight, cstruct);
 
 
-/*   fprintf(stderr,"\nHeight: %d, Width: %d, Escapement: %d, Orientation: %d, Weight: %d, \n", */
+/*   fprintf(stderr,"\nHeight: %d, Width: %d, Escapement: %d, Orientation: %d (*%f), Weight: %d, \n", */
 /*           cstruct->dc->font->lfHeight, */
 /*           cstruct->dc->font->lfWidth, */
 /*           cstruct->dc->font->lfEscapement, */
 /*           cstruct->dc->font->lfOrientation, */
+/* 	  cstruct->ypixeling, */
 /*           cstruct->dc->font->lfWeight); */
 /*   fprintf(stderr,"Italic: %d, Underline: %d, StrikeOut: %d, CharSet: %d, OutPrecision: %d, \n", */
 /*           cstruct->dc->font->lfItalic, */
@@ -425,7 +426,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,i
 
 
   /* Text angle */
-  text->angle = (float)(-cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+  if (cstruct->ypixeling>0)
+    text->angle =  (float)(cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
+  else
+    text->angle = -(float)(cstruct->dc->font->lfEscapement)/10.0 * PI / 180;
   /* text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; */
   sina =  sin(text->angle);
   cosa =  cos(text->angle);
@@ -433,6 +437,14 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,i
 
   /* Compute text starting position.  Have explicit character cell 
   offsets (x,y) in logical coordinates */
+
+
+  if (cstruct->dc->textalign & TA_UPDATECP){ 
+    x = currentx; 
+    y = currenty;
+  } /* This is *necessary* to process Steven Oney's test file
+       correctly. Don't remove! */
+
 
 
   /***************/
@@ -444,13 +456,6 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,i
       x_width = i2f_ScaleX(width, cstruct);
       y_width = i2f_ScaleY(width, cstruct);
 
-
-/*       if (cstruct->dc->textalign & TA_UPDATECP){  */
-/*  	x = currentx;  */
-/*  	y = currenty; */
-/*       } */ /* Are we forgetting the parameters value ??? 
-	    no, this is *necessary* to process Steven Oney's test
-            file correctly. Don't remove! */ 
 
       /* Justification*/
       switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
