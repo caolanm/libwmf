@@ -386,6 +386,7 @@ int yViewportExt;
 int xWindowExt;
 int yWindowExt;
 int mapmode;
+int depth;
 } CSTRUCT;
 
 
@@ -492,9 +493,18 @@ in the parameter array, y's precede x's
 
 
 int NormY(S16 in,CSTRUCT *cstruct);
+float fNormY(float in,CSTRUCT *cstruct);
+int iNormY(float in,CSTRUCT *cstruct);
 int ScaleY(S16 in,CSTRUCT *cstruct);
+float fScaleY(float in, CSTRUCT *cstruct);
+int iScaleY(float in, CSTRUCT *cstruct);
 int NormX(S16 in,CSTRUCT *cstruct);
+float fNormX(float in,CSTRUCT *cstruct);
+int iNormX(float in,CSTRUCT *cstruct);
 int ScaleX(S16 in,CSTRUCT *cstruct);
+float fScaleX(float in, CSTRUCT *cstruct);
+int iScaleX(float in, CSTRUCT *cstruct);
+float floatabs(float in);
 U16 AldusChecksum(PLACEABLEMETAHEADER *pmh);
 
 int FileIsPlaceable(char *file);

@@ -132,42 +132,49 @@ void xf_set_pixel(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U16 x,U16 y)
 {
   /* 
-  This is ALMOST right... 
   The important CSTRUCT, DC, LOGFONTA are documented in wmfapi.h.
   */
 
-  int color,flag;
   int c1, c2, c3;
   F_text *text;
   int height;
 	
   text=(F_text *)malloc(sizeof(F_text));
 
-  c1=(cstruct->dc->textcolor[0]& 0x00FF);
+  c1=( cstruct->dc->textcolor[0]& 0x00FF);
   c2=((cstruct->dc->textcolor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->textcolor[1]& 0x00FF);
+  c3=( cstruct->dc->textcolor[1]& 0x00FF);
   text->color=xf_find_color(c1, c2, c3);
 
-  text->length =  cstruct->realwidth;
-  height       =  cstruct->realheight;
-  text->ascent  = 0;
   text->descent = 0;
 
-  /* if (cstruct->dc->bgmode == TRANSPARENT) */
+  text->length =  cstruct->xpixeling * cstruct->realwidth;
+  text->ascent =  cstruct->dc->font->lfHeight / cstruct->ypixeling;
+/*   text->ascent =  cstruct->ypixeling * cstruct->realheight; */
+
+  wmfdebug(stderr,"<>ascent is %d\n", text->ascent);
+  height = text->descent + text->ascent;
+
+  if (cstruct->dc->textalign & TA_UPDATECP)
+    {
+        x = currentx;
+        y = currenty;
+    }
+
   switch( cstruct->dc->textalign & (TA_LEFT | TA_RIGHT | TA_CENTER) )
     {
       case TA_LEFT:
           if (cstruct->dc->textalign & TA_UPDATECP) {
-              cstruct->currentx = x + text->length;
-              cstruct->currenty = y - height;
+              currentx = x + text->length;
+              currenty = y - height;
           }
           break;
       case TA_RIGHT:
           x -= text->length;
           y += height;
           if (cstruct->dc->textalign & TA_UPDATECP) {
-              cstruct->currentx = x;
-              cstruct->currenty = y;
+              currentx = x;
+              currenty = y;
           }
           break;
       case TA_CENTER:
@@ -209,8 +216,16 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
     }
   if (cstruct->dc->font->lfCharSet == 2) 
     { 
-      text->font = 32;  /* Greek */
+      text->font = 32;  /* Greek, symbol */
     } 
+  if (cstruct->dc->font->lfCharSet == 1) 
+    { 
+      text->font = 32;  /* Greek, symbol */
+    } 
+  if (cstruct->dc->font->lfCharSet > 2) 
+    {
+      fprintf(stderr, "charset=%d\n", cstruct->dc->font->lfCharSet);
+    }
 
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
@@ -220,8 +235,10 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   why MS Word formulas look so ugly compared to LaTeX.
   */
 
+
   text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20; 
-  text->depth=100;
+  /* text->size = cstruct->dc->font->lfHeight / (20 * cstruct->ypixeling); */
+  text->depth=cstruct->depth--;
   text->pen_style=0;
   
   text->cstring=(char *)malloc(strlen(str)+1);
@@ -571,12 +588,11 @@ void xf_draw_polypolygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
       line->pen_color=BLACK;
       line->fill_color=color;
       line->fill_style=20;
-      line->depth=100;
+      line->depth=cstruct->depth--;
       line->pen_style=0;
       line->style_val=0.00;
       
       xf_addpolyline(line);
-    printf("xf_addpolyline %d\n", line->type);
     }
 }
 
@@ -619,15 +635,14 @@ void xf_draw_polylines(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->pen_color=BLACK;
   line->fill_color=color;
   line->fill_style=-1;
-  line->depth=100;
+  line->depth=cstruct->depth--;
   line->pen_style=0;
   line->style_val=0.00;
 
   xf_addpolyline(line);
 
   /*  printf("xf_draw_polylines %d\n",wmfrecord->Parameters[0]); */
-  printf("xf_addpolyline %d\n", line->type); 
- 
+  
 }
 
 void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
@@ -652,7 +667,8 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   c3=(cstruct->dc->bgcolor[1]& 0x00FF);
   bgcolor=xf_find_color(c1, c2, c3);
 
-  flag=setlinestyle(cstruct,0,cstruct->dc->pen);
+  /* Correct ? Big bugs around !!! */
+  flag=setlinestyle(cstruct,0,&(line->style_val),cstruct->dc->pen);
 
   line->points[0].x = currentx;
   line->points[0].y = currenty;
@@ -668,12 +684,11 @@ void xf_draw_line(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->pen_color=BLACK;
   line->fill_color=color;
   line->fill_style=-1;
-  line->depth=100;
+  line->depth=cstruct->depth--;
   line->pen_style=0;
   line->style_val=0.00;
 
   xf_addpolyline(line);
-  printf("xf_addpolyline %d\n", line->type); 
 }
 
 
@@ -717,18 +732,17 @@ void xf_draw_polygon(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
   line->pen_color=BLACK;
   line->fill_color=color;
   line->fill_style=20;
-  line->depth=100;
+  line->depth=cstruct->depth--;
   line->pen_style=0;
   line->style_val=0.00;
   
   xf_addpolyline(line);
-  printf("xf_addpolyline %d\n", line->type); 
 }
 
 void xf_fill_opaque(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 	{
     int color;
-    /* printf("xf_fill_opaque ?\n"); */
+    printf("xf_fill_opaque\n");
     
 	}
 
@@ -758,7 +772,7 @@ void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
     float oangle1,oangle2;
     int width = cstruct->dc->pen->lopnWidth;
   
-	/* printf("xf_draw_arc %d\n", finishtype); */
+	printf("xf_draw_arc\n");
     wmfdebug(stderr,"the Function is %x\n",wmfrecord->Function);
 
 	}
@@ -766,36 +780,75 @@ void xf_draw_arc(CSTRUCT *cstruct,WMFRECORD *wmfrecord,int finishtype)
 
 void xf_draw_ellipse(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
-  int color,flag;
   F_ellipse *ellipse;
   int left, right, top, bottom;
   int c1,c2,c3;
   
   ellipse=(F_ellipse *)malloc(sizeof(F_ellipse));
 
-  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
-  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
-  color=xf_find_color(c1, c2, c3);
+  /* Default values (invisible ellipse) */
+/*   ellipse->tagged=; */
+/*   ellipse->distrib=; */
 
   ellipse->type=T_ELLIPSE_BY_RAD;
   ellipse->style=SOLID_LINE;
-  ellipse->thickness=1;
+  ellipse->thickness=0;
   ellipse->pen_color=BLACK;
-  ellipse->fill_color=color;
-  ellipse->fill_style=20;
-  ellipse->depth=100;
+  ellipse->fill_color=WHITE;
+  ellipse->fill_style=-1;
+  ellipse->depth=cstruct->depth--;
   ellipse->pen_style=0;
   ellipse->style_val=0.00;
+/*   ellipse->angle; */
+  ellipse->direction=1;
 
-  top    = NormX(wmfrecord->Parameters[0], cstruct);
-  right  = NormX(wmfrecord->Parameters[1], cstruct);
-  bottom = NormX(wmfrecord->Parameters[2], cstruct);
-  left   = NormX(wmfrecord->Parameters[3], cstruct);
-  
-  ellipse->radiuses.x = (right - left) / 2;
-  ellipse->radiuses.y = (top - bottom) / 2;
+  /* Set the fill color and the fill style */
+  if (cstruct->dc->brush->lbStyle != BS_NULL){
+    c1=( cstruct->dc->brush->lbColor[0]& 0x00FF);
+    c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+    c3=( cstruct->dc->brush->lbColor[1]& 0x00FF);
+    ellipse->fill_color=xf_find_color(c1, c2, c3);
 
+    /* The fill style/pattern should be computed somewhere... */
+    /* setbrushstyle(cstruct,color,cstruct->dc->brush);       */
+    ellipse->fill_style=20;
+  }
+
+  /* Set the pen color, style, and thickness, and the line style */
+  if (cstruct->dc->pen->lopnStyle != PS_NULL){
+    c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+    c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
+    ellipse->pen_color=xf_find_color(c1, c2, c3);
+
+    /* Unused by xfig */
+    ellipse->pen_style=0;
+
+    /* Line style */
+    ellipse->style=setlinestyle(cstruct,ellipse->pen_color,&(ellipse->style_val),cstruct->dc->pen);
+
+    /* How to compute thickness from cstruct->dc->pen->lopnWidth ??? */
+    ellipse->thickness=1;
+  }
+
+  /* Computations of the ellipse dimensions */
+
+  top    = iNormX(wmfrecord->Parameters[0], cstruct);
+  right  = iNormX(wmfrecord->Parameters[1], cstruct);
+  bottom = iNormX(wmfrecord->Parameters[2], cstruct);
+  left   = iNormX(wmfrecord->Parameters[3], cstruct);
+
+  if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
+    ellipse->radiuses.x = (right - left) / 2;
+    ellipse->radiuses.y = (top - bottom) / 2;
+  } else {
+    /* 
+    cstruct->dc->pen->lopnWidth(/2.0 ?) replaced by ellipse->thickness. 
+    Is it correct ? 
+    */
+    ellipse->radiuses.x = (right - left) / 2 + ellipse->thickness;
+    ellipse->radiuses.y = (top - bottom) / 2 + ellipse->thickness;
+  }
   ellipse->center.x = left   + ellipse->radiuses.x;
   ellipse->center.y = bottom + ellipse->radiuses.y;
 
@@ -839,62 +892,109 @@ void xf_invert_rectangle2(CSTRUCT *cstruct,U16 x,U16 y,U16 width,U16 height)
 	int mx,my;
 	int color,ocolor;
 
-	printf("xf_invert_rectangle2 ?\n");
+	printf("xf_invert_rectangle2\n");
 	}
 
 
 void xf_draw_rectangle(CSTRUCT *cstruct,WMFRECORD *wmfrecord)
 {
-  int color;
-  int flag;
   F_point *points;
   F_line *line;
   FILE *fl;
-  int c1, c2, c3,np,i;
+  int c1, c2, c3, np, i;
   int x1, y1, x2, y2;
   
-  /* printf("xf_draw_rectangle \n");*/
+  /* Allocation */
   line=(F_line *)malloc(sizeof(F_line));
 
-  c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
-  c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
-  c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
-  
-  color=xf_find_color(c1, c2, c3);
+  /* Default values (invisible rectangle) */
+  line->type=T_BOX;
+  line->style=SOLID_LINE;
+  line->thickness=0;
+  line->pen_color=BLACK;
+  line->fill_color=WHITE;
+  line->depth=cstruct->depth--;
+  line->pen_style=0;
+  line->fill_style=-1; /* not filled */
+  line->style_val=0.0; 
+  line->join_style=0;  /*??*/
+  line->cap_style=0;   /*??*/
+  line->radius=0;      /*?? */
+  line->for_arrow=NULL; /*?? */
+  line->back_arrow=NULL; /*?? */
+    
+
+
+  /* Set the fill color and the fill mode */
+  if ((cstruct->dc->brush!=NULL) && (cstruct->dc->brush->lbStyle != BS_NULL)){
+    c1=(cstruct->dc->brush->lbColor[0]& 0x00FF);
+    c2=((cstruct->dc->brush->lbColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->brush->lbColor[1]& 0x00FF);
+    line->fill_color=xf_find_color(c1, c2, c3);
+
+    /* The fill style/pattern should be computed somewhere... */
+    /*line->fill_style = setbrushstyle(cstruct,color,cstruct->dc->brush); */
+    line->fill_style=20;
+  }
+    
+
+  /* Set the pen color, style, and thickness, and the line style */
+  if (cstruct->dc->pen->lopnStyle != PS_NULL){
+    c1=(cstruct->dc->pen->lopnColor[0]& 0x00FF);
+    c2=((cstruct->dc->pen->lopnColor[0]& 0xFF00)>>8);
+    c3=(cstruct->dc->pen->lopnColor[1]& 0x00FF);
+    line->pen_color=xf_find_color(c1,c2,c3);
+
+    /* Unused by xfig */
+    line->pen_style=0;
+
+    /* Line style */
+    line->style = setlinestyle(cstruct,line->pen_color,\
+		&(line->style_val),\
+		cstruct->dc->pen);
+    
+    /* How to compute thickness ??? */
+    /* line->thickness=cstruct->dc->pen->lopnWidth; gives too large thicknesses */
+    line->thickness=1;
+  }
+
+
+  /* Computation of the points */
   np=5;
   
   line->points=(F_point *) malloc(np*sizeof(F_point));
 
-  x1=NormX(wmfrecord->Parameters[3],cstruct);
-  y1=NormY(wmfrecord->Parameters[2],cstruct);
-  x2=NormX(wmfrecord->Parameters[1],cstruct);
-  y2=NormY(wmfrecord->Parameters[0],cstruct);
+  if (cstruct->dc->pen->lopnStyle != PS_INSIDEFRAME){
+      x1=NormX(wmfrecord->Parameters[3],cstruct);
+      y1=NormY(wmfrecord->Parameters[2],cstruct);
+      x2=NormX(wmfrecord->Parameters[1],cstruct);
+      y2=NormY(wmfrecord->Parameters[0],cstruct);
+  }
+  else{
+    /* cstruct->dc->pen->lopnWidth/2.0 replaced by line->thickness. Is it correct ? */
+    x1=iNormX(wmfrecord->Parameters[3]+line->thickness,cstruct);
+    y1=iNormY(wmfrecord->Parameters[2]+line->thickness,cstruct);
+    x2=iNormX(wmfrecord->Parameters[1]-line->thickness,cstruct);
+    y2=iNormY(wmfrecord->Parameters[0]-line->thickness,cstruct);
+  }
+
   line->points[0].x=line->points[3].x=line->points[4].x=x1;
   line->points[0].y=line->points[1].y=line->points[4].y=y1;
   line->points[1].x=line->points[2].x=x2;
   line->points[2].y=line->points[3].y=y2;
 
-  for (i=0; i<np; i++)
-    {
-       if (i<np-1)
-	line->points[i].next=&(line->points[i+1]);
-       else
-	line->points[i].next=NULL;
-    }
+  for (i=0; i<np; i++){
+    if (i<np-1)
+      line->points[i].next=&(line->points[i+1]);
+    else
+      line->points[i].next=NULL;
+  }
 
-  /* Fill out defaults for F_line */
-  line->type=T_BOX;
-  line->style=SOLID_LINE;
-  line->thickness=1;
-  line->pen_color=BLACK;
-  line->fill_color=color;
-  line->fill_style=20;
-  line->depth=100;
-  line->pen_style=0;
-  line->style_val=0.00;
-  
+  /* It happens... this is not a bug... */
+/*   if ((line->fill_style==-1)&(line->thickness==0)) */
+/*     fprintf(stderr,"xf_draw_rectangle: invisible rectangle !!!\n"); */
+
   xf_addpolyline(line); 
-  printf("xf_addpolyline %d\n", line->type);
 }
 
 void xf_finish(CSTRUCT *cstruct)
@@ -903,17 +1003,49 @@ void xf_finish(CSTRUCT *cstruct)
 
 int setbrushstyle(CSTRUCT *cstruct,int color,LOGBRUSH *brushin)
 	{
-	  printf("setbrushstyle ?\n");
+	  printf("setbrushstyle\n");
 
 	return(0);
 	}
 
-int setlinestyle(CSTRUCT *cstruct,int color,LOGPEN *pen)
-	{
-	  printf("setlinestyle ?\n");
-	 
-	return(1);
-	}
+int setlinestyle(CSTRUCT *cstruct,int color,float *style_val,LOGPEN *pen){
+  printf("setlinestyle\n");
+  /* Far from being exhaustive */
+
+  switch(pen->lopnStyle & PS_STYLE_MASK)
+    {
+    case PS_SOLID:
+      return(SOLID_LINE);
+      break;
+      
+    case PS_DASH: 
+      return(DASH_LINE);
+      break;
+      
+    case PS_DOT: 
+      return(DOTTED_LINE);
+      break;
+	
+    case PS_DASHDOT:
+      return(DASH_DOT_LINE);
+      break;
+
+    case PS_DASHDOTDOT:
+      return(DASH_2_DOTS_LINE);
+      break;
+
+    case PS_ALTERNATE:
+      *style_val=1.0;
+      return(DOTTED_LINE);
+      break;
+    default:
+      fprintf(stderr,"setlinestyle: unsupported style (%d,%d)\n",pen->lopnStyle,
+	      pen->lopnStyle & PS_STYLE_MASK);
+      return(DEFAULT); 
+      break;
+    }
+}	 
+
 
 
 void xf_parseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height)
@@ -975,11 +1107,13 @@ void xf_parseROP(CSTRUCT *cstruct,U32 dwROP,U16 x, U16 y, U16 width, U16 height)
 void xf_setfillstyle(CSTRUCT *cstruct,LOGBRUSH *brush,DC *currentDC)
 	{
 	/*not needed*/
+printf("xf_setfillstyle ?");
 	}
 
 void xf_setpenstyle(CSTRUCT *cstruct,LOGPEN *pen,DC *currentDC)
 	{
 	/*not needed*/
+printf("xf_setpenstyle ?");
 	}
 
 void xf_clip_rect(CSTRUCT *cstruct)

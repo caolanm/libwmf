@@ -18,9 +18,29 @@ int ScaleX(S16 in,CSTRUCT *cstruct)
 	return( abs( in/cstruct->xpixeling ) );
 	}
 
+float fScaleX(float in,CSTRUCT *cstruct)
+	{
+	return( floatabs( in/cstruct->xpixeling ) );
+	}
+
+int iScaleX(float in,CSTRUCT *cstruct)
+	{
+	return( round( floatabs( in/cstruct->xpixeling )) );
+	}
+
 int NormX(S16 in,CSTRUCT *cstruct)
 	{
 	return( abs( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg) );
+	}
+
+float fNormX(float in,CSTRUCT *cstruct)
+        {
+	return( floatabs( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg));
+	}
+
+int iNormX(float in,CSTRUCT *cstruct)
+        {
+	  return( round( floatabs( (in-newleft)/cstruct->xpixeling + cstruct->xViewportOrg)));
 	}
 
 int ScaleY(S16 in,CSTRUCT *cstruct)
@@ -28,10 +48,37 @@ int ScaleY(S16 in,CSTRUCT *cstruct)
 	return( abs( in/cstruct->ypixeling ) );
 	}
 
+float fScaleY(float in, CSTRUCT *cstruct)
+	{
+	return( floatabs( in/cstruct->ypixeling ) );
+	}
+
+int iScaleY(float in, CSTRUCT *cstruct)
+	{
+	return( round( floatabs( in/cstruct->ypixeling )) );
+	}
+
 int NormY(S16 in,CSTRUCT *cstruct)
 	{
 	return( abs( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg) );
 	}
+
+float fNormY(float in,CSTRUCT *cstruct)
+	{
+	return( floatabs( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg) );
+	}
+
+int iNormY(float in,CSTRUCT *cstruct)
+	{
+	return( round( floatabs( (in-newtop)/cstruct->ypixeling + cstruct->yViewportOrg)));
+	}
+
+float floatabs(float in){
+  if (in<0)
+    return (-in);
+  else
+    return in;
+}
 
 void do_pixeling(CSTRUCT *cstruct, HMETAFILE file)
 	{
@@ -233,6 +280,9 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 	cstruct->mapmode=MM_TWIPS;
  	cstruct->xWindowExt=0;
 	cstruct->yWindowExt=0;
+
+	/* Quick and dirty hack */
+	cstruct->depth=999;
 
 	defaultpen.lopnColor[0]=0;
 	defaultpen.lopnColor[1]=0;
