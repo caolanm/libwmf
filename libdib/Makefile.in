@@ -31,7 +31,7 @@ SHELL = /bin/sh
 .SUFFIXES: .C .o
 
 MYOBJECTS = \
-    bytelevel.o \
+    ../bytelevel.o \
     bintree.o \
     dibtoxpm.o
 

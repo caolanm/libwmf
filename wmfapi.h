@@ -23,8 +23,8 @@
 #define U8 unsigned char
 #endif
 
-U32 read_32ubit(FILE *in);
-U16 read_16ubit(FILE *in);
+U32 wmfReadU32bit(FILE *in);
+U16 wmfReadU16bit(FILE *in);
 
 #ifndef PI
 #ifndef M_PI

@@ -315,14 +315,14 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 
 	do
 		{
-		wmfrecord.Size = read_32ubit(file->filein);
+		wmfrecord.Size = wmfReadU32bit(file->filein);
 		if (wmfrecord.Size == 0)
 			{
 			wmfdebug(stderr,"size was 0, giving up now silently\n");
 			break;
 			}
 		wmfdebug(stderr,"the size is %d, pos is %x\n",wmfrecord.Size,ftell(file->filein));
-		wmfrecord.Function = read_16ubit(file->filein);
+		wmfrecord.Function = wmfReadU16bit(file->filein);
 		if ((wmfrecord.Size > file->wmfheader->MaxRecordSize) || (wmfrecord.Size < 3))
 			{
 			wmfdebug(stderr,"what the hell!, wmfrecord with len %d, ignoring\n",wmfrecord.Size);
@@ -331,7 +331,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 		else
 			{
 			for (i=0;i<wmfrecord.Size-3;i++) 
-				wmfrecord.Parameters[i] = (S16) read_16ubit(file->filein);
+				wmfrecord.Parameters[i] = (S16) wmfReadU16bit(file->filein);
 			}
 		
 		wmfdebug(stderr,"our Function is %x\n",wmfrecord.Function);
@@ -1055,7 +1055,7 @@ int PlayMetaFile(void* vcstruct,HMETAFILE file)
 					objects[i].obj.brush.pointer = (void *)temps;
 					
 					output = fopen(temps,"wb");
-					read_32ubit(dib);	/*dont know what this is yet*/
+					wmfReadU32bit(dib);	/*dont know what this is yet*/
 					get_BITMAPINFOHEADER(dib,&dibheader);
 					save_DIBasXpm(dib,&dibheader,output);
 					fclose(dib);
@@ -1430,7 +1430,7 @@ int FileIsPlaceable(char *file)
 	FILE *filein = fopen(file,"rb");
 	if (filein == NULL)
 		return(0);
-	testlong = read_32ubit(filein);
+	testlong = wmfReadU32bit(filein);
 	if (testlong == 0x9ac6cdd7)
 		return(1);
 	return(0);
@@ -1504,17 +1504,17 @@ HMETAFILE GetPlaceableMetaFile(char *file)
 		fprintf(stderr,"arse no mem\n");
 		return(NULL);
 		}
-	cmetaheader->pmh->Key = read_32ubit(cmetaheader->filein);
-	cmetaheader->pmh->Handle = read_16ubit(cmetaheader->filein);
-	cmetaheader->pmh->Left = read_16ubit(cmetaheader->filein);
-	cmetaheader->pmh->Top = read_16ubit(cmetaheader->filein);
-	cmetaheader->pmh->Right = read_16ubit(cmetaheader->filein);
-	cmetaheader->pmh->Bottom = read_16ubit(cmetaheader->filein);
-	cmetaheader->pmh->Inch = read_16ubit(cmetaheader->filein);
+	cmetaheader->pmh->Key = wmfReadU32bit(cmetaheader->filein);
+	cmetaheader->pmh->Handle = wmfReadU16bit(cmetaheader->filein);
+	cmetaheader->pmh->Left = wmfReadU16bit(cmetaheader->filein);
+	cmetaheader->pmh->Top = wmfReadU16bit(cmetaheader->filein);
+	cmetaheader->pmh->Right = wmfReadU16bit(cmetaheader->filein);
+	cmetaheader->pmh->Bottom = wmfReadU16bit(cmetaheader->filein);
+	cmetaheader->pmh->Inch = wmfReadU16bit(cmetaheader->filein);
 	cmetaheader->placeable=1;
 	
-	cmetaheader->pmh->Reserved = read_32ubit(cmetaheader->filein);
-	cmetaheader->pmh->Checksum = read_16ubit(cmetaheader->filein);
+	cmetaheader->pmh->Reserved = wmfReadU32bit(cmetaheader->filein);
+	cmetaheader->pmh->Checksum = wmfReadU16bit(cmetaheader->filein);
 	cmetaheader->wmfheader = GetRealMetaFile(cmetaheader->filein);
 	if (cmetaheader->wmfheader == NULL)
 		{
@@ -1533,19 +1533,19 @@ WMFHEAD *GetRealMetaFile(FILE *filein)
 	head = (WMFHEAD *) malloc(sizeof(WMFHEAD));
 	if (head == NULL)
 		return(NULL);
-	head->FileType = read_16ubit(filein);
-	head->HeaderSize = read_16ubit(filein);
+	head->FileType = wmfReadU16bit(filein);
+	head->HeaderSize = wmfReadU16bit(filein);
 	if (head->HeaderSize != 9)
 		{
 		fprintf(stderr,"This isnt a wmf file at all\n");
 		free(head);
 		return(NULL);
 		}
-	head->Version = read_16ubit(filein);
-	head->FileSize = read_32ubit(filein);
-	head->NumOfObjects = read_16ubit(filein);
-	head->MaxRecordSize = read_32ubit(filein);
-	head->NumOfParams = read_16ubit(filein);
+	head->Version = wmfReadU16bit(filein);
+	head->FileSize = wmfReadU32bit(filein);
+	head->NumOfObjects = wmfReadU16bit(filein);
+	head->MaxRecordSize = wmfReadU32bit(filein);
+	head->NumOfParams = wmfReadU16bit(filein);
 	return(head);
 	}
 

@@ -13,6 +13,7 @@ char *dibversion="0.1.0";
 #include <string.h>
 #include <math.h>
 
+#include "../wmfapi.h"
 #include "dibtoxpm.h"
 #include "bintree.h"
 
@@ -26,28 +27,28 @@ int get_BMPHEADER(FILE *file,BMPHEADER *bmpheader)
 	bmpheader->Identifier[0] = getc(file);
 	bmpheader->Identifier[1] = getc(file);
 	bmpheader->Identifier[2] = '\0';
-	bmpheader->FileSize = read_32ubit(file);
-	bmpheader->Reserved = read_32ubit(file);
-	bmpheader->BitmapDataOffset = read_32ubit(file);
+	bmpheader->FileSize = wmfReadU32bit(file);
+	bmpheader->Reserved = wmfReadU32bit(file);
+	bmpheader->BitmapDataOffset = wmfReadU32bit(file);
 	}
 
 int get_BITMAPINFOHEADER(FILE *file,BITMAPINFOHEADER* dib_header)
 	{
 	int i;
 
-	dib_header->biSize=read_32ubit(file);
-	dib_header->biWidth=(S32)read_32ubit(file);        
-	dib_header->biHeight=(S32)read_32ubit(file);
+	dib_header->biSize=wmfReadU32bit(file);
+	dib_header->biWidth=(S32)wmfReadU32bit(file);        
+	dib_header->biHeight=(S32)wmfReadU32bit(file);
 	
 	
-	dib_header->biPlanes=read_16ubit(file);
-	dib_header->biBitCount=read_16ubit(file);        
-	dib_header->biCompression=read_32ubit(file);        
-	dib_header->biSizeImage=read_32ubit(file);
-	dib_header->biXPelsPerMeter=read_32ubit(file);
-	dib_header->biYPelsPerMeter=read_32ubit(file);
-	dib_header->biClrUsed=read_32ubit(file);
-	dib_header->biClrImportant=read_32ubit(file);
+	dib_header->biPlanes=wmfReadU16bit(file);
+	dib_header->biBitCount=wmfReadU16bit(file);        
+	dib_header->biCompression=wmfReadU32bit(file);        
+	dib_header->biSizeImage=wmfReadU32bit(file);
+	dib_header->biXPelsPerMeter=wmfReadU32bit(file);
+	dib_header->biYPelsPerMeter=wmfReadU32bit(file);
+	dib_header->biClrUsed=wmfReadU32bit(file);
+	dib_header->biClrImportant=wmfReadU32bit(file);
 	for (i=0;i<(dib_header->biSize)-40;i++)
 	          fgetc(file);
 	}
