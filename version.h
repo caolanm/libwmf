@@ -1,1 +1,1 @@
-char *wmfversion = "libwmf 0.1.16";
+char *wmfversion = "libwmf 0.1.21";

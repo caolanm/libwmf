@@ -1,3 +1,5 @@
+    * Matej Vela patch introduced libtool to allow dynamic libraries.
+    * Matej Vela patch to add man pages.
     * Changed licence on libdib/bintree.c and libdib/dibtoxpm.c 
       to LGPL, according to Caolán's email.
 v 0.1.21

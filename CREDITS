@@ -19,6 +19,7 @@ winepatches dir for them.
 * Debugging help by Benjamin Geer, Peter Ohlerich, Steve Oney.
 * Patches by Bob Bell, F.J. Franklin.
 * Revamping of the configure.in script, and more, by Albert Chin. 
+* Matej Vela megapatch to use libtools.
 
 * adding text output (and more) to the Xfig output code of libwmf;
   creating a rudimentary wmftoeps, fixing up font handling and text
