@@ -71,48 +71,47 @@ fi
 dnl system ttf support
 dnl ========================================================
 
-dnl A sensible default:
-TTF_DIR="/usr"
-
 _cppflags=${CPPFLAGS}
 _ldflags=${LDFLAGS}
 
 AC_ARG_WITH(ttf,
 [  --with-ttf[=DIR]	  find the ttf library in DIR],[
-  if test "$withval" != "no"; then
-    TTF_DIR=$withval
-    CPPFLAGS="${CPPFLAGS} -I$withval/include"
-    LDFLAGS="${LDFLAGS} -L$withval/lib"
-  fi
+    if test "$withval" != "no"; then
+        TTF_DIR=$withval
+        TTF_CPPFLAGS="-I$withval/include"
+        TTF_LDFLAGS="-L$withval/lib"
+    fi
 ])
 
-AC_CHECK_HEADERS(freetype.h freetype/freetype.h,[
-    AC_CHECK_LIB(ttf, TT_Init_FreeType,
-	AC_DEFINE(HAVE_TTF)
-	AC_CHECK_HEADER(freetype.h,[
-	    TTF_CFLAGS="-I${TTF_DIR}/include"],
-	    AC_CHECK_HEADER(freetype/freetype.h,[
-		TTF_CFLAGS="-I${TTF_DIR}/include/freetype"]))
-	TTF_LIBS="-L${TTF_DIR}/lib -lttf",
-	AC_CHECK_LIB(ttf, TT_Done_FreeType,[
-	    AC_DEFINE(HAVE_TTF)
-	    AC_CHECK_HEADER(freetype.h,[
-		TTF_CFLAGS="-I${TTF_DIR}/include"],
-		AC_CHECK_HEADER(freetype/freetype.h,[
-		    TTF_CFLAGS="-I${TTF_DIR}/include/freetype"]))
-	    TTF_LIBS="-L${TTF_DIR}/lib -lttf"],
-	    AC_MSG_WARN([TrueType library not installed. Please visit
-http://www.freetype.org and try again. The GD binding will not be
-able to handle wmf text and wmftogif will not have text support as a
-result (see README).]), -lnsl))
-    break],
-    if test "x$ac_cv_header_freetype_h" = xno -a \
-    "x$ac_cv_header_freetype_freetype_h" = xno; then
-	AC_MSG_WARN([TrueType library not installed. Please visit
+CPPFLAGS="$CPPFLAGS $TTF_CPPFLAGS"
+LDFLAGS="$LDFLAGS $TTF_LDFLAGS"
+
+dnl FreeType 1.3.1 has include file in <freetype/freetype.h>
+dnl
+AC_CHECK_HEADER(freetype.h,no_sys_freetype=no)
+if test "x$no_sys_freetype" != "xno"; then
+    AC_CHECK_HEADER(freetype/freetype.h,[
+        no_sys_freetype=no
+        AC_DEFINE(HAVE_FREETYPE_FREETYPE)])
+fi
+if test "x$no_sys_freetype" = "xno"; then
+    AC_CHECK_LIB(ttf, TT_Init_FreeType,[
+        AC_DEFINE(HAVE_TTF)
+        HAVE_TTF=1
+        TTF_CFLAGS="$TTF_CPPFLAGS"
+        TTF_LIBS="$TTF_LDFLAGS -lttf"],[
+        AC_CHECK_LIB(ttf, TT_Done_FreeType,[
+            AC_DEFINE(HAVE_TTF)
+            HAVE_TTF=1
+            TTF_CFLAGS="$TTF_CPPFLAGS"
+            TTF_LIBS="$TTF_LDFLAGS -lttf -lnsl"], no_sys_freetype=yes, -lnsl)])
+fi
+if test "x$no_sys_freetype" != "xno"; then
+    AC_MSG_WARN([TrueType library not installed. Please visit
 http://www.freetype.org and try again. The GD binding will not be
 able to handle wmf text and wmftogif will not have text support as a
 result (see README).])
-    fi)
+fi
 
 CPPFLAGS=${_cppflags}
 LDFLAGS=${_ldflags}

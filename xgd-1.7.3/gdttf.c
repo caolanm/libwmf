@@ -18,7 +18,12 @@ char * gdImageStringTTF(gdImage *im, int *brect, int fg, char *fontname,
 #else
 
 #include "gdcache.h"
-#include "freetype.h"
+
+#ifdef HAVE_FREETYPE_FREETYPE
+#include <freetype/freetype.h>
+#else
+#include <freetype.h>
+#endif
 
 /* number of fonts cached before least recently used is replaced */
 #define FONTCACHESIZE 6

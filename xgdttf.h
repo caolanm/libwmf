@@ -13,7 +13,11 @@ typedef struct taglistentry
 	} listentry;
 
 #ifdef HAVE_TTF
+#ifdef HAVE_FREETYPE_FREETYPE
+#include <freetype/freetype.h>
+#else
 #include <freetype.h>
+#endif
 
 static char*  LookUp_Name( int  index,TT_Face_Properties *properties, TT_Face *face, char *name_buffer );
 #endif
