@@ -1,3 +1,5 @@
+    * Dr Volker Zell inspired changes needed for CYGWIN. 
+      Cleanup in libpng detection.
     * Matej Vela patch introduced libtool to allow dynamic libraries.
     * Matej Vela patch to add man pages.
     * Changed licence on libdib/bintree.c and libdib/dibtoxpm.c 
