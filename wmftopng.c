@@ -94,7 +94,7 @@ int main(int argc,char **argv)
 	
 	cstruct->preparse = 0;
 /* fprintf(stderr, "%f %f\n", cstruct->realwidth, cstruct->realheight); */
-	PlayMetaFile((void *)cstruct,file,scale_BMP,argv[2]);
+	PlayMetaFile((void *)cstruct,file,scale_BMP,NULL);
 
 	out = fopen(argv[2], "wb");
 	if (out == NULL)
