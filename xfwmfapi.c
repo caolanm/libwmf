@@ -350,7 +350,8 @@ void xf_draw_text(CSTRUCT *cstruct, char *str, RECT *arect,U16 flags,U16 *lpDx,U
   text->base_x = x;
   text->base_y = y;
 
-  text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000; 
+  text->angle = - (PI * cstruct->dc->font->lfOrientation / 10.0)/180; 
+/*   text->angle = 2 * PI * cstruct->dc->font->lfOrientation / 10000;  */
 
 
 

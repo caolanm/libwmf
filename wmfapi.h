@@ -96,8 +96,8 @@ typedef struct tagLOGFONTA
 {
     U16      lfHeight;
     U16      lfWidth;
-    U16      lfEscapement;
-    U16      lfOrientation;
+    S16      lfEscapement;
+    S16      lfOrientation;
     U16      lfWeight;
     U8      lfItalic;
     U8      lfUnderline;
