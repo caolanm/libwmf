@@ -10,3 +10,12 @@ winepatches dir for them.
 	(http://www.csn.ul.ie/~airlied)
 * zooming in with xwmf (+ and -) is by Raj Manandhar <raj@colsa.com> 
 
+* Contributions by Dom Lachowicz (help with cvs repository, 
+  checking in stuff, good ideas,...)
+* Contribution by Steven Michael Robbins (simpler configure.in)
+* Debugging help by Frédéric Vivien, Benjamin Geer, Peter Ohlerich.
+
+* adding text output (and more) to the xfig output code of libwmf;
+  creating a rudimentary wmftoeps -- yours truly the maintainer,
+  Martin Vermeer
+
