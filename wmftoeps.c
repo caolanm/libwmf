@@ -12,6 +12,7 @@ int main(int argc,char **argv)
   char *in;
   HMETAFILE file;
   int check;
+  float dx, dy;
   FILE *out;
   CSTRUCT rstruct;
   CSTRUCT *cstruct = &rstruct;
@@ -71,7 +72,10 @@ int main(int argc,char **argv)
   cstruct->preparse = 0;
   PlayMetaFile((void *)cstruct,file);
 
-  writeepsheader(out, cstruct->realwidth, cstruct->realheight);
+  dx = cstruct->realwidth; 
+  dy = cstruct->realwidth;
+
+  writeepsheader(out, argv [1], dx, dy);
   eps_color_to_file(out);  /* If there are user-defined colours? */
   xf_objlist_tofile(out);
 
@@ -84,19 +88,24 @@ int main(int argc,char **argv)
   return(0);
 }
 
-int writeepsheader(FILE *fl, double realwidth, double realheight)
+int writeepsheader(FILE *fl, char *title, double realwidth, double realheight)
 {
   char *hostname;
   size_t len;
   hostname = (char *)malloc(100);
   gethostname(hostname, len);
 
+/* works for formulas, but not otherwise: */
+/*
+  realwidth  = 0.06 * realwidth;
+  realheight = 0.06 * realheight;
+*/
   fprintf(fl, "%%!PS-Adobe-2.0 EPSF-2.0\n");
-  fprintf(fl, "%%%%Title: libwmf output\n");
+  fprintf(fl, "%%%%Title: %s\n", title);
   fprintf(fl, "%%%%Creator: libwmf version 0.1.19 cvs\n");
   fprintf(fl, "%%%%CreationDate: %s", ctime(time));
   fprintf(fl, "%%%%For: %s@%s\n", getlogin(), hostname);
-  fprintf(fl, "%%%%BoundingBox: 0 0 %d %d \n", (int) realwidth, (int) realheight);
+  fprintf(fl, "%%%%BoundingBox: 0 0 %d %d \n",  (int) realwidth, (int) realheight);
   fprintf(fl, "%%%%Magnification: 1.0000\n");
   fprintf(fl, "%%%%EndComments\n");
   fprintf(fl, "/$F2psDict 200 dict def\n");
@@ -138,13 +147,8 @@ int writeepsheader(FILE *fl, double realwidth, double realheight)
   fprintf(fl, "\n");
   fprintf(fl, "end\n");
   fprintf(fl, "save\n");
-  fprintf(fl, "newpath 0 %d moveto 0 0 lineto %d 0 lineto %d %d lineto closepath clip newpath\n", (int)realwidth, (int)realheight, (int)realheight, (int)realwidth);
-  fprintf(fl, "%% Fill background color\n");
-  fprintf(fl, "0 0 moveto %d 0 lineto %d %d lineto 0 %d lineto\n", \
-	(int)realwidth, (int)realwidth, (int)realheight, (int)realheight);
-  fprintf(fl, "closepath 1.00 1.00 1.00 setrgbcolor fill\n");
   fprintf(fl, "\n");
-  fprintf(fl, "8.0 55.0 translate\n");
+  fprintf(fl, "0.0 %f translate\n", realheight);
   fprintf(fl, "1 -1 scale\n");
   fprintf(fl, "\n");
   fprintf(fl, "/cp {closepath} bind def\n");

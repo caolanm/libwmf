@@ -31,9 +31,10 @@ void xf_write_polyline(FILE *fl, F_line *line)
   	line->type, \
 	line->style, \
 */
-  fprintf(fl, "%d slw\n gs col%d s gr\n", \
-	line->thickness * 7.5, \
-	line->pen_color);
+  fprintf(fl, "%.3f slw\n gs ", (line->thickness * 7.5));
+  fprintf(fl, "col%d s gr\n", line->pen_color);
+
+/*
   fprintf(fl, "%d %d %d %0.3f 0 0 -1 0 0 %d", \
 	line->fill_color, \
 	line->depth, \
@@ -41,15 +42,17 @@ void xf_write_polyline(FILE *fl, F_line *line)
 	line->fill_style, \
 	line->style_val, \
 	np);
-
+*/
 
 
   for (i=0; i<np; i++)
     {
-      fprintf(fl, "n ");
-      if (i == 0) { fprintf(fl,"%d %d m ", line->points[i].x, line->points[i].y); }
-      else { fprintf(fl,"%d %d l ", line->points[i].x, line->points[i].y); }
-      fprintf(fl, "gs col%d s gr\n", line->pen_color);
+      if (i == 0) { fprintf(fl,"n %d %d m\n", line->points[i].x, line->points[i].y); }
+      else 
+        { 
+          fprintf(fl,"%d %d l ", line->points[i].x, line->points[i].y); 
+          fprintf(fl, "gs col%d s gr\n", line->pen_color);
+        }
     }
   fprintf(fl,"\n");
 }
@@ -129,7 +132,8 @@ void xf_write_arc(FILE *fl, F_arc *arc)
 
 void xf_write_text(FILE *fl, F_text *text)
 {
-  char *c;
+  int i;
+  char c;
 /*
   fprintf(fl,"%d %d %d %d ", \
 	text->type,\
@@ -146,8 +150,8 @@ void xf_write_text(FILE *fl, F_text *text)
         fprintf(fl,"/Times-Italic ff ");
         break;
       case 2:
-        break;
         fprintf(fl,"/Times-Bold ff ");
+        break;
       case 32:
         fprintf(fl,"/Symbol ff ");
         break;
@@ -156,7 +160,7 @@ void xf_write_text(FILE *fl, F_text *text)
         break;
     }
    fprintf(fl, "%.2f scf sf\n", \
-	15.0 * text->size); /* empirical? */
+	text->size / 0.06); /* empirical */
 /*
    fprintf(fl, "%f %d %d %d %d %d " , \
 	text->angle,\
@@ -166,7 +170,15 @@ void xf_write_text(FILE *fl, F_text *text)
 */
    fprintf(fl, "%d %d m\n" , \
 	text->base_x, text->base_y);
-   fprintf(fl, "gs 1 -1 sc (%s) col%d sh gr\n",\
-        text->cstring, text->color);
+   fprintf(fl, "gs 1 -1 sc %f rot ", 57.297 * text->angle);
+   fprintf(fl, "(");
+   for (i = 0; i<strlen(text->cstring);i++)
+     {
+       c = text->cstring [i];
+       if ( (c == '(') || (c == ')') ) fprintf(fl, "\\");
+       fprintf(fl, "%c", c);
+     }
+   fprintf(fl, ") ");
+   fprintf(fl, "col%d sh gr\n", text->color);
 
 }
