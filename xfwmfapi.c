@@ -221,7 +221,12 @@ printf("charset = %d\n", cstruct->dc->font->lfCharSet);
 
   /* Fill out defaults for F_text (for now?) */
   text->type=T_LEFT_JUSTIFIED;
-  text->size = 12;
+  /* 
+  The 20 is semi-empirical. Twips per inch point? 
+  The use of lfHeight to make big parentheses explains btw
+  why MS Word formulas look so ugly compared to LaTeX.
+  */
+  text->size = ScaleY(cstruct->dc->font->lfHeight,cstruct) / 20;
   text->depth=100;
   text->pen_style=0;
   
