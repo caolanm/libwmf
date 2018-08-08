@@ -393,18 +393,19 @@ fontFetch (char **error, void *key)
   if (!font_found)
     {
       *error = "Could not find/open font";
+      gdFree (fullname);
       gdFree (a);
       return NULL;
     }
 
   err = FT_New_Face (*b->library, fullname, 0, &a->face);
+  gdFree (fullname);
   if (err)
     {
       *error = "Could not read font";
       gdFree (a);
       return NULL;
     }
-  gdFree (fullname);
 
 /* FIXME - This mapping stuff is imcomplete - where is the spec? */
 
