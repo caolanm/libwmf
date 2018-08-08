@@ -38,6 +38,32 @@ static U16 ParU16 (wmfAPI* API,wmfRecord* record,unsigned long index)
 	return ((sp2 << 8) | sp1);
 }
 
+static int PutParU16 (wmfAPI* API,wmfRecord* record,unsigned long index,U16 sp)
+{	int changed = 0;
+
+	unsigned char c1 = (unsigned char) ( sp       & 0xff);
+	unsigned char c2 = (unsigned char) ((sp >> 8) & 0xff);
+
+	if (index >= record->size)
+	{	WMF_ERROR (API,"Bad record - unexpectedly short!");
+		API->err = wmf_E_BadFormat;
+		return (0);
+	}
+
+	index <<= 1;
+	if (record->parameter[index] != c1)
+	{	record->parameter[index] = c1;
+		changed = 1;
+	}
+	index++;
+	if (record->parameter[index] != c2)
+	{	record->parameter[index] = c2;
+		changed = 1;
+	}
+
+	return (changed);
+}
+
 static S16 ParS16 (wmfAPI* API,wmfRecord* record,unsigned long index)
 {	U16 up;
 

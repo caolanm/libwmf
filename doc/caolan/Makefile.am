@@ -2,6 +2,14 @@ SUBDIRS = . pics
 
 wmfonedocdir = @WMF_DOCDIR@/caolan
 
+install-data-local:
+	@echo "Installing Caolan's documentation"; \
+	 cd $(srcdir) && \
+	 $(mkinstalldirs) $(DESTDIR)$(wmfonedocdir); \
+	 (for i in *.html *.gif; do \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(wmfonedocdir)/$$i; \
+	  done)
+
 DOCUMENTATION = \
 	2.html \
 	Arc.html \
@@ -77,7 +85,5 @@ DOCUMENTATION = \
 	msmeta02.gif \
 	msmeta03.gif \
 	msmeta04.gif
-
-wmfonedoc_DATA = $(DOCUMENTATION)
 
 EXTRA_DIST = $(DOCUMENTATION)

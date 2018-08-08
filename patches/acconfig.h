@@ -7,7 +7,7 @@
 #undef HAVE_EXPAT
 
 /* Define if you have libxml2.  */
-#undef HAVE_XML2
+#undef HAVE_LIBXML2
 
 /* Define if you have libpng.  */
 #undef HAVE_LIBPNG

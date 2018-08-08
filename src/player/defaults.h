@@ -57,6 +57,8 @@ static void SetDefaults (wmfAPI* API,wmfPen* pen,wmfBrush* brush,wmfFont* font)
 	WMF_FONT_SET_PITCH       (font, 0);
 	WMF_FONT_SET_NAME        (font,wmf_strdup (API,"Times"));
 
+	font->user_data = 0;
+
 	FD->map (API,font);
 }
 

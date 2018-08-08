@@ -32,13 +32,7 @@ else
 WMF2PLOT = 
 endif
 
-if LIBWMF_OPT_MAGICK
-WMF2MAGICK = wmf2magick
-else
-WMF2MAGICK = 
-endif
-
-bin_PROGRAMS = $(WMF2LAYERS) $(WMF2GD) $(WMF2X) $(WMF2PLOT) $(WMF2MAGICK)
+bin_PROGRAMS = $(WMF2LAYERS) $(WMF2GD) $(WMF2X) $(WMF2PLOT)
 
 wmf2eps_LDADD = ../libwmf.la ../libwmflite.la
 
@@ -51,5 +45,3 @@ wmf2gd_LDADD = ../libwmf.la ../libwmflite.la
 wmf2x_LDADD = ../libwmf.la ../libwmflite.la
 
 wmf2plot_LDADD = ../libwmf.la ../libwmflite.la
-
-wmf2magick_LDADD = ../libwmf.la ../libwmflite.la

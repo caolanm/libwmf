@@ -1,4 +1,12 @@
-SUBDIRS = . src include fonts doc
+if LIBWMF_BUILD_ALL
+DIRHEAVY = . src include fonts doc
+else
+DIRHEAVY = . src include
+endif
+
+DIST_SUBDIRS = . src include fonts doc
+
+SUBDIRS = $(DIRHEAVY)
 
 bin_SCRIPTS = libwmf-config
 

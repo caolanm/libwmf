@@ -658,10 +658,10 @@ void wmf_ipa_font_map_xml (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 	exmlfontmap_read (API,FD,xmlfontmap);
 	return;
 #endif /* HAVE_EXPAT */
-#ifdef HAVE_XML2
+#ifdef HAVE_LIBXML2
 	xml2fontmap_read (API,FD,xmlfontmap);
 	return;
-#endif /* HAVE_XML2 */
+#endif /* HAVE_LIBXML2 */
 	WMF_DEBUG (API,"warning: no XML support!");
 }
 
@@ -831,7 +831,7 @@ static void exmlfontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 }
 #endif /* HAVE_EXPAT */
 
-#ifdef HAVE_XML2
+#ifdef HAVE_LIBXML2
 
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
@@ -951,7 +951,7 @@ static void xml2fontmap_read (wmfAPI* API,wmfXML_FontData* FD,char* xmlfontmap)
 	xmlFreeParserCtxt (ctxt);
 }
 
-#endif /* HAVE_XML2 */
+#endif /* HAVE_LIBXML2 */
 
 void wmf_ipa_font_map_gs (wmfAPI* API,wmfGS_FontData* FD,char* gsfontmap)
 {	ipa_font_gs_file (API,FD,gsfontmap);

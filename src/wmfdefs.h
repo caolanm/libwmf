@@ -29,7 +29,9 @@
 #include "libwmf/color.h"
 #include "libwmf/macro.h"
 
+#ifdef LIBWMF_INCLUDE_TRIO_H
 #include "extra/trio/trio.h"
+#endif
 
 #define WMF_BMP_OPAQUE 0xff /* I think, or should this be zero ?? */
 
@@ -39,6 +41,7 @@
 #define API_FTLIBRARY_OPEN     (1<<21)
 #define API_FILE_OPEN          (1<<22)
 
+#define API_ENABLE_EDITING     (1<<30)
 #define API_STANDARD_INTERFACE (1<<31)
 
 /* API-independent defs & macros *only*

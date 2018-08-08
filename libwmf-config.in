@@ -82,7 +82,13 @@ if test "$echo_exec_prefix" = "yes"; then
 fi
 
 wmf_cflags="@WMF_CONFIG_CFLAGS@"
-wmf_libs="-lwmf -lwmflite @WMF_LIBFLAGS@"
+
+libwmf_buildstyle=@LIBWMF_BUILDSTYLE@
+if test $libwmf_buildstyle = heavy; then
+	wmf_libs="-lwmf -lwmflite @WMF_LIBFLAGS@"
+else
+	wmf_libs="-lwmflite"
+fi
 
 if test "$echo_cflags" = "yes"; then
 	includes="$wmf_cflags"

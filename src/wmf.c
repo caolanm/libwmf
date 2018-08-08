@@ -73,6 +73,16 @@ wmf_error_t wmf_api_create (wmfAPI** API_return,unsigned long flags,wmfAPI_Optio
 		return (err);
 	}
 
+	if ((flags & WMF_OPT_WRITE) && (options->write_file))
+	{	wmf_write_begin (API, options->write_file);
+
+		if (ERR (API))
+		{	WMF_DEBUG (API,"bailing...");
+			err = wmf_api_destroy (API);
+			return (err);
+		}
+	}
+
 /* Have successfully created the API...
  */
 	(*API_return) = API;
@@ -98,6 +108,8 @@ wmf_error_t wmf_api_destroy (wmfAPI* API) /* Basically free all alloced memory *
 	{	FD = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
 		if (FD) ft_lib = FD->Library;
 	}
+
+	if (API->write_data) wmf_write_end (API);
 
 	err = wmf_lite_destroy (API);
 
@@ -170,6 +182,12 @@ static void wmf_arg (unsigned long* flags,wmfAPI_Options* options)
 			continue;
 		}
 
+		if (strncmp (argv[arg],"--wmf-write=",12) == 0)
+		{	(*flags) |= WMF_OPT_WRITE;
+			options->write_file = argv[arg] + 12;
+			continue;
+		}
+
 		if ((strcmp (argv[arg],"--wmf-ignore-nonfatal"    ) == 0)
 		 || (strcmp (argv[arg],"--wmf-ignore-nonfatal=yes") == 0))
 		{	(*flags) |= WMF_OPT_IGNORE_NONFATAL;
@@ -230,6 +248,7 @@ Additional wmf-related options:
   --wmf-xtra-fonts                use non-system fonts, if any found.
   --wmf-xtra-fontmap=<file>       use non-system xml-fontmap file <file>.
   --wmf-gs-fontmap=<file>         use ghostscript file <file>.
+  --wmf-write=<file>              write metafile to <file>.
 
 Report bugs to <http://www.wvware.com/>.
 @endverbatim 
@@ -250,6 +269,7 @@ Additional wmf-related options:\n\
   --wmf-xtra-fonts                use non-system fonts, if any found.\n\
   --wmf-xtra-fontmap=<file>       use non-system xml-fontmap file <file>.\n\
   --wmf-gs-fontmap=<file>         use ghostscript file <file>.\n\
+  --wmf-write=<file>              write metafile to <file>.\n\
 \n\
 Report bugs to <http://www.wvware.com/>.\n";
 

@@ -20,7 +20,7 @@ INCLUDES = \
 
 noinst_LTLIBRARIES = libipa.la
 
-libipa_la_SOURCES = eps.c fig.c svg.c xgd.c x.c ipa.c plot.c magick.c foreign.c
+libipa_la_SOURCES = eps.c fig.c svg.c xgd.c x.c ipa.c plot.c foreign.c
 
 libipa_la_LDFLAGS = 
 
@@ -75,11 +75,4 @@ PLOTHEADERS = \
 	plot/region.h \
 	plot.h
 
-MAGICKHEADERS = \
-	magick/bmp.h \
-	magick/device.h \
-	magick/draw.h \
-	magick/region.h \
-	magick.h
-
-EXTRA_DIST = template.c template.h $(IPAHEADERS) $(EPSHEADERS) $(FIGHEADERS) $(SVGHEADERS) $(GDHEADERS) $(XHEADERS) $(PLOTHEADERS) $(MAGICKHEADERS)
+EXTRA_DIST = template.c template.h $(IPAHEADERS) $(EPSHEADERS) $(FIGHEADERS) $(SVGHEADERS) $(GDHEADERS) $(XHEADERS) $(PLOTHEADERS)

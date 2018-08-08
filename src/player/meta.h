@@ -20,8 +20,10 @@
 #ifndef WMFPLAYER_META_H
 #define WMFPLAYER_META_H
 
-static void meta_mapmode (wmfAPI* API,wmfRecord* Record)
-{	U16 par_U16;
+static int meta_mapmode (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	U16 par_U16;
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
@@ -31,10 +33,14 @@ static void meta_mapmode (wmfAPI* API,wmfRecord* Record)
 	par_U16 = ParU16 (API,Record,0);
 
 	WmfSetMapMode (API,par_U16);
+
+	return (changed);
 }
 
-static void meta_orgext (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_orgext (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	S32 par_S32_x;
 	S32 par_S32_y;
@@ -89,10 +95,14 @@ static void meta_orgext (wmfAPI* API,wmfRecord* Record)
 		API->err = wmf_E_Glitch;
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_scale (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_scale (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	S32 par_S32_x1;
 	S32 par_S32_x2;
@@ -117,7 +127,7 @@ static void meta_scale (wmfAPI* API,wmfRecord* Record)
 	if ((par_S32_x1 == 0) || (par_S32_y1 == 0))
 	{	WMF_ERROR (API,"meta file attempts division by zero!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	x2 = (double) par_S32_x2;
@@ -146,10 +156,14 @@ static void meta_scale (wmfAPI* API,wmfRecord* Record)
 
 	PixelWidth (API);
 	PixelHeight (API); /* Recalculate pixel size */
+
+	return (changed);
 }
 
-static void meta_moveto (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_moveto (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	U16 par_U16_x;
 	U16 par_U16_y;
@@ -163,10 +177,14 @@ static void meta_moveto (wmfAPI* API,wmfRecord* Record)
 	par_U16_y = ParU16 (API,Record,0);
 
 	P->current = L_Coord (API,par_U16_x,par_U16_y);
+
+	return (changed);
 }
 
-static void meta_flood (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_flood (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -199,7 +217,7 @@ static void meta_flood (wmfAPI* API,wmfRecord* Record)
 	if (SCAN (API))
 	{	wmf_ipa_color_add (API,&(flood.color));
 		D_Coord_Register (API,flood.pt,0);
-		return;
+		return (changed);
 	}
 
 	flood.dc = P->dc;
@@ -225,10 +243,14 @@ static void meta_flood (wmfAPI* API,wmfRecord* Record)
 		API->err = wmf_E_Glitch;
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_pixel (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_pixel (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -265,16 +287,20 @@ static void meta_pixel (wmfAPI* API,wmfRecord* Record)
 	{	wmf_ipa_color_add (API,&(drawpixel.color));
 		scope = (float) MAX (drawpixel.pixel_width,drawpixel.pixel_height);
 		D_Coord_Register (API,drawpixel.pt,scope);
-		return;
+		return (changed);
 	}
 
 	drawpixel.dc = P->dc;
 
 	if (FR->draw_pixel) FR->draw_pixel (API,&drawpixel);
+
+	return (changed);
 }
 
-static void meta_arc (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -492,7 +518,7 @@ static void meta_arc (wmfAPI* API,wmfRecord* Record)
 		break;
 		}
 
-		return;
+		return (changed);
 	}
 
 	d_pt.x = (drawarc.BR.x - drawarc.TL.x) / 2; /* elliptic axes */
@@ -534,10 +560,14 @@ static void meta_arc (wmfAPI* API,wmfRecord* Record)
 		API->err = wmf_E_Glitch;
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_ellipse (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_ellipse (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -577,16 +607,20 @@ static void meta_ellipse (wmfAPI* API,wmfRecord* Record)
 
 		D_Coord_Register (API,drawarc.TL,scope);
 		D_Coord_Register (API,drawarc.BR,scope);
-		return;
+		return (changed);
 	}
 
 	drawarc.dc = P->dc;
 
 	if (FR->draw_ellipse) FR->draw_ellipse (API,&drawarc);
+
+	return (changed);
 }
 
-static void meta_line (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_line (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -623,16 +657,20 @@ static void meta_line (wmfAPI* API,wmfRecord* Record)
 
 		D_Coord_Register (API,drawline.from,scope);
 		D_Coord_Register (API,drawline.to,scope);
-		return;
+		return (changed);
 	}
 
 	drawline.dc = P->dc;
 
 	if (FR->draw_line) FR->draw_line (API,&drawline);
+
+	return (changed);
 }
 
-static void meta_lines (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_lines (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -677,14 +715,14 @@ static void meta_lines (wmfAPI* API,wmfRecord* Record)
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
-		return;
+		return (changed);
 	}
 
 	polyline.pt = (wmfD_Coord*) wmf_malloc (API,polyline.count * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	index = 1;
@@ -702,10 +740,14 @@ static void meta_lines (wmfAPI* API,wmfRecord* Record)
 	if (FR->poly_line) FR->poly_line (API,&polyline);
 
 	wmf_free (API,polyline.pt);
+
+	return (changed);
 }
 
-static void meta_polygon (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_polygon (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -750,14 +792,14 @@ static void meta_polygon (wmfAPI* API,wmfRecord* Record)
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
-		return;
+		return (changed);
 	}
 
 	polyline.pt = (wmfD_Coord*) wmf_malloc (API,polyline.count * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	index = 1;
@@ -775,10 +817,14 @@ static void meta_polygon (wmfAPI* API,wmfRecord* Record)
 	if (FR->draw_polygon) FR->draw_polygon (API,&polyline);
 
 	wmf_free (API,polyline.pt);
+
+	return (changed);
 }
 
-static void meta_polygons (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_polygons (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -814,7 +860,7 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 
 	polypoly.npoly = ParU16 (API,Record,0);
 
-	if (polypoly.npoly == 0) return;
+	if (polypoly.npoly == 0) return (changed);
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,",%lu",(unsigned long) polypoly.npoly);
@@ -824,14 +870,14 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polypoly.count = (U16*) wmf_malloc (API, polypoly.npoly * sizeof (U16));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	count = 0;
@@ -860,11 +906,11 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 		}
 		wmf_free (API, polypoly.pt);
 		wmf_free (API, polypoly.count);
-		return;
+		return (changed);
 	}
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	if (SCAN (API) && DIAG (API))
@@ -886,7 +932,7 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
-		return;
+		return (changed);
 	}
 
 	polypoly.dc = P->dc;
@@ -921,7 +967,7 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 
 			if (ERR (API))
 			{	WMF_DEBUG (API,"bailing...");
-				return;
+				return (changed);
 			}
 
 			polypoly_construct (API, &polypoly, &polyline, 0);
@@ -952,6 +998,8 @@ static void meta_polygons (wmfAPI* API,wmfRecord* Record)
 	}
 	wmf_free (API, polypoly.pt);
 	wmf_free (API, polypoly.count);
+
+	return (changed);
 }
 
 static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_t* polyline,U16 ipoly)
@@ -1023,7 +1071,7 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 		polyline->count++;
 	}
 
-	polypoly_construct (API, polypoly, polyline, ipoly + 1);
+	polypoly_construct (API, polypoly, polyline, (U16)(ipoly + 1));
 
 	for (i = imin; i < count; i++)
 	{	polyline->pt[polyline->count].x = polypoly->pt[ipoly][i].x;
@@ -1035,8 +1083,10 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 	polyline->count++;
 }
 
-static void meta_round (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_round (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -1076,7 +1126,7 @@ static void meta_round (wmfAPI* API,wmfRecord* Record)
 
 		D_Coord_Register (API,drawrect.TL,scope);
 		D_Coord_Register (API,drawrect.BR,scope);
-		return;
+		return (changed);
 	}
 
 	par_U16_x = ParU16 (API,Record,1);
@@ -1088,10 +1138,14 @@ static void meta_round (wmfAPI* API,wmfRecord* Record)
 	drawrect.dc = P->dc;
 
 	if (FR->draw_rectangle) FR->draw_rectangle (API,&drawrect);
+
+	return (changed);
 }
 
-static void meta_rect (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_rect (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfL_Coord l_pt;
@@ -1131,7 +1185,7 @@ static void meta_rect (wmfAPI* API,wmfRecord* Record)
 
 		D_Coord_Register (API,drawrect.TL,scope);
 		D_Coord_Register (API,drawrect.BR,scope);
-		return;
+		return (changed);
 	}
 
 	drawrect.width  = 0;
@@ -1140,10 +1194,14 @@ static void meta_rect (wmfAPI* API,wmfRecord* Record)
 	drawrect.dc = P->dc;
 
 	if (FR->draw_rectangle) FR->draw_rectangle (API,&drawrect);
+
+	return (changed);
 }
 
-static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_rgn_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfObject* objects;
@@ -1193,7 +1251,7 @@ static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 	if ((oid_region >= NUM_OBJECTS (API)) || (oid_brush >= NUM_OBJECTS (API)))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	obj_region = objects + oid_region;
@@ -1208,7 +1266,7 @@ static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 	{	WMF_ERROR (API,"libwmf: have lost track of the objects in this metafile");
 		WMF_ERROR (API,"        please send it to us at http://www.wvware.com/");
 		API->err = wmf_E_Glitch;
-		return;
+		return (changed);
 	}
 
 	region = &(obj_region->obj.rgn);
@@ -1237,7 +1295,7 @@ static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 		d_pt.y += height;
 		D_Coord_Register (API,d_pt,0);
 
-		return;
+		return (changed);
 	}
 
 	polyrect.dc = P->dc;
@@ -1260,14 +1318,14 @@ static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.BR = (wmfD_Coord*) wmf_malloc (API,polyrect.count * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.count = region->numRects;
@@ -1328,10 +1386,14 @@ static void meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 
 	wmf_free (API,polyrect.TL);
 	wmf_free (API,polyrect.BR);
+
+	return (changed);
 }
 
-static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_rgn_paint (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfObject* objects;
@@ -1362,7 +1424,7 @@ static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 	if (oid_region >= NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	obj_region = objects + oid_region;
@@ -1375,7 +1437,7 @@ static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 	{	WMF_ERROR (API,"libwmf: have lost track of the objects in this metafile");
 		WMF_ERROR (API,"        please send it to us at http://www.wvware.com/");
 		API->err = wmf_E_Glitch;
-		return;
+		return (changed);
 	}
 
 	region = &(obj_region->obj.rgn);
@@ -1387,7 +1449,7 @@ static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 		d_pt = region->extents.BR;
 		D_Coord_Register (API,d_pt,0);
 
-		return;
+		return (changed);
 	}
 
 	polyrect.dc = P->dc;
@@ -1410,14 +1472,14 @@ static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.BR = (wmfD_Coord*) wmf_malloc (API,polyrect.count * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.count = region->numRects;
@@ -1464,10 +1526,14 @@ static void meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 
 	wmf_free (API,polyrect.TL);
 	wmf_free (API,polyrect.BR);
+
+	return (changed);
 }
 
-static void meta_rgn_create (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	wmfRecord start;
 	wmfRecord end;
@@ -1504,7 +1570,7 @@ static void meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	oid_region = i;
@@ -1519,7 +1585,7 @@ static void meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	WmfSetRectRgn (API,region,0);
@@ -1533,14 +1599,14 @@ static void meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 
 	num_band = ParU16 (API,Record,5);
 
-	if (num_band == 0) return;
+	if (num_band == 0) return (changed);
 
 	temp_region.rects = (wmfD_Rect*) wmf_malloc (API,8 * sizeof (wmfD_Rect));
 	temp_region.size = 8;
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	WmfSetRectRgn (API,&temp_region,0);
@@ -1593,10 +1659,14 @@ static void meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 	}
 
 	wmf_free (API,temp_region.rects);
+
+	return (changed);
 }
 
-static void meta_clip_select (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_clip_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	wmfObject* objects;
 	wmfObject* obj_region;
@@ -1618,7 +1688,7 @@ static void meta_clip_select (wmfAPI* API,wmfRecord* Record)
 	if (oid_region >= NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	obj_region = objects + oid_region;
@@ -1643,7 +1713,7 @@ static void meta_clip_select (wmfAPI* API,wmfRecord* Record)
 			WMF_ERROR (API,"        please send it to us at http://www.wvware.com/");
 			API->err = wmf_E_Glitch;
 		}
-		return;
+		return (changed);
 	}
 
 	region = &(obj_region->obj.rgn);
@@ -1651,10 +1721,14 @@ static void meta_clip_select (wmfAPI* API,wmfRecord* Record)
 	clip = (wmfRegion*) P->dc->clip;
 
 	WmfCombineRgn (API,clip,region,0,RGN_COPY);
+
+	return (changed);
 }
 
-static void meta_clip_offset (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_clip_offset (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfRegion* clip;
@@ -1691,20 +1765,20 @@ static void meta_clip_offset (wmfAPI* API,wmfRecord* Record)
 	clip->extents.BR.x += l_pt.x;
 	clip->extents.BR.y += l_pt.y;
 			
-	if (SCAN (API)) return;
+	if (SCAN (API)) return (changed);
 
 	polyrect.TL = (wmfD_Coord*) wmf_malloc (API,clip->numRects * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.BR = (wmfD_Coord*) wmf_malloc (API,clip->numRects * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.count = clip->numRects;
@@ -1722,10 +1796,14 @@ static void meta_clip_offset (wmfAPI* API,wmfRecord* Record)
 
 	wmf_free (API,polyrect.TL);
 	wmf_free (API,polyrect.BR);
+
+	return (changed);
 }
 
-static void meta_clip_combine (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_clip_combine (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfRegion* visible;
@@ -1777,23 +1855,23 @@ static void meta_clip_combine (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
-	if (SCAN (API)) return;
+	if (SCAN (API)) return (changed);
 
 	polyrect.TL = (wmfD_Coord*) wmf_malloc (API,clip->numRects * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.BR = (wmfD_Coord*) wmf_malloc (API,clip->numRects * sizeof (wmfD_Coord));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	polyrect.count = clip->numRects;
@@ -1811,10 +1889,14 @@ static void meta_clip_combine (wmfAPI* API,wmfRecord* Record)
 
 	wmf_free (API,polyrect.TL);
 	wmf_free (API,polyrect.BR);
+
+	return (changed);
 }
 
-static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_dib_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfRecord bmp_record;
@@ -1840,8 +1922,8 @@ static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 	double stretch_y;
 
 	if ((Record->function == META_DIBBITBLT) && ((Record->size) == 9)) /* Special case... */
-	{	meta_rop_draw (API,Record);
-		return;
+	{	changed = meta_rop_draw (API,Record,attrlist);
+		return (changed);
 	}
 
 	if (SCAN (API) && DIAG (API))
@@ -1959,11 +2041,11 @@ static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	if ((par_U16_w == 0) || (par_U16_h == 0) || (bmp_draw.crop.w == 0) || (bmp_draw.crop.h == 0))
-	{	return;
+	{	return (changed);
 	}
 
 	l_pt_TL = L_Coord (API,par_U16_x,par_U16_y);
@@ -1983,14 +2065,14 @@ static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 		d_pt = wmf_D_Coord_translate (API,l_pt);
 		D_Coord_Register (API,d_pt,0);
 
-		return;
+		return (changed);
 	}
 
 	pos_current = WMF_TELL (API);
 	if (pos_current < 0)
 	{	WMF_ERROR (API,"API's tell() failed on input stream!");
 		API->err = wmf_E_BadFile;
-		return;
+		return (changed);
 	}
 
 	bmp_read.offset = bmp_record.position;
@@ -2003,13 +2085,13 @@ static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API) || (bmp_read.bmp.data == 0))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	if (WMF_SEEK (API,pos_current) == (-1))
 	{	WMF_ERROR (API,"API's seek() failed on input stream!");
 		API->err = wmf_E_BadFile;
-		return;
+		return (changed);
 	}
 
 	bmp_draw.dc = P->dc;
@@ -2032,10 +2114,14 @@ static void meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 	if (FR->bmp_draw) FR->bmp_draw (API,&bmp_draw);
 
 	if (FR->bmp_free) FR->bmp_free (API,&(bmp_draw.bmp));
+
+	return (changed);
 }
 
-static void meta_dib_brush (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_dib_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfRecord bmp_record;
@@ -2061,7 +2147,7 @@ static void meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	oid_brush = i;
@@ -2084,7 +2170,7 @@ static void meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 	if (pos_current < 0)
 	{	WMF_ERROR (API,"API's tell() failed on input stream!");
 		API->err = wmf_E_BadFile;
-		return;
+		return (changed);
 	}
 
 	bmp_read.offset = bmp_record.position;
@@ -2102,13 +2188,13 @@ static void meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	if (WMF_SEEK (API,pos_current) == (-1))
 	{	WMF_ERROR (API,"API's seek() failed on input stream!");
 		API->err = wmf_E_BadFile;
-		return;
+		return (changed);
 	}
 
 	WMF_BRUSH_SET_STYLE (brush,BS_DIBPATTERN);
@@ -2120,10 +2206,14 @@ static void meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 	if (SCAN (API)) wmf_ipa_color_add (API,WMF_BRUSH_COLOR (brush));
 
 	WMF_DC_SET_BRUSH (P->dc,brush);
+
+	return (changed);
 }
 
-static void meta_rop_draw (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_rop_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfROP_Draw_t rop_draw;
@@ -2182,7 +2272,7 @@ static void meta_rop_draw (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	l_pt_TL = L_Coord (API,par_U16_x,par_U16_y);
@@ -2202,7 +2292,7 @@ static void meta_rop_draw (wmfAPI* API,wmfRecord* Record)
 	if (SCAN (API))
 	{	D_Coord_Register (API,rop_draw.TL,0);
 		D_Coord_Register (API,rop_draw.BR,0);
-		return;
+		return (changed);
 	}
 
 	rop_draw.dc = P->dc;
@@ -2211,10 +2301,14 @@ static void meta_rop_draw (wmfAPI* API,wmfRecord* Record)
 	rop_draw.pixel_height = ABS (P->dc->pixel_height);
 
 	if (FR->rop_draw) FR->rop_draw (API,&rop_draw);
+
+	return (changed);
 }
 
-static void meta_dc_set (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_dc_set (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	U16 par_U16;
 
@@ -2263,25 +2357,67 @@ static void meta_dc_set (wmfAPI* API,wmfRecord* Record)
 		API->err = wmf_E_Glitch;
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_dc_color (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_dc_color (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	wmfRGB color;
 
 	U16 par_U16_rg;
 	U16 par_U16_b;
 
+	const char * value = 0;
+	char hash[8];
+	unsigned long rgbhex;
+
+	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
 		fprintf (stderr,"\t#par=%lu; max. index = 1",Record->size);
+	}
+
+	if (API->flags & API_ENABLE_EDITING)
+	{	if (value = wmf_attr_query (API, attrlist, "color"))
+		{	if ((*value) == '#')
+			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
+				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);
+					par_U16_b  = (U16) ( rgbhex       & 0x00ff);
+
+					if (PutParU16 (API,Record,1,par_U16_b )) changed = 1;
+					if (PutParU16 (API,Record,0,par_U16_rg)) changed = 1;
+				}
+				else
+				{	value = 0; /* force a re-write below */
+				}
+			}
+			else
+			{	value = 0; /* force a re-write below */
+			}
+		}
 	}
 
 	par_U16_b  = ParU16 (API,Record,1);
 	par_U16_rg = ParU16 (API,Record,0);
 
 	color = rgb (API,par_U16_rg,par_U16_b);
+
+	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
+	{	hash[0] = '#';
+		hash[1] = hex[(color.r >> 4) & 0x0f];
+		hash[2] = hex[ color.r       & 0x0f];
+		hash[3] = hex[(color.g >> 4) & 0x0f];
+		hash[4] = hex[ color.g       & 0x0f];
+		hash[5] = hex[(color.b >> 4) & 0x0f];
+		hash[6] = hex[ color.b       & 0x0f];
+		hash[7] = 0;
+		value = wmf_attr_add (API, attrlist, "color", hash);
+	}
 
 	if (SCAN (API)) wmf_ipa_color_add (API,&color);
 
@@ -2301,10 +2437,14 @@ static void meta_dc_color (wmfAPI* API,wmfRecord* Record)
 		API->err = wmf_E_Glitch;
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_dc_select (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_dc_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	wmfObject* objects;
 	wmfObject* obj;
@@ -2323,7 +2463,7 @@ static void meta_dc_select (wmfAPI* API,wmfRecord* Record)
 	if (oid >= NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	obj = objects + oid;
@@ -2350,10 +2490,14 @@ static void meta_dc_select (wmfAPI* API,wmfRecord* Record)
 		WMF_DEBUG (API,"unexpected object type!");
 	break;
 	}
+
+	return (changed);
 }
 
-static void meta_dc_save (wmfAPI* API,wmfRecord* Record) /* complete ?? */
-{	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
+static int meta_dc_save (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist) /* complete ?? */
+{	int changed = 0;
+
+	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
@@ -2363,10 +2507,14 @@ static void meta_dc_save (wmfAPI* API,wmfRecord* Record) /* complete ?? */
 	dc_stack_push (API,P->dc);
 
 	P->dc = dc_copy (API,P->dc);
+
+	return (changed);
 }
 
-static void meta_dc_restore (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfRegion* clip;
@@ -2399,10 +2547,10 @@ static void meta_dc_restore (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
-	if (SCAN (API)) return;
+	if (SCAN (API)) return (changed);
 
 	userdata.dc = P->dc;
 	userdata.data = P->dc->userdata;
@@ -2421,14 +2569,14 @@ static void meta_dc_restore (wmfAPI* API,wmfRecord* Record)
 
 		if (ERR (API))
 		{	WMF_DEBUG (API,"bailing...");
-			return;
+			return (changed);
 		}
 
 		polyrect.BR = (wmfD_Coord*) wmf_malloc (API,clip->numRects * sizeof (wmfD_Coord));
 
 		if (ERR (API))
 		{	WMF_DEBUG (API,"bailing...");
-			return;
+			return (changed);
 		}
 
 		polyrect.count = clip->numRects;
@@ -2448,10 +2596,14 @@ static void meta_dc_restore (wmfAPI* API,wmfRecord* Record)
 	}
 
 	if (FR->region_clip) FR->region_clip (API,&polyrect);
+
+	return (changed);
 }
 
-static void meta_text (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 	wmfFontData*          FD = (wmfFontData*)          API->font_data;
 
@@ -2616,15 +2768,15 @@ static void meta_text (wmfAPI* API,wmfRecord* Record)
 	break;
 	}
 
-	if (ERR (API)) return;
+	if (ERR (API)) return (changed);
 
-	if (length == 0) return;
+	if (length == 0) return (changed);
 
 	drawtext.str = (char*) wmf_malloc (API,length + 1);
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	font = WMF_DC_FONT (P->dc);
@@ -2658,7 +2810,7 @@ static void meta_text (wmfAPI* API,wmfRecord* Record)
 
 		if (ERR (API))
 		{	WMF_DEBUG (API,"bailing...");
-			return;
+			return (changed);
 		}
 
 		l_width = 0;
@@ -2820,7 +2972,7 @@ static void meta_text (wmfAPI* API,wmfRecord* Record)
 	if (SCAN (API))
 	{	wmf_free (API,drawtext.str);
 		if (lpDx) wmf_free (API,lpDx);
-		return;
+		return (changed);
 	}
 
 	drawtext.dc = P->dc;
@@ -2881,10 +3033,14 @@ static void meta_text (wmfAPI* API,wmfRecord* Record)
 	}
 
 	wmf_free (API,drawtext.str);
+
+	return (changed);
 }
 
-static void meta_pen_create (wmfAPI* API,wmfRecord* Record) /* complete, I think */
-{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
+static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist) /* complete, I think */
+{	int changed = 0;
+
+	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
 
 	wmfObject* objects = 0;
 	wmfObject* obj_pen = 0;
@@ -2902,6 +3058,12 @@ static void meta_pen_create (wmfAPI* API,wmfRecord* Record) /* complete, I think
 
 	U16 i;
 
+	const char * value = 0;
+	char hash[8];
+	unsigned long rgbhex;
+
+	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
 	objects = P->objects;
 
 	i = 0;
@@ -2910,7 +3072,7 @@ static void meta_pen_create (wmfAPI* API,wmfRecord* Record) /* complete, I think
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	oid_pen = i;
@@ -2941,10 +3103,42 @@ static void meta_pen_create (wmfAPI* API,wmfRecord* Record) /* complete, I think
 	WMF_PEN_SET_WIDTH  (pen,(double) par_U16_w * ABS (P->dc->pixel_width ));
 	WMF_PEN_SET_HEIGHT (pen,(double) par_U16_w * ABS (P->dc->pixel_height));
 
+	if (API->flags & API_ENABLE_EDITING)
+	{	if (value = wmf_attr_query (API, attrlist, "color"))
+		{	if ((*value) == '#')
+			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
+				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);
+					par_U16_b  = (U16) ( rgbhex       & 0x00ff);
+
+					if (PutParU16 (API,Record,4,par_U16_b )) changed = 1;
+					if (PutParU16 (API,Record,3,par_U16_rg)) changed = 1;
+				}
+				else
+				{	value = 0; /* force a re-write below */
+				}
+			}
+			else
+			{	value = 0; /* force a re-write below */
+			}
+		}
+	}
+
 	par_U16_b  = ParU16 (API,Record,4);
 	par_U16_rg = ParU16 (API,Record,3);
 
 	color = rgb (API,par_U16_rg,par_U16_b);
+
+	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
+	{	hash[0] = '#';
+		hash[1] = hex[(color.r >> 4) & 0x0f];
+		hash[2] = hex[ color.r       & 0x0f];
+		hash[3] = hex[(color.g >> 4) & 0x0f];
+		hash[4] = hex[ color.g       & 0x0f];
+		hash[5] = hex[(color.b >> 4) & 0x0f];
+		hash[6] = hex[ color.b       & 0x0f];
+		hash[7] = 0;
+		value = wmf_attr_add (API, attrlist, "color", hash);
+	}
 
 	WMF_PEN_SET_COLOR (pen,&color);
 
@@ -2953,10 +3147,14 @@ static void meta_pen_create (wmfAPI* API,wmfRecord* Record) /* complete, I think
 	if (WMF_PEN_STYLE (pen) != PS_NULL) WMF_DEBUG (API,"Non-null pen style...");
 
 	WMF_DC_SET_PEN (P->dc,pen);
+
+	return (changed);
 }
 
-static void meta_brush_create (wmfAPI* API,wmfRecord* Record) /* unfinished */
-{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
+static int meta_brush_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist) /* unfinished */
+{	int changed = 0;
+
+	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
 
 	wmfObject* objects = 0;
 	wmfObject* obj_brush = 0;
@@ -2974,6 +3172,12 @@ static void meta_brush_create (wmfAPI* API,wmfRecord* Record) /* unfinished */
 
 	U16 i;
 
+	const char * value = 0;
+	char hash[8];
+	unsigned long rgbhex;
+
+	static char hex[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
 	objects = P->objects;
 
 	i = 0;
@@ -2982,7 +3186,7 @@ static void meta_brush_create (wmfAPI* API,wmfRecord* Record) /* unfinished */
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	oid_brush = i;
@@ -3001,10 +3205,42 @@ static void meta_brush_create (wmfAPI* API,wmfRecord* Record) /* unfinished */
 
 	WMF_BRUSH_SET_STYLE (brush,ParU16 (API,Record,0));
 
+	if (API->flags & API_ENABLE_EDITING)
+	{	if (value = wmf_attr_query (API, attrlist, "color"))
+		{	if ((*value) == '#')
+			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
+				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);
+					par_U16_b  = (U16) ( rgbhex       & 0x00ff);
+
+					if (PutParU16 (API,Record,2,par_U16_b )) changed = 1;
+					if (PutParU16 (API,Record,1,par_U16_rg)) changed = 1;
+				}
+				else
+				{	value = 0; /* force a re-write below */
+				}
+			}
+			else
+			{	value = 0; /* force a re-write below */
+			}
+		}
+	}
+
 	par_U16_b  = ParU16 (API,Record,2);
 	par_U16_rg = ParU16 (API,Record,1);
 
 	color = rgb (API,par_U16_rg,par_U16_b);
+
+	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
+	{	hash[0] = '#';
+		hash[1] = hex[(color.r >> 4) & 0x0f];
+		hash[2] = hex[ color.r       & 0x0f];
+		hash[3] = hex[(color.g >> 4) & 0x0f];
+		hash[4] = hex[ color.g       & 0x0f];
+		hash[5] = hex[(color.b >> 4) & 0x0f];
+		hash[6] = hex[ color.b       & 0x0f];
+		hash[7] = 0;
+		value = wmf_attr_add (API, attrlist, "color", hash);
+	}
 
 	WMF_BRUSH_SET_COLOR (brush,&color);
 
@@ -3020,10 +3256,14 @@ static void meta_brush_create (wmfAPI* API,wmfRecord* Record) /* unfinished */
 	if (SCAN (API)) wmf_ipa_color_add (API,&color);
 
 	WMF_DC_SET_BRUSH (P->dc,brush);
+
+	return (changed);
 }
 
-static void meta_font_create (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
+static int meta_font_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
 	wmfFontData* FD = (wmfFontData*) API->font_data;
 
 	wmfRecord name_record;
@@ -3053,7 +3293,7 @@ static void meta_font_create (wmfAPI* API,wmfRecord* Record)
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	oid_font = i;
@@ -3113,7 +3353,7 @@ static void meta_font_create (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	par_U16 = 0;
@@ -3136,14 +3376,18 @@ static void meta_font_create (wmfAPI* API,wmfRecord* Record)
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
-		return;
+		return (changed);
 	}
 
 	WMF_DC_SET_FONT (P->dc,font);
+
+	return (changed);
 }
 
-static void meta_palette_create (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
+static int meta_palette_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
 
 	wmfObject* objects = 0;
 
@@ -3157,14 +3401,18 @@ static void meta_palette_create (wmfAPI* API,wmfRecord* Record)
 	if (i == NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	objects[i].type = OBJ_PAL;
+
+	return (changed);
 }
 
-static void meta_delete (wmfAPI* API,wmfRecord* Record)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+static int meta_delete (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	wmfObject* objects;
@@ -3184,7 +3432,7 @@ static void meta_delete (wmfAPI* API,wmfRecord* Record)
 	if (oid >= NUM_OBJECTS (API))
 	{	WMF_ERROR (API,"Object out of range!");
 		API->err = wmf_E_BadFormat;
-		return;
+		return (changed);
 	}
 
 	obj = objects + oid;
@@ -3203,10 +3451,14 @@ static void meta_delete (wmfAPI* API,wmfRecord* Record)
 	}
 
 	obj->type = 0;
+
+	return (changed);
 }
 
-static void meta_unused (wmfAPI* API,wmfRecord* Record)
-{	if (SCAN (API) && DIAG (API))
+static int meta_unused (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+{	int changed = 0;
+
+	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
 		fprintf (stderr,"\t#par=%lu; max. index = ?",Record->size);
 	}
@@ -3249,6 +3501,8 @@ recommended approach in today's font world.
 	at all), so i think we can safely ignore these things. */
 
 	/* META_ESCAPE: ?? */
+
+	return (changed);
 }
 
 static void diagnose_object (wmfAPI* API,unsigned int oid,wmfObject* obj)

@@ -2,13 +2,24 @@ wmfdocdir = @WMF_DOCDIR@
 
 htmldocdir = $(wmfdocdir)/html
 
+install-data-local:
+	@echo "Installing doxymentation"; \
+	 cd $(srcdir) && \
+	 $(mkinstalldirs) $(DESTDIR)$(htmldocdir); \
+	 (for i in *.html doxygen.*; do \
+	    $(INSTALL_DATA) $$i $(DESTDIR)$(htmldocdir)/$$i; \
+	  done)
+
 DOCUMENTATION = \
 	doxygen.gif \
+	doxygen.png \
 	index.html \
 	files.html \
 	api_8c.html \
 	api_8h.html \
 	bbuf_8c.html \
+	xml_8c.html \
+	xml_8h.html \
 	eps_2bmp_8h.html \
 	fig_2bmp_8h.html \
 	ipa_2bmp_8h.html \
@@ -143,8 +154,19 @@ DOCUMENTATION = \
 	struct__wmfUserData__t.html \
 	struct__wmfXML__FontData.html \
 	struct__wmfXML__FontInfo.html \
+	struct__wmfXML__InputData.html \
+	struct__wmfWriteFileInfo.html \
+	struct__wmfAttributeStore.html \
+	struct__wmfAttributes.html \
+	canvas_8h.html \
+	recorder_8c.html \
+	recorder_8h.html \
+	metadefs_8h.html \
+	struct__wmfCanvasBrush.html \
+	struct__wmfCanvasPen.html \
+	struct__wmfCanvasFont.html \
+	struct__wmfConstruct.html \
+	struct__wmfRecordBox.html \
 	doxygen.css
-
-htmldoc_DATA = $(DOCUMENTATION)
 
 EXTRA_DIST = $(DOCUMENTATION)

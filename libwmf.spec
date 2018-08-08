@@ -1,5 +1,5 @@
 %define name libwmf
-%define version 0.2.5
+%define version 0.2.7
 %define release 1
 %define prefix /usr
 %define bindir %{prefix}/bin
@@ -67,7 +67,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %doc doc/*.html doc/*.png doc/*.gif
 %doc doc/caolan/*.html doc/caolan/*.gif
 %doc doc/caolan/pics/weave.jpg
-%doc doc/html/*.html doc/html/doxygen.css doc/html/doxygen.gif
+%doc doc/html/*.html doc/html/doxygen.*
 
 %files devel
 %defattr(-,root,root)

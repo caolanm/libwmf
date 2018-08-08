@@ -1,8 +1,20 @@
-SUBDIRS = extra ipa . convert
+if LIBWMF_BUILD_ALL
+LIBHEAVY = libwmf.la
+DIRHEAVY = extra ipa . convert
+DEFHEAVY = -DLIBWMF_INCLUDE_TRIO_H=1
+else
+LIBHEAVY = 
+DIRHEAVY = .
+DEFHEAVY = 
+endif
+
+DIST_SUBDIRS = extra ipa . convert
+
+SUBDIRS = $(DIRHEAVY)
 
 CFLAGS = @CFLAGS@ @WMF_CFLAGS@
 
-DEFS = @DEFS@ @WMF_DEFS@ \
+DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DVERSION=\"@VERSION@\" \
 	-DWMF_FONTDIR=\"@WMF_FONTDIR@\" \
@@ -13,16 +25,16 @@ DEFS = @DEFS@ @WMF_DEFS@ \
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_builddir)
 
-lib_LTLIBRARIES = libwmflite.la libwmf.la
+lib_LTLIBRARIES = libwmflite.la $(LIBHEAVY)
 
-libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c
+libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c recorder.c
 
 libwmflite_la_LDFLAGS = -lm \
 	-no-undefined \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) -export-dynamic
 
-libwmf_la_SOURCES = font.c stream.c wmf.c
+libwmf_la_SOURCES = font.c stream.c wmf.c xml.c
 
 if LIBWMF_OPT_TRIO
 LIBTRIO = extra/trio/libtrio.la
@@ -36,9 +48,9 @@ else
 LIBGD = extra/gd/libgd.la
 endif
 
-libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO)
+libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO) @WMF_LIBFLAGS@
 
-libwmf_la_LDFLAGS = @WMF_LIBFLAGS@ \
+libwmf_la_LDFLAGS = \
 	-no-undefined \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) -export-dynamic
@@ -53,4 +65,5 @@ PLAYERHEADERS = \
 	player/record.h \
 	player/region.h
 
-EXTRA_DIST = wmfdefs.h player.h $(PLAYERHEADERS) api.h bbuf.h font.h stream.h
+EXTRA_DIST = wmfdefs.h metadefs.h player.h $(PLAYERHEADERS) recorder.h \
+	api.h bbuf.h font.h stream.h xml.h

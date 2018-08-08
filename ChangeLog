@@ -1,3 +1,22 @@
+v. 0.2.7
+	* update Fontmap[.GS] detection (guesswork, really) (fjf)
+	* don't include trio.h when --disable-heavy is used (fjf)
+	* remember to update both version numbers in configure.ac!
+	* move player.h's defs into metadefs.h for recorder.c (fjf)
+	* add some missing "extern"s (c. Jeremy Shane Sanders)
+	* added recorder.h & libwmf/canvas.h; call it Canvas now (fjf)
+v. 0.2.6
+	* added recorder.c, first stab at a metafile writer (fjf)
+	* new --disable-heavy configure option (fjf)
+	* initialize default font user_data to 0 (c. Corby Wilson)
+	* tidy docs/dox installation (fjf)
+	* basic editing features w/ API_ENABLE_EDITING (fjf)
+	* expat/libxml2 configuration updated (fjf)
+	* wmf2x will read *.xml & *.XML as wmfxml (fjf)
+	* some initial wmfxml import work (fjf)
+	* option to write WMF as, er, WMF. or XML. (fjf)
+	* bump version number; disallow plotutils (fjf)
+	* remove MVG back-end
 v. 0.2.5
 	* use memset to handle varying size of libxml2's SAX struct (fjf)
 v. 0.2.4 (this is not a release)

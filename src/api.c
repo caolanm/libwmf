@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -154,6 +155,8 @@ wmf_error_t wmf_lite_create (wmfAPI** API_return,unsigned long flags,wmfAPI_Opti
 		}
 	}
 
+	API->write_data = 0;
+
 	API->MetaHeader.pmh = &(API->PlaceableMetaHeader);
 	API->MetaHeader.wmfheader = &(API->Head);
 	API->File = &(API->MetaHeader);
@@ -184,6 +187,10 @@ wmf_error_t wmf_lite_create (wmfAPI** API_return,unsigned long flags,wmfAPI_Opti
 	API->fonts = 0;
 
 	API->color_data = 0;
+
+	API->store.attrlist = 0;
+	API->store.count = 0;
+	API->store.max = 0;
 
 /* Library error state:
  */
@@ -614,7 +621,7 @@ void wmf_detach (wmfAPI* API,void* mem)
  * @return Pointer to new string, or zero on failure.
  *         Sets error state \b wmf_E_InsMem on failure, or \b wmf_E_Glitch if str is zero.
  */
-char* wmf_strdup (wmfAPI* API,char* str)
+char* wmf_strdup (wmfAPI* API,const char* str)
 {	char* cpy = 0;
 
 	if (str == 0)
