@@ -120,7 +120,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
   png_infop info_ptr;
   png_uint_32 width, height, rowbytes;
   int bit_depth, color_type, interlace_type;
-  int num_palette, num_trans;
+  int num_palette = 0, num_trans;
   png_colorp palette;
   png_color_16p trans_gray_rgb;
   png_color_16p trans_color_rgb;
