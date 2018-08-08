@@ -1,4 +1,0 @@
-#define HS_BDIAGONAL_width 8
-#define HS_BDIAGONAL_height 8
-static unsigned char HS_BDIAGONAL_bits[] = {
-   0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};

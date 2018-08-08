@@ -1,289 +1,861 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(wmfapi.c)
-dnl AC_CONFIG_HEADER(config.h)
+AC_INIT(src/player.c)
+
+WMF_PACKAGE=libwmf
+
+dnl This next section is courtesy gtk+
+dnl 
+# Making releases:
+#   WMF_MICRO_VERSION += 1;
+#   WMF_INTERFACE_AGE += 1;
+#   WMF_BINARY_AGE += 1;
+# if any functions have been added, set WMF_INTERFACE_AGE to 0.
+# if backwards compatibility has been broken,
+# set WMF_BINARY_AGE and WMF_INTERFACE_AGE to 0.
+#
+WMF_MAJOR_VERSION=0
+WMF_MINOR_VERSION=2
+WMF_MICRO_VERSION=5
+WMF_INTERFACE_AGE=0
+WMF_BINARY_AGE=0
+WMF_VERSION=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION.$WMF_MICRO_VERSION
+
+AC_SUBST(WMF_MAJOR_VERSION)
+AC_SUBST(WMF_MINOR_VERSION)
+AC_SUBST(WMF_MICRO_VERSION)
+AC_SUBST(WMF_INTERFACE_AGE)
+AC_SUBST(WMF_BINARY_AGE)
+AC_SUBST(WMF_VERSION)
+
+dnl spec file substitutions
+LIBWMF_PACKAGE=$WMF_PACKAGE
+LIBWMF_VERSION=$WMF_VERSION
+LIBWMF_RELEASE=1
+AC_SUBST(LIBWMF_PACKAGE)
+AC_SUBST(LIBWMF_VERSION)
+AC_SUBST(LIBWMF_RELEASE)
+
+# libtool versioning
+LT_RELEASE=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION
+LT_CURRENT=`expr $WMF_MICRO_VERSION - $WMF_INTERFACE_AGE`
+LT_REVISION=$WMF_INTERFACE_AGE
+LT_AGE=`expr $WMF_BINARY_AGE - $WMF_INTERFACE_AGE`
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+# For automake.
+VERSION=$WMF_VERSION
+PACKAGE=$WMF_PACKAGE
+
+dnl Initialize automake stuff
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+
+# Specify a configuration file
+AM_CONFIG_HEADER(wmfconfig.h)
+
+# A despicable hack:
+AUTOHEADER="autoheader -l patches"
+AC_SUBST(AUTOHEADER)
+
+# CFLAGS to be listed by libwmf-config should be added to this:
+WMF_CONFIG_CFLAGS=
+
+# Other CFLAGS, not to be listed by libwmf-config, should be added to this:
+WMF_CFLAGS=
+
+# LDFLAGS to be listed by libwmf-config should be added to this:
+WMF_LIBFLAGS=
+
+# WMF_DEFS is for flags such as -DDEBUG which are to applied only to
+# libwmf source not extra packages such as gd - more global defs should be
+# added to WMF_CFLAGS
+AC_ARG_ENABLE(debug,[  --enable-debug          set DEBUG option to libwmf [default=no]],[
+	if [ test "x$enableval" != "xno" ]; then
+		WMF_DEFS="-DDEBUG=1"
+	else
+		WMF_DEFS=
+	fi
+],[	WMF_DEFS=
+])
+
+AC_ARG_ENABLE(ansi,[  --enable-ansi           set -ansi option to libwmf [default=no]],[
+	if [ test "x$enableval" != "xno" ]; then
+		WMF_DEFS="$WMF_DEFS -ansi"
+	fi
+])
+
+AC_ARG_ENABLE(pedantic,[  --enable-pedantic       set -pedantic option to libwmf [default=no]],[
+	if [ test "x$enableval" != "xno" ]; then
+		WMF_DEFS="$WMF_DEFS -pedantic"
+	fi
+])
+
+# gd does not read config.h so need to pass it options on the command line:
+GD_DEFS=
+
+dnl Initialize libtool
+# Tests for Windows
+AC_CYGWIN
+AC_EXEEXT
+AC_OBJEXT
+AC_MINGW32
+# End Tests for Windows
 
 dnl Checks for programs.
-dnl AC_PROG_CC
-dnl AC_PROG_CC shoves in -g by default, i *really* hate this so here goes...
-dnl ill shove in the autoconf def of AC_PROG_CC verbatim and remove the -g 
-dnl stuff
-dnl autoconf stuff begins here
 
-AC_DEFUN(AC_PROG_CC_NO_G,
-[AC_BEFORE([$0], [AC_PROG_CPP])dnl
-AC_CHECK_PROG(CC, gcc, gcc)
-if test -z "$CC"; then
-  AC_CHECK_PROG(CC, cc, cc, , , /usr/ucb/cc)
-  test -z "$CC" && AC_MSG_ERROR([no acceptable cc found in \$PATH])
-fi
-
-AC_PROG_CC_WORKS
-AC_PROG_CC_GNU
-
-if test $ac_cv_prog_gcc = yes; then
-  GCC=yes
-dnl Check whether -g works, even if CFLAGS is set, in case the package
-dnl plays around with CFLAGS (such as to build both debugging and
-dnl normal versions of a library), tasteless as that idea is.
-  ac_test_CFLAGS="${CFLAGS+set}"
-  ac_save_CFLAGS="$CFLAGS"
-  CFLAGS=
-dnl   C Begin
-dnl AC_PROG_CC_G
-dnl   C End
-  if test "$ac_test_CFLAGS" = set; then
-    CFLAGS="$ac_save_CFLAGS"
-dnl   C Begin
-dnl  elif test $ac_cv_prog_cc_g = yes; then
-dnl    CFLAGS="-g -O2"
-dnl   C End
-  else
-    CFLAGS="-O2"
-  fi
-else
-  GCC=
-  test "${CFLAGS+set}" = set 
-dnl   C Begin
-dnl || CFLAGS="-g"
-dnl   C End
-fi
-])
-
-
-
-dnl autoconf stuff ends here
-
-AC_PROG_CC_NO_G
-AC_PROG_MAKE_SET
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+# Configure libtool
+AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
+#end libtool stuff
 
-dnl test for X, and Xpm and ttf to get the flags needed to
-dnl compile something to use libwmf
-
-if test [ "$no_x" = yes ]; then
-    X11=""
-else
-    X11="-lX11"
-fi
-
-
-dnl system ttf support
-dnl ========================================================
-
-_cppflags=${CPPFLAGS}
-_ldflags=${LDFLAGS}
-
-AC_ARG_WITH(ttf,
-[  --with-ttf[=DIR]	  find the ttf library in DIR],[
-    if test "$withval" != "no"; then
-        TTF_DIR=$withval
-        TTF_CPPFLAGS="-I$withval/include"
-        TTF_LDFLAGS="-L$withval/lib"
-    fi
-])
-
-CPPFLAGS="$CPPFLAGS $TTF_CPPFLAGS"
-LDFLAGS="$LDFLAGS $TTF_LDFLAGS"
-
-dnl FreeType 1.3.1 has include file in <freetype/freetype.h>
-dnl
-AC_CHECK_HEADER(freetype.h,no_sys_freetype=no)
-if test "x$no_sys_freetype" != "xno"; then
-    AC_CHECK_HEADER(freetype/freetype.h,[
-        no_sys_freetype=no
-        AC_DEFINE(HAVE_FREETYPE_FREETYPE)])
-fi
-if test "x$no_sys_freetype" = "xno"; then
-    AC_CHECK_LIB(ttf, TT_Init_FreeType,[
-        AC_DEFINE(HAVE_TTF)
-        HAVE_TTF=1
-        TTF_CFLAGS="$TTF_CPPFLAGS"
-        TTF_LIBS="$TTF_LDFLAGS -lttf"],[
-        AC_CHECK_LIB(ttf, TT_Done_FreeType,[
-            AC_DEFINE(HAVE_TTF)
-            HAVE_TTF=1
-            TTF_CFLAGS="$TTF_CPPFLAGS"
-            TTF_LIBS="$TTF_LDFLAGS -lttf -lnsl"], no_sys_freetype=yes, -lnsl)])
-fi
-if test "x$no_sys_freetype" != "xno"; then
-    AC_MSG_WARN([TrueType library not installed. Please visit
-http://www.freetype.org and try again. The GD binding will not be
-able to handle wmf text and wmftogif will not have text support as a
-result (see README).])
-fi
-
-CPPFLAGS=${_cppflags}
-LDFLAGS=${_ldflags}
-
-dnl ========================================================
-dnl end of Freetype
-
-AC_PATH_X
-### Check for the pt library (for SCO, needed for X)
-AC_CHECK_LIB(pt,ptsname,[X_EXTRA_LIBS="$X_EXTRA_LIBS -lpt"])
-
-AC_PATH_XTRA
+dnl Checks for header files.
 AC_HEADER_STDC
-
-AC_CHECK_HEADERS(unistd.h)
-CFLAGS="$CFLAGS $X_CFLAGS"
-CPPFLAGS="$CPPFLAGS $X_CFLAGS"
-
-LIBS="$X_LIBS $LIBS -lX11 $X_EXTRA_LIBS"
-
-dnl system xpm support, done after X, as its usually in the same place
-dnl ========================================================
-
-_cppflags=${CPPFLAGS}
-_ldflags=${LDFLAGS}
-
-AC_ARG_WITH(xpm,
-[  --with-xpm[=DIR]	  use xpm library in DIR],[
-  if test "$withval" != "no"; then
-    XPM_DIR=$withval
-    CPPFLAGS="${CPPFLAGS} -I$withval/include"
-    LDFLAGS="${LDFLAGS} -L$withval/lib"
-  fi
+AC_CHECK_HEADERS(time.h)
+AC_CHECK_HEADER(unistd.h,[
+	AC_DEFINE(HAVE_UNISTD_H)
+	GD_DEFS="$GD_DEFS -DHAVE_UNISTD_H"
 ])
-
-AC_CHECK_HEADER(X11/xpm.h,
-    AC_CHECK_LIB(Xpm, XpmReadFileToXpmImage,
-	AC_DEFINE(HAVE_XPM)
-	if test "x${XPM_DIR}" != "x"; then
-	    XPM_CFLAGS="-I${XPM_DIR}/include"
-	    XPM_LIBS="-L${XPM_DIR}/lib -lXpm"
-	else
-	    XPM_LIBS="-lXpm"
-	fi
-	XPMINCLUDE="<X11/xpm.h>"
-	AC_DEFINE(USE_X),
-	AC_MSG_ERROR(Xpm not installed. Please visit
-  http://www.inria.fr/koala/lehors/xpm.html and try again)),
-    AC_CHECK_HEADER(xpm.h,
-	AC_CHECK_LIB(Xpm, XpmReadFileToXpmImage,
-	    AC_DEFINE(HAVE_XPM)
-	    if test "x${XPM_DIR}" != "x"; then
-		XPM_CFLAGS="-I${XPM_DIR}/include"
-		XPM_LIBS="-L${XPM_DIR}/lib -lXpm"
-	    else
-		XPM_LIBS="-lXpm"
-	    fi
-	    XPMINCLUDE="<xpm.h>"
-	    AC_DEFINE(USE_X),
-	    AC_MSG_ERROR(Xpm not installed. Please visit
-  http://www.inria.fr/koala/lehors/xpm.html and try again)),
-	AC_MSG_ERROR(Xpm not installed. Please visit
-  http://www.inria.fr/koala/lehors/xpm.html and try again)))
-
-CPPFLAGS=${_cppflags}
-LDFLAGS=${_ldflags}
-
-dnl ========================================================
-dnl end of Xpm
-
-dnl Digital UNIX defines nint in libm
-AC_CHECK_LIB(m, nint, AC_DEFINE(HAVE_NINT))
-
-dnl system ZLIB support, originally nicked from mozilla source
-dnl ========================================================
-
-_cppflags=${CPPFLAGS}
-_ldflags=${LDFLAGS}
-
-AC_ARG_WITH(zlib,
-[  --with-zlib[=DIR]       use libz in DIR],[
-  if test "$withval" != "no"; then
-    ZLIB_DIR=$withval
-    CPPFLAGS="${CPPFLAGS} -I$withval/include"
-    LDFLAGS="${LDFLAGS} -L$withval/lib"
-  fi
-])
-
-AC_CHECK_HEADER(zlib.h,
-    AC_CHECK_LIB(z, gzread,[
-	if test "x${ZLIB_DIR}" != "x"; then
-	    ZLIB_CFLAGS="-I${ZLIB_DIR}/include"
-	    ZLIB_LIBS="-L${ZLIB_DIR}/lib -lz"
-	else
-	    ZLIB_LIBS="-lz"
-	fi],
-	AC_CHECK_LIB(gz, gzread,[
-	    if test "x${ZLIB_DIR}" != "x"; then
-		ZLIB_CFLAGS="-I${ZLIB_DIR}/include"
-		ZLIB_LIBS="-L${ZLIB_DIR}/lib -lz"
-	    else
-		ZLIB_LIBS="-lz"
-	    fi])))
-
-CPPFLAGS=${_cppflags}
-LDFLAGS=${_ldflags}
-
-dnl ========================================================
-dnl end of zlib
-
-
-dnl begin png search
-dnl =========================
-#
-# Check for PNG
-#
-_cppflags=${CPPFLAGS}
-_ldflags=${LDFLAGS}
-
-AC_ARG_WITH(png,
-[  --with-png[=DIR]	  use png library in DIR],[
-  if test "$withval" != "no"; then
-    PNG_DIR=$withval
-    CPPFLAGS="${CPPFLAGS} -I$withval/include"
-    if test "x$ZLIB_CFLAGS" != "x"; then
-	CPPFLAGS="${CPPFLAGS} ${ZLIB_CFLAGS}"
-    fi
-    LDFLAGS="${LDFLAGS} -L$withval/lib"
-  fi
-])
-
-AC_CHECK_HEADER(png.h,
-    AC_CHECK_HEADER(pngconf.h,
-	AC_CHECK_LIB(png, png_free,
-	    AC_DEFINE(HasPNG)
-	    if test "x${PNG_DIR}" != "x"; then
-		PNG_CFLAGS="-I${PNG_DIR}/include"
-		PNG_LIBS="-L${PNG_DIR}/lib -lpng"
-	    else
-		PNG_LIBS="-lpng"
-	    fi, , ${ZLIB_LIBS} -lm)))
-
-CPPFLAGS=${_cppflags}
-LDFLAGS=${_ldflags}
-
-dnl end png search
-dnl =========================
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 
-dnl check for getopt
-dnl AC_CHECK_FUNC(getopt_long, , [LIBOBJS="$LIBOBJS getopt1.o getopt.o"])
-dnl AC_CHECK_FUNC(strerror, , [LIBOBJS="$LIBOBJS strerror.o"])
-dnl AC_SUBST(LIBOBJS)
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
 
-AC_SUBST(X11)
-AC_SUBST(X_LIBS)
-AC_SUBST(X_EXTRA_LIBS)
+dnl Checks for library functions.
+AC_CHECK_FUNCS(strstr)
 
-AC_SUBST(PNG_CFLAGS)
-AC_SUBST(PNG_LIBS)
+dnl Check for trio functions.
+require_trio=no
+AC_CHECK_FUNCS(printf fprintf vfprintf sprintf,,require_trio=yes)
+AC_CHECK_FUNCS(vprintf vsprintf)
+AC_CHECK_FUNCS(sscanf,,require_trio=yes)
+AC_CHECK_FUNCS(scanf vscanf fscanf vsscanf)
 
-AC_SUBST(ZLIB_CFLAGS)
-AC_SUBST(ZLIB_LIBS)
+dnl Special case (1): vsnprintf
+AC_CHECK_FUNCS(vsnprintf,,check_for_vsnprintf=yes)
 
-AC_SUBST(TTF_CFLAGS)
-AC_SUBST(TTF_LIBS)
+if [ test "x$check_for_vsnprintf" = "xyes" ]; then
+	AC_CHECK_FUNC(_vsnprintf,[
+		AC_DEFINE(HAVE_VSNPRINTF)
+		AC_DEFINE(vsnprintf,_vsnprintf)
+	],[	dnl Hmm. On the off-chance, check for vsnprintf in libdb.
+		dnl This should, hopefully, solve the problem with Tru64 4.x
+		dnl which is incompatible with trio (the latter's fault).
+		AC_CHECK_LIB(db,vsnprintf,[
+			AC_DEFINE(HAVE_VSNPRINTF)
+			WMF_LIBFLAGS="$WMF_LIBFLAGS -ldb"
+		],[	require_trio=yes
+		])
+	])
+fi
 
-AC_SUBST(XPM_LIBS)
-AC_SUBST(XPM_CFLAGS)
-AC_SUBST(XPMINCLUDE)
+dnl Special case (2): snprintf
+AC_CHECK_FUNCS(snprintf,,check_for_snprintf=yes)
 
-AC_OUTPUT(Makefile libdib/Makefile xgd-1.7.3/Makefile libxfig/Makefile)
+if [ test "x$check_for_snprintf" = "xyes" ]; then
+	AC_CHECK_FUNC(_snprintf,[
+		AC_DEFINE(HAVE_SNPRINTF)
+		AC_DEFINE(snprintf,_snprintf)
+	])
+fi
 
+dnl Special case (3): vfscanf is defined as a macro for Darwin / Mac OS X
+AC_CHECK_FUNCS(vfscanf,,check_for_vfscanf=yes)
+
+if [ test "x$check_for_vfscanf" = "xyes" ]; then
+	AC_MSG_CHECKING(for vfscanf in stdio.h)
+	AC_EGREP_HEADER(vfscanf,stdio.h,[
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(HAVE_VFSCANF)
+	],[	AC_MSG_RESULT(no)
+	])
+fi
+
+AM_CONDITIONAL(LIBWMF_OPT_TRIO,[ test "x$require_trio" = "xyes" ])
+
+dnl Checks for libraries, etc.
+
+AC_ARG_WITH(layers,[  --with-layers           whether to build layers [default is yes]],[
+	if [ test "x$withval" = "xyes" ]; then
+		libwmf_layers=yes
+	elif [ test "x$withval" = "xno" ]; then
+		libwmf_layers=no
+	elif [ test "x$withval" = "xmodules" ]; then
+		AC_MSG_ERROR([* * * Sorry, modules not yet supported! * * *])
+		libwmf_layers=modules
+	else
+		AC_MSG_WARN([* * * Bad option to --with-layers! * * *])
+		libwmf_layers=yes
+	fi
+],[	libwmf_layers=yes
+])
+
+if [ test $libwmf_layers = no ]; then
+	AC_DEFINE(WITHOUT_LAYERS,1)
+fi
+
+AM_CONDITIONAL(LIBWMF_OPT_MODULES,[ test $libwmf_layers = modules ])
+AM_CONDITIONAL(LIBWMF_OPT_LAYERS,[ test $libwmf_layers != no ])
+
+libwmf_x=no
+libwmf_xml=no
+libwmf_gd_jpeg=no
+libwmf_plot=no
+
+if [ test $libwmf_layers != no ]; then
+	AC_PATH_X
+	AC_PATH_XTRA
+else
+	X_CFLAGS="-DX_DISPLAY_MISSING=1"
+	no_x=yes
+fi
+
+dnl (1) X        {-lX11}      [(!)-DX_DISPLAY_MISSING]
+
+WMF_X_CONFIG_CFLAGS=""
+WMF_X_CFLAGS=""
+WMF_X_LDFLAGS=""
+
+WMF_X_CFLAGS="$X_CFLAGS"
+if [ test "x$no_x" != "xyes" ]; then
+	WMF_X_CONFIG_CFLAGS="$X_CFLAGS"
+	WMF_X_LDFLAGS="$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+	libwmf_x=yes
+fi
+
+AM_CONDITIONAL(LIBWMF_OPT_X,[ test "x$no_x" != "xyes" ])
+
+dnl (2a) expat   {-lexpat}
+
+WMF_EXPAT_CFLAGS=""
+WMF_EXPAT_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+dnl There may be other xml solutions available at some point...
+
+if [ test $libwmf_xml = no ]; then
+	AC_ARG_WITH(expat,[  --with-expat=DIR        use expat in DIR],[
+		if [ test "x$withval" != "xno" ]; then
+			if [ test "x$withval" != "xyes" ]; then
+				EXPAT_DIR=$withval
+				CPPFLAGS="$CPPFLAGS -I$withval/include"
+				LDFLAGS="$LDFLAGS -L$withval/lib"
+			fi
+			search_for_expat=yes
+		else
+			search_for_expat=no
+		fi
+	],[	search_for_expat=yes
+	])
+else
+	search_for_expat=no
+fi
+
+if [ test $search_for_expat = yes ]; then
+	AC_CHECK_HEADER(expat.h,[
+		AC_CHECK_LIB(expat,XML_ParserFree,[
+			if [ test "x$EXPAT_DIR" != "x" ]; then
+				WMF_EXPAT_CFLAGS="-I$EXPAT_DIR/include"
+				WMF_EXPAT_LDFLAGS="-L$EXPAT_DIR/lib -lexpat"
+			else
+				WMF_EXPAT_LDFLAGS="-lexpat"
+			fi
+			libwmf_xml=expat
+		])
+	])
+fi
+
+if [ test $libwmf_xml = expat ]; then
+	AC_DEFINE(HAVE_EXPAT)
+fi
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (2b) xml2    {-lxml2}
+
+WMF_XML_CFLAGS=""
+WMF_XML_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+dnl There may be other xml solutions available at some point...
+
+if [ test $libwmf_xml = no ]; then
+	AC_ARG_WITH(xml,[  --with-xml=DIR          use xml(2) in DIR],[
+		if [ test "x$withval" != "xno" ]; then
+			if [ test "x$withval" != "xyes" ]; then
+				XML_DIR=$withval
+				CPPFLAGS="$CPPFLAGS -I$withval/include"
+				LDFLAGS="$LDFLAGS -L$withval/lib"
+			fi
+			search_for_xml=yes
+		else
+			search_for_xml=no
+		fi
+	],[	search_for_xml=yes
+	])
+else
+	search_for_xml=no
+fi
+
+if [ test $search_for_xml = yes ]; then
+	if [ test -n "$XML_DIR" ]; then
+		AC_PATH_PROG(XML2_CONFIG,xml2-config, ,[$XML_DIR/bin:$PATH])
+	else
+		AC_PATH_PROG(XML2_CONFIG,xml2-config)
+	fi
+
+	if [ test -n "$XML2_CONFIG" ]; then
+		WMF_XML_CFLAGS=`$XML2_CONFIG --cflags`
+		WMF_XML_LDFLAGS=`$XML2_CONFIG --libs`
+	else
+		AC_MSG_ERROR([* * * unable to find xml2-config; unable to continue - check ftp://xmlsoft.org/ * * *])
+	fi
+
+	libwmf_xml=xml2
+fi
+
+if [ test $libwmf_xml = xml2 ]; then
+	AC_DEFINE(HAVE_XML2)
+fi
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (3) freetype {-lfreetype} [-DHAVE_LIBFREETYPE]
+
+WMF_FT_CONFIG_CFLAGS=""
+WMF_FT_CFLAGS=""
+WMF_FT_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+have_freetype=no
+
+AC_ARG_WITH(freetype,[  --with-freetype=DIR     use freetype2 in DIR],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			FREETYPE_DIR=$withval
+		fi
+	else
+		AC_MSG_ERROR(* * * libwmf requires freetype2 * * *)
+	fi
+])
+
+if [ test -n "$FREETYPE_DIR" ]; then
+	AC_PATH_PROG(FREETYPE_CONFIG,freetype-config, ,[$FREETYPE_DIR/bin:$PATH])
+else
+	AC_PATH_PROG(FREETYPE_CONFIG,freetype-config)
+fi
+
+if [ test -n "$FREETYPE_CONFIG" ]; then
+	if [ test -n "$FREETYPE_DIR" ]; then
+		freetype_cflags="`$FREETYPE_CONFIG --cflags` -I$FREETYPE_DIR/include"
+		freetype_libs=`$FREETYPE_CONFIG --libs`
+	else
+		freetype_cflags=`$FREETYPE_CONFIG --cflags`
+		freetype_libs=`$FREETYPE_CONFIG --libs`
+	fi
+else
+	if [ test -n "$FREETYPE_DIR" ]; then
+		freetype_cflags="-I$FREETYPE_DIR/include/freetype2 -I$FREETYPE_DIR/include"
+		freetype_libs="-L$FREETYPE_DIR/lib -lfreetype"
+	else
+		freetype_cflags=""
+		freetype_libs="-lfreetype"
+	fi
+fi
+
+CPPFLAGS="$freetype_cflags $CPPFLAGS"
+LDFLAGS="$LDFLAGS $freetype_libs"
+
+dnl Check existence of freetype library first:
+
+AC_CHECK_LIB(freetype,FT_Init_FreeType,[
+	have_freetype=yes
+	WMF_FT_LDFLAGS="$freetype_libs"
+])
+
+if [ test "$have_freetype" != "yes" ]; then
+	AC_MSG_ERROR(* * * unable to find libfreetype which is required by libwmf * * *)
+fi
+
+dnl Then check existence of freetype header:
+
+AC_CHECK_HEADER(freetype/freetype.h,[
+	AC_MSG_CHECKING(whether it's freetype 2)
+	AC_EGREP_HEADER(FT_Library,freetype/freetype.h,[
+		AC_MSG_RESULT(yes)
+		have_ft_header=yes
+		WMF_FT_CFLAGS="$freetype_cflags"
+		WMF_FT_CONFIG_CFLAGS="$freetype_cflags"
+	],[	AC_MSG_RESULT(no)
+		have_ft_header=no
+	])
+],[	have_ft_header=no
+])
+
+if [ test "$have_ft_header" != "yes" ]; then
+	no_ft_cppflags=$CPPFLAGS
+	CPPFLAGS="-I/usr/include/freetype2 $CPPFLAGS"
+	AC_CHECK_HEADER(freetype/ftglyph.h,[
+		WMF_FT_CFLAGS="-I/usr/include/freetype2"
+		WMF_FT_CONFIG_CFLAGS="-I/usr/include/freetype2"
+	],[	CPPFLAGS=$no_ft_cppflags
+		CPPFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include $CPPFLAGS"
+		AC_CHECK_HEADER(freetype/fttypes.h,[
+			WMF_FT_CFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include"
+			WMF_FT_CONFIG_CFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include"
+		],[	AC_MSG_ERROR([* * * Okay, I give up. Where are those darned headers? * * *])
+		])
+	])
+	AC_MSG_CHECKING(whether it's freetype 2)
+	AC_EGREP_HEADER(FT_Face,freetype/freetype.h,[
+		AC_MSG_RESULT(yes, very cool!)
+		have_ft_header=yes
+	],[	AC_MSG_RESULT(no, hmm...)
+		AC_MSG_ERROR([* * * Okay, I give up. Where are those darned headers? * * *])
+	])
+fi
+
+GD_DEFS="$GD_DEFS -DHAVE_LIBFREETYPE"
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (4) zlib     {-lz}
+
+WMF_Z_CONFIG_CFLAGS=""
+WMF_Z_CFLAGS=""
+WMF_Z_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+AC_ARG_WITH(zlib,[  --with-zlib=DIR         use libz in DIR],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			ZLIB_DIR=$withval
+			CPPFLAGS="$CPPFLAGS -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+		fi
+	else
+		AC_MSG_ERROR(* * * libwmf requires zlib * * *)
+	fi
+])
+
+dnl WMF_Z_CFLAGS are required later on when testing for png, etc.
+
+AC_CHECK_HEADER(zlib.h,[
+	AC_CHECK_LIB(z,gzputs,[
+		if [ test "x$ZLIB_DIR" != "x" ]; then
+			WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
+			WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
+			WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lz"
+		else
+			WMF_Z_LDFLAGS="-lz"
+		fi
+	],[	AC_CHECK_LIB(gz,gzputs,[
+			if [ test "x$ZLIB_DIR" != "x" ]; then
+				WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
+				WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
+				WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lgz"
+			else
+				WMF_Z_LDFLAGS="-lgz"
+			fi
+		],[	AC_MSG_ERROR(* * * unable to find libz which is required by libwmf * * *)
+		])
+	])
+],[	AC_MSG_ERROR(* * * unable to find "zlib.h" which is required by libwmf * * *)
+])
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (5) png      {-lpng}      [-DHAVE_LIBPNG]
+
+WMF_PNG_CFLAGS=""
+WMF_PNG_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+AC_ARG_WITH(png,[  --with-png=DIR          use libpng in DIR],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			PNG_DIR=$withval
+			CPPFLAGS="$CPPFLAGS -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+		fi
+	else
+		AC_MSG_ERROR(* * * libwmf requires libpng * * *)
+	fi
+])
+
+dnl "png.h" includes "zlib.h"
+CPPFLAGS="$CPPFLAGS $WMF_Z_CFLAGS"
+
+AC_CHECK_HEADER(png.h,[
+	AC_CHECK_LIB(png,png_write_image,[
+		if [ test "x$PNG_DIR" != "x" ]; then
+			WMF_PNG_CFLAGS="-I$PNG_DIR/include"
+			WMF_PNG_LDFLAGS="-L$PNG_DIR/lib -lpng"
+		else
+			WMF_PNG_LDFLAGS="-lpng"
+		fi
+	],[	AC_MSG_ERROR(* * * unable to find libpng which is required by libwmf * * *)
+	],-lz -lm)
+],[	AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *)
+])
+
+AC_DEFINE(HAVE_LIBPNG)
+GD_DEFS="$GD_DEFS -DHAVE_LIBPNG"
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (6) jpeg     {-ljpeg}     [-DHAVE_LIBJPEG] (optional)
+
+WMF_JPEG_CFLAGS=""
+WMF_JPEG_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+AC_ARG_WITH(jpeg,[  --with-jpeg=DIR         use libjpeg in DIR],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			JPEG_DIR=$withval
+			CPPFLAGS="$CPPFLAGS -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+		fi
+		search_for_jpeg=yes
+	else
+		search_for_jpeg=no
+	fi
+],[	search_for_jpeg=yes
+])
+
+if [ test "$search_for_jpeg" != "no" ]; then
+	AC_CHECK_HEADER(jpeglib.h,[
+		AC_CHECK_LIB(jpeg,jpeg_CreateCompress,[
+			if [ test "x$JPEG_DIR" != "x" ]; then
+				WMF_JPEG_CFLAGS="-I$JPEG_DIR/include"
+				WMF_JPEG_LDFLAGS="-L$JPEG_DIR/lib -ljpeg"
+			else
+				WMF_JPEG_LDFLAGS="-ljpeg"
+			fi
+			AC_DEFINE(HAVE_LIBJPEG)
+			GD_DEFS="$GD_DEFS -DHAVE_LIBJPEG"
+			libwmf_gd_jpeg=yes
+		])
+	])
+fi
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (7) gd       {-lgd}
+
+dnl Chances are that even if gd is present, it won't have been patched for compatibility
+dnl with libwmf, but worth checking anyway...
+
+WMF_GD_CFLAGS=""
+WMF_GD_LDFLAGS=""
+
+libwmf_gd="wmf"
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+AC_ARG_WITH(sys-gd,[  --with-sys-gd=DIR       use system GD in DIR (if compatible)],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			GD_DIR=$withval
+			CPPFLAGS="$CPPFLAGS -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+		fi
+		search_for_gd=yes
+	else
+		search_for_gd=no
+	fi
+],[	search_for_gd=yes
+])
+
+AC_ARG_ENABLE(gd,[  --disable-gd            don't build GD, don't look for it, don't require it],[
+	if [ test "x$enableval" = "xno" ]; then
+		search_for_gd=no
+		libwmf_gd="none"
+	fi
+],[	if [ test $libwmf_layers = no ]; then
+		search_for_gd=no
+		libwmf_gd="none"
+	fi
+])
+
+if [ test "$search_for_gd" != "no" ]; then
+	other_libs=""
+
+	dnl Do I need extra libs with Xpm?
+	dnl 
+	if [ test "x$libwmf_x" = "xyes" ]; then
+		CPPFLAGS="$CPPFLAGS $WMF_X_CFLAGS"
+		LDFLAGS="$LDFLAGS $WMF_X_LDFLAGS"
+		AC_CHECK_LIB(Xpm,main,[
+			other_libs="$other_libs -lXpm"
+			WMF_GD_LDFLAGS="-lXpm"
+		])
+	fi
+
+	if [ test "x$libwmf_gd_jpeg" = "xyes" ]; then
+		CPPFLAGS="$CPPFLAGS $WMF_JPEG_CFLAGS"
+		LDFLAGS="$LDFLAGS $WMF_JPEG_LDFLAGS"
+		other_libs="$other_libs -ljpeg"
+	fi
+
+	CPPFLAGS="$CPPFLAGS $WMF_FT_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
+	LDFLAGS="$LDFLAGS $WMF_FT_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS"
+	other_libs="$other_libs -lfreetype -lpng -lz -lm"
+
+	AC_CHECK_HEADER(gd.h,[
+		AC_CHECK_LIB(gd,gdClipSetAdd,[
+			AC_CHECK_LIB(gd,gdft_draw_bitmap,[
+				libwmf_gd="sys"
+			],,$other_libs)
+		],,$other_libs)
+	])
+fi
+
+if [ test "x$libwmf_gd" != "xnone" ]; then
+	AC_DEFINE(HAVE_GD,1)
+	build_gd_layer=yes
+else
+	build_gd_layer=no
+fi
+
+if [ test "x$libwmf_gd" = "xsys" ]; then
+	if [ test "x$GD_DIR" != "x" ]; then
+		WMF_GD_CFLAGS="-I$GD_DIR/include"
+		WMF_GD_LDFLAGS="-L$GD_DIR/lib -lgd $WMF_GD_LDFLAGS"
+	else
+		WMF_GD_LDFLAGS="-lgd $WMF_GD_LDFLAGS"
+	fi
+elif [ test "x$libwmf_gd" = "xnone" ]; then
+	dnl Slight hack here to disable GD build:
+	libwmf_gd="sys"
+else
+	WMF_GD_LDFLAGS=""
+fi
+
+AM_CONDITIONAL(LIBWMF_OPT_GD,[ test "x$build_gd_layer" = "xyes" ])
+AM_CONDITIONAL(LIBWMF_OPT_SYS_GD,[ test "x$libwmf_gd" = "xsys" ])
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (8) plot     {-lplot}
+
+WMF_PLOT_CFLAGS=""
+WMF_PLOT_LDFLAGS=""
+
+_cppflags=$CPPFLAGS
+_ldflags=$LDFLAGS
+
+AC_ARG_WITH(plot,[  --with-plot=DIR         use GNU plotutils (>= 2.4.0) in DIR (default no)],[
+	if [ test "x$withval" != "xno" ]; then
+		if [ test "x$withval" != "xyes" ]; then
+			PLOT_DIR=$withval
+			CPPFLAGS="$CPPFLAGS -I$withval/include"
+			LDFLAGS="$LDFLAGS -L$withval/lib"
+		fi
+		search_for_plot=yes
+	else
+		search_for_plot=no
+	fi
+],[	search_for_plot=no
+])
+
+if [ test "$search_for_plot" != "no" ]; then
+	AC_CHECK_HEADER(plot.h,[
+		AC_CHECK_LIB(plot,pl_libplot_ver,[
+			AC_LIBPLOT_LIBS
+			if [ test $ac_can_link_libplot != no ]; then
+				if [ test "x$PLOT_DIR" != "x" ]; then
+					WMF_PLOT_CFLAGS="-I$PLOT_DIR/include"
+					WMF_PLOT_LDFLAGS="-L$PLOT_DIR/lib $LIBPLOT_LIBS"
+				else
+					WMF_PLOT_LDFLAGS="$LIBPLOT_LIBS"
+				fi
+				AC_DEFINE(HAVE_LIBPLOT)
+				libwmf_plot=maybe
+			else
+				AC_MSG_ERROR(* * * sorry - unable to link against libplot * * *)
+			fi
+		],[	AC_MSG_ERROR(GNU plotutils >= 2.4.0 required)
+		])
+	])
+fi
+
+AM_CONDITIONAL(LIBWMF_OPT_PLOT,[ test "x$libwmf_plot" != "xno" ])
+
+CPPFLAGS=$_cppflags
+LDFLAGS=$_ldflags
+
+dnl (9) magick
+
+libwmf_magick=no
+AC_ARG_ENABLE(magick,[  --enable-magick         build magick device layer [default=no]],[
+	if [ test "x$enableval" != "xno" ]; then
+		AC_DEFINE(ENABLE_MAGICK)
+		libwmf_magick=yes
+	fi
+])
+
+AM_CONDITIONAL(LIBWMF_OPT_MAGICK,[ test "x$libwmf_magick" != "xno" ])
+
+dnl Other options...
+
+AC_ARG_WITH(docdir,[  --with-docdir=DIR       install documentation in DIR],[
+	WMF_DOCDIR=$withval
+],[	if test "x$prefix" = "xNONE"; then
+		WMF_DOCDIR=$ac_default_prefix/share/doc/$PACKAGE
+	else
+		WMF_DOCDIR=$prefix/share/doc/$PACKAGE
+	fi
+])
+
+AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
+	WMF_FONTDIR=$withval
+],[	if test "x$prefix" = "xNONE"; then
+		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
+	else
+		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
+	fi
+])
+
+AC_ARG_WITH(sysfontmap,[  --with-sysfontmap=FILE  [default is /usr/share/fonts/fontmap]],[
+	WMF_SYS_FONTMAP=$withval
+],[	WMF_SYS_FONTMAP=/usr/share/fonts/fontmap
+])
+
+AC_ARG_WITH(xtrafontmap,[  --with-xtrafontmap=FILE non-system XML fontmap],[
+	WMF_XTRA_FONTMAP=$withval
+],[	WMF_XTRA_FONTMAP=$WMF_FONTDIR/fontmap
+])
+
+AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
+	WMF_GS_FONTMAP=$withval
+],[	dnl 
+	dnl Test first for Debian Font Manager's ghostscript Fontmap.
+	dnl Next test for GnuWin32 ghostscript Fontmap.
+	dnl Next test for standard ghostscript Fontmap.
+	dnl If not found, default to RedHat location.
+	dnl 
+	if [ test -r /var/lib/defoma/gs.d/dirs/fonts/Fontmap ]; then
+		WMF_GS_FONTMAP=/var/lib/defoma/gs.d/dirs/fonts/Fontmap
+	elif [ test -r 'c:/progra~1/gs/gs/lib/fontmap' ]; then
+		WMF_GS_FONTMAP='c:/progra~1/gs/gs/lib/fontmap'
+	elif [ test -r 'c:/gs/fonts/fontmap' ]; then
+		WMF_GS_FONTMAP='c:/gs/fonts/fontmap'
+	else
+		WMF_GS_FONTMAP=/usr/share/ghostscript/5.50/Fontmap
+	fi
+])
+
+AC_ARG_WITH(gsfontdir,[  --with-gsfontdir=DIR    directory for ghostscript fonts],[
+	WMF_GS_FONTDIR=$withval
+],[	dnl 
+	dnl Test first for Debian Font Manager's ghostscript font directory.
+	dnl Next test for GnuWin32 ghostscript font directory.
+	dnl Next test for standard ghostscript font directory.
+	dnl If not found, default to RedHat location.
+	dnl 
+	if [ test -d /var/lib/defoma/gs.d/dirs/fonts ]; then
+		WMF_GS_FONTDIR=/var/lib/defoma/gs.d/dirs/fonts
+	elif [ test -d 'c:/progra~1/gs/gs/lib/fonts' ]; then
+		WMF_GS_FONTDIR='c:/progra~1/gs/gs/lib/fonts'
+	elif [ test -d 'c:/gs/fonts' ]; then
+		WMF_GS_FONTDIR='c:/gs/fonts'
+	else
+		WMF_GS_FONTDIR=/usr/share/fonts/default/Type1
+	fi
+])
+
+dnl Output...
+
+WMF_CFLAGS="$WMF_FT_CFLAGS $WMF_X_CFLAGS $WMF_PLOT_CFLAGS $WMF_EXPAT_CFLAGS $WMF_XML_CFLAGS"
+WMF_CFLAGS="$WMF_CFLAGS $WMF_GD_CFLAGS $WMF_JPEG_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
+
+AC_SUBST(WMF_CFLAGS)
+
+WMF_CONFIG_CFLAGS="$WMF_FT_CONFIG_CFLAGS $WMF_Z_CONFIG_CFLAGS $WMF_X_CONFIG_CFLAGS"
+
+AC_SUBST(WMF_CONFIG_CFLAGS)
+
+WMF_LIBFLAGS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_X_LDFLAGS $WMF_EXPAT_LDFLAGS $WMF_XML_LDFLAGS"
+WMF_LIBFLAGS="$WMF_LIBFLAGS $WMF_FT_LDFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS -lm"
+
+AC_SUBST(WMF_LIBFLAGS)
+
+AC_SUBST(WMF_DOCDIR)
+AC_SUBST(WMF_FONTDIR)
+AC_SUBST(WMF_SYS_FONTMAP)
+AC_SUBST(WMF_XTRA_FONTMAP)
+AC_SUBST(WMF_GS_FONTMAP)
+AC_SUBST(WMF_GS_FONTDIR)
+
+AC_SUBST(WMF_DEFS)
+AC_SUBST(GD_DEFS)
+
+AC_OUTPUT([
+Makefile
+doc/Makefile
+doc/caolan/Makefile
+doc/caolan/pics/Makefile
+doc/html/Makefile
+fonts/Makefile
+fonts/libwmf-fontmap
+fonts/fontmap
+include/Makefile
+include/libwmf/Makefile
+src/Makefile
+src/extra/Makefile
+src/extra/trio/Makefile
+src/extra/gd/Makefile
+src/ipa/Makefile
+src/convert/Makefile
+libwmf-config
+libwmf.spec
+])
+
+echo ""
+echo "	Support for X:			$libwmf_x"
+echo "	Support for GD:			$libwmf_gd"
+echo "	Support for JPEG though GD:	$libwmf_gd_jpeg"
+echo "	Support for GNU plotutils:	$libwmf_plot"
+echo "	Whether to build magick layer:	$libwmf_magick"
+echo "	Support for XML:		$libwmf_xml"
+echo ""
+echo "	Documentation directory:	$WMF_DOCDIR"
+echo "	Font directory:			$WMF_FONTDIR"
+echo "	System XML fontmap file:	$WMF_SYS_FONTMAP"
+echo "	Non-system XML fontmap file:	$WMF_XTRA_FONTMAP"
+echo "	ghostscript fontmap file:	$WMF_GS_FONTMAP"
+echo "	ghostscript font directory:	$WMF_GS_FONTDIR"
+echo ""

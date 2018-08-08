@@ -1,4 +1,0 @@
-#define HS_CROSS_width 8
-#define HS_CROSS_height 8
-static unsigned char HS_CROSS_bits[] = {
-   0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08};

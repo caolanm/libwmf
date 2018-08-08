@@ -1,4 +1,0 @@
-#define HS_HORIZONTAL_width 8
-#define HS_HORIZONTAL_height 8
-static unsigned char HS_HORIZONTAL_bits[] = {
-   0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00};

@@ -1,27 +1,36 @@
-A lot of this source code is derived from selected portions of wine
-code, wine can be found at http://www.winehq.com. Where ive found
-problems in wine's handling of metafile's and graphics ive 
-endevoured to create patches and submit them to wine, see the
-winepatches dir for them.
+(1) Export to PNG and JPEG uses Thomas Boutell's GD library.
+    http://www.boutell.com/gd/
 
-* the majority of the code is my own work, Caolan.McNamara@ul.ie 
-	(http://www.csn.ul.ie/~caolan)
-* the fig code is written by David.Airlie@ul.ie 
-	(http://www.csn.ul.ie/~airlied)
-* zooming in with xwmf (+ and -) is by Raj Manandhar <raj@colsa.com> 
----
-* Contributions by Dom Lachowicz (help with cvs repository, 
-  checking in stuff, good ideas,...)
-* Contribution by Steven Michael Robbins (simpler configure.in)
-* Major contributions/development on Xfig output by Frédéric Vivien.
-  Graphic elements, embedded bitmaps, styles and attributes. 
-  And the test file cell.wmf.
-* Debugging help by Benjamin Geer, Peter Ohlerich, Steve Oney.
-* Patches by Bob Bell, F.J. Franklin, Volker Zell.
-* Revamping of the configure.in script, and more, by Albert Chin. 
-* Matej Vela megapatch to use libtools.
+(2) Font support in GD and in libwmf is provided by the FreeType library.
+    http://freetype.sourceforge.net/
 
-* adding text output (and more) to the Xfig output code of libwmf;
-  creating a rudimentary wmftoeps, fixing up font handling and text
-  placement in wnftopng -- yours truly the maintainer, Martin Vermeer
+(3) Also deserving of credit are:
+  (a) allegro
+      http://www.talula.demon.co.uk/allegro/
+  (b) Gdtclft
+      http://www.tcltk.com/
+  (c) wine
+      http://www.winehq.com/
+  (d) Bjorn Reese and Daniel Stenberg for trio.
 
+(4) Caolan McNamara was original author of libwmf, and although I (Francis
+    James Franklin) have reworked much of it the core of the interpreter
+    (i.e., the most important part) owes everything to Caolan.
+    http://www.csn.ul.ie/~caolan
+    http://www.alinameridon.com/
+
+(5) Export to FIG format (readable/editable by xfig) was added by David Airlie,
+    Frédéric Vivien and Martin Vermeer.
+    http://www.csn.ul.ie/~airlied
+    http://www.netby.net/Oest/Europa-Alle/vermeer
+
+(6) Bob Friesenhahn linked libwmf into ImageMagick, so now you are able to
+    convert WMF files to anything ImageMagick supports using the handy
+    ImageMagick command syntax.
+
+(7) Other contributors include Raj Manandhar, Steven Michael Robbins, Bob Bell
+    Albert Chin and Matej Vila. Also, Benjamin Geer, Peter Ohlerich, Steve Oney
+    and Michael Cree have helped with debugging.
+
+(8) Finally, special thanks to Dom Lachowicz for all sorts of reasons.
+    http://www.seas.upenn.edu/~dominicl/

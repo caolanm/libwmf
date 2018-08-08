@@ -1,9 +1,0 @@
-Index: graphics/x11drv/graphics.c
-===================================================================
-RCS file: /home/wine/wine/graphics/x11drv/graphics.c,v
-retrieving revision 1.11
-diff -r1.11 graphics.c
-222c222
-<     if ((physDev->pen.style!=PS_SOLID) && (physDev->pen.style!=PS_INSIDEFRAME))
----
->     if ((physDev->pen.width <=1) && (physDev->pen.style!=PS_SOLID) && (physDev->pen.style!=PS_INSIDEFRAME))

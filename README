@@ -1,194 +1,171 @@
-ABOUT
-=====
-libwmf's homepage is
-http://wvware.sourceforge.net/libwmf.html
+libwmf-0.2.2 Release Notes
+--------------------------
 
-and my (MV) email for bugs and whatnot is
+While there have been some improvements to text placement and rendering in the
+X and gd layers, most changes are in the configuration. (It is now possible to
+build libwmf without any device layers, but this has not been tested extensively
+and is not recommended for general use.)
 
-martin.vermeer@hut.fi
+Special thanks to Bob Friesenhahn, Leonard Rosenthol, David C Sterratt and
+Tomasz K³oczko.
 
-libwmf is a library for unix like machines that can convert wmf
-files into other formats, currently it supports a gd binding
-to convert to png, and an X one to draw direct to an X window
-or pixmap. As a new feature, also the Xfig and encapsulated PostScript
-formats are supported.
+Hopefully this release will build on Solaris. My apologies to everyone who had
+problems with libwmf-0.2.1.
 
-WHAT YOU GET
-============
-xwmf draws wmf files on screen (X)
-use + to zoom in and
-use - to zoom out
-wmftopng converts wmf files to png, can use (and I recommend) truetype fonts
-wmftofig converts wmf files to fig, (new program, in active development still, 
-but very cool)
-wmftoeps converts wmf files to eps, (very new, very incomplete)
+libwmf-0.2.1 Release Notes
+--------------------------
 
+In adherence with the ancient philosophy of `It's my birthday and I'll release
+if I want to,' today, August 22nd 2001, sees the release of libwmf-0.2.1,
+a.k.a. `The Inspector General's Nose'.
 
-REQUIREMENTS (how text strings in wmf files are handled)
-============
+I was, in fact, tempted to call it version 0.3.0, but I've been calling it
+0.2.1 for so many preview snapshots that, well, to do otherwise now would seem
+like a betrayal.
 
-1)
-First you *must* have the xpm libraries installed, this is
-the default for linux distributions and many others, if you
-don't have such a system you can get xpm from 
-ftp://ftp.x.org/contrib/libraries
+The most significant change is the introduction of redirectable character
+output streams (i.e., wmfStream) which should facilitate the writing of WMF
+importers. - Speaking of which, CVS sodipodi now has optional support for
+importing WMF, requiring libwmf-0.2.1, and an importer for AbiWord is in the
+works.
 
-2)
-To compile this code in its entirity you should have the freetype
-library (http://www.freetype.org), and you should have a range
-of truetype fonts, typically the ones supplied with windows.
+This has, however, necessitated a slight change in the API, and people who use
+libwmf in conjuction with wv will need to upgrade to wv-0.7.0 or later.
 
-NOTE 1: Currently an elaborate set of substitution/fallback rules 
-is in effect. You should be safe having times.ttf and/or
-arial.ttf and some symbol font like symbol.ttf (better: 
-eucsym.ttf) on your disc. 
+Other significant changes are support for a ghostscript-style fontmap and the
+beginnings of doxygen-generated documentation (which will grow more complete
+with future releases).
 
-freetype is only required for the gd binding to libwmf, i.e. the
-wmftopng program, the X bindings, (xwmf) doesn't require the 
-truetype library, but I very much recommend that you install
-xfsft, or have a X server able to use ttf fonts. 
+Otherwise, there has been considerable clean-up, bug-fixes and improvement of
+both the source and the build system, and some additional functionality,
+including:
+(a) The .fig export uses scaling now, and has options to save images as PNG
+    or JPEG.
+(b) The .svg export now supports inline (data URI) images and compression to
+    .svgz (plus sodipodi-specific workarounds).
+(c) Use of metafile size info., if any (a mixed blessing).
 
-Without the freetype library wmftopng will compile, but will
-not be able to display text strings in the output png. If
-you do have freetype, you still *are* *required* to specify
-the directory that they are in to wmftopng as the third argument
-to it, the fonts should be the standard ttf fonts supplied with
-windows, or the font that the text will be rendered in will
-not be the original font (see above, or source gdwmfapi.c).
+Special thanks to:
+(a) Matej Vila, for helping to make libwmf more Debian-friendly;
+(b) Michael Cree, for helping me to get libwmf working on Tru64;
+(c) Steve Oney, whose help I have not yet done justice to...
 
-3)
-Without a truetype font server and the standard windows fonts
-then the X binding might render text is a different font than
-would appear under windows natively, this is a runtime issue for
-the xwmf program.
+Thanks also to: Bob Friesenhahn, Michal Jaegermann, Anil Madhavapeddy,
+Jacqueline Signore, Shuang Wang, Sean Young, and Kees Zeelenberg.
 
-4)
-In this release libwmf cannot resize bitmaps embedded in wmf files
-on its own, and attempt to offload them to the netpbm utilities,
-so you should have these installed, it wont break anything not to
-have them installed, and this requirement will be removed in a later
-release. (Note MV: Frédéric working on this).
+Finally, having just assumed the mantle of maintainership, I would like to
+take this opportunity once again to thank Martin Vermeer for all of his work
+on libwmf.
 
-INSTALLATION
-============
+Francis James Franklin <fjf@alinameridon.com>                 22nd August, 2001
+===============================================================================
 
-it should just be a simple matter of 
-./configure
-make
-make install
+Amendment #1
+------------
 
-on some machines you might have to have gnu make installed,
-if the make fails try gmake instead.
+This version of libwmf is now officially part of the wvWare project, available
+by CVS under the module named `libwmf2'.
 
-For full functionality you have to have X, freetype and the xpm
-libraries installed.
+I have added device layers for SVG (W3C's XML-based vector graphic format) and
+MVG (ImageMagick's proprietary vector graphic format); the X device layer has
+not been changed and I have no intention of changing it in the near future, but
+it works. I have also added a device layer for GNU plotutils, but currently it
+is only a shell, so don't use it.
 
-If the xpm libraries are not in the standard locations you can use
-./configure --with-xpm=dir
-to point to the xpm dir location e.g.
+The MVG work is based on information supplied by Bob Friesenhahn who did the
+WMF coder for ImageMagick. (ImageMagick's WMF coder links against libwmf(1),
+not this version.) I am using version ImageMagick-5.3.3, and I don't know
+whether earlier (or later) versions will be compatible with the MVG format
+assumed by libwmf. In fact, I am already finding bugs, particularly with
+dashed lines... Also, I don't really know how to implement fonts; I suspect
+ImageMagick could do with some serious hacking on this point...
 
-If the freetype libraries are not in the standard locations you can use
+Martin Vermeer has added a FIG device layer, so now there are two routes
+available if anyone wants to *edit* the images as vector graphics:
+(a) WMF->FIG for editing with xfig;
+(b) WMF->SVG for editing with, for example, sodipodi (best to get the *very*
+    latest source for sodipodi; the GNOME-1.4 release and earlier are colour-
+    blind).
 
-./configure --with-ttf=dir
+The svg & magick device layers write all bitmap data as PNG images, using
+filenames provided via the device layer interface.
 
-to point to the freetype dir location e.g.
+The current version of the GD library subsumed within libwmf is gd-2.0.0, with
+my additions. This supports 24-bit colour.
 
-./configure --with-ttf=/usr
+There is some documentation, but the best way to learn how to use the various
+the device layers is to read the source in src/convert/
 
-for Red Hat with freetype and devel version 1.3.1-5, which sets up 
-/usr as the root directory (<ttfroot>)under which 
-to find both the headers (in /usr/include/freetype/) and the library 
-(in /usr/lib). Configure currently searches <ttfroot>/include and
-<ttfroot>include/freetype and <ttfdir> itself for headers, and
-<ttfroot>/lib and <ttfroot> itself for the library.
+Francis James Franklin <fjf@alinameridon.com>                    13th May, 2001
+===============================================================================
 
-In this example, freetype.h is in /usr/include/freetype/ and 
-libttf.a in /usr/lib/.
+This is my own (i.e., unofficial) development version of libwmf which I propose
+as a candidate for release as (official) libwmf version 0.2.0.
 
-In each case the dir can either be the dir *above* the include/,
-include/freetype/ and lib/ dirs where the component can be found. 
-Or the actual dir within *both* the lib and include files exist.
+Although based on Caolan's excellent libwmf, there has been an almost complete
+restructuring to take libwmf away from it's batch-process origins and make it
+as well-behaved a library as possible.
 
-For other distro's, find the common <ttfroot> containing both
-header and library files, and give that as a commmand line option to
-./configure. Let me know (MV) if you find a distro where such a common
-root does not exist.
+(1) The names have been changed to protect the innocent. All global / external
+    variables have the prefix `wmf' (or, since the GD library is subsumed
+    within libwmf, `gd'). With very few exceptions:
+    (a) functions: wmf_function_name (...)
+    (b) types:     wmfType, or wmfType_t
+    (c) macros:    WMF_Macro (...)
 
+(2) It is my belief that device-layer (e.g., output) implementations should
+    not need to know anything about wmf files or the interpreter's methods.
+    In addition, the writing of such device-layers should be made as simple
+    as possible, though not of course at the expense of image fidelity or
+    quality.
 
-MORE INFORMATION
-================
+    As such, I have crafted a new interface between the interpreter and the
+    device layer, which I choose to call the `ipa' (as opposed to the `api'
+    which is the `application / program interface'). There must also be an
+    interface between the application and the device layer, but this third
+    interface is independent of the interpreter.
 
-Once everything is installed, if you have an app that you wish to
-compile against libwmf, here is the sample options for the gd
-binding, to generate png's from wmf.
-gcc wmftopng.c -lwmf -ldib -lgdwmf -lxgd -lttf -L/usr/X11R6/lib -lX11 -lXpm -lpng -lz -lm
+    Although this may sound unnecessarily complicated, in fact it makes
+    programming applications or device layers significantly easier.
 
-the breakdown is
--lwmf    -ldib     -lgdwmf     -lxgd     -lttf 		-lpng -lz -lm
-^^^^     ^^^^      ^^^^^^      ^^^^^     ^^^^^ 		^^^^^^^^^^^^^
-the      bmp       the gd      the       truetype   png library
-lib      handling  binding     gd        library    requirements
-itself   code      to libwmf   lib
+(3) With very few exceptions, all function calls refer to a variable of type
+    `wmfAPI' which incorporates all data associated with a given wmf file.
+    A final call to wmf_api_destroy frees up all memory allocated during the
+    initialization and processing of the metafile.
 
--L/usr/X11R6/lib -lX11 -lXpm
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Xpm library, needed as libdib
-converts dib's to xpm files.
-(libdib, is for device 
-indepentant bitmaps, i.e bmp
-files without their full headers)
+(4) (a) There is no longer any dependence on temporary files; all processing
+        of the metafile is performed in-memory or w.r.t. original metafile.
+    (b) Metafiles can be in-memory if desired; or applications can specify
+        their own read/seek/tell functions for reading the metafile.
 
-the include files that are installed that you need are
-wmfapi.h for all bindings
-[ + gdwmfapi.h for gd binding ] OR
-[ + Xwmfapii.h for X binding ]
+(5) (a) Xpm dependence & system calls have been removed; libwmf provides
+        bitmap scaling functionality.
+    (b) Bitmaps are read using code taken from ImageMagick [?? - are there
+        licensing issues to be addressed here?]
+    (c) libwmf now uses freetype (2) for stringwidth calculations, and is
+        bundled with the standard thirteen ghostscript fonts [?? - are there
+        licensing issues to be addressed here?]
+    (d) libwmf incorporates GD (gd-1.8.4 at time of writing) which supports
+        freetype (2), with some enhancements (filled arcs & clipping).
+     *  
+     *  libz, libpng and freetype(2) are the sole required external libraries.
+     *  
 
-for the X binding to draw direct to a pixmap/window
+(6) (a) The build system uses automake and libtool, and the only library
+        created is `libwmf', which includes the eps and gd device layers and
+        the GD library as well as the interpreter and api.
+    (b) Header files are installed in a `libwmf' sub-directory.
 
-gcc xwmf.c -lwmf -ldib -lXwmf -L/usr/X11R6/lib -lX11 -lXpm -lm
+(7) I have added the wmf examples with Tor Lillqvist's plug-in for the Gimp:
+    http://www.iki.fi/tml/gimp/wmf
+    [?? - are there licensing issues to be addressed here?]
 
-all the same except use libXwmf which is the binding for X.
+Currently the only device layers are eps [eps & ps] and gd [png & jpeg].
+Implementing more should be relatively straight-forward. I recognize that,
+until device layers for X, xfig and magick exist, this proposed revision of
+libwmf is at a disadvantage...
 
-documentation will be included in a later version as to how to
-write your own binding for the wmf library, especially wanted
-ones are wmf->fig and wmf->eps. (under construction).
+I have tested only with PPC Linux 2000 and (x86) Linux RH7.
 
-some other info as to the current situation.
-
-this baby currently attempts to convert 16 bit windows metafiles,
-known as .wmf to something useful.
-
-In its present state it draws the metafile to an X window, and
-can output a png file.
-
-Its early code, but works so far on... 
-
-at least the collection of clipart from msword and msworks
-for win 3.1
-
-the wordtests dir is a set of wmf files outputted from sample runs
-of libwv. The png binding doesn't currently do text, but it
-will once i've merged code from a tcl binding to gd that understands
-the truetype format. [Has this been done? MV]
-
-It *doesnt* do emf files, i.e 32bit metafile yet, and is surely quite
-buggy at the moment.
-
-There are a few examples of clipart files in the clipart dir, some 
-pointers to other freely available clipart would be appreciated.
-the out.wmf file contains examples of all the currently supported
-wmf functions.
-
-This is a sister project to libwv, 
-http://www.wvWare.com
-to allow that converter to decode wmf files that are embedded
-in word docs.
-
-the intention is to use it as a library that you can plug
-in modules for other file formats. 
-
-CHANGELOG is the file with the changes and up to date news.
-read it for updates.
-
-C.
-MV
+Francis James Franklin <fjf@alinameridon.com>                   4th March, 2001
+===============================================================================
