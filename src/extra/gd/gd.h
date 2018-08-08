@@ -373,9 +373,6 @@ void gdImageGd(gdImagePtr im, FILE *out);
 void gdImageGd2(gdImagePtr im, FILE *out, int cs, int fmt);
 
 /* Best to free this memory with gdFree(), not free() */
-void* gdImagePngPtr(gdImagePtr im, int *size);
-
-/* Best to free this memory with gdFree(), not free() */
 void* gdImageGdPtr(gdImagePtr im, int *size);
 
 /* Best to free this memory with gdFree(), not free() */

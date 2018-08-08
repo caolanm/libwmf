@@ -435,17 +435,6 @@ gdImagePng (gdImagePtr im, FILE * outFile)
   out->free (out);
 }
 
-void *
-gdImagePngPtr (gdImagePtr im, int *size)
-{
-  void *rv;
-  gdIOCtx *out = gdNewDynamicCtx (2048, NULL);
-  gdImagePngCtx (im, out);
-  rv = gdDPExtractData (out, size);
-  out->free (out);
-  return rv;
-}
-
 /* This routine is based in part on code from Dale Lutz (Safe Software Inc.)
  *  and in part on demo code from Chapter 15 of "PNG: The Definitive Guide"
  *  (http://www.cdrom.com/pub/png/pngbook.html).
