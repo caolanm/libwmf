@@ -268,7 +268,7 @@ int wmf_stream_sputs (char* str,void* context)
 {	char* more = 0;
 	char* sptr = 0;
 
-	unsigned long max;
+	unsigned long max=0;
 
 	wmfDefaultStream* defstr = (wmfDefaultStream*) context;
 
@@ -310,11 +310,9 @@ int wmf_stream_sputs (char* str,void* context)
  * @internal
  */
 int wmf_stream_rezet (void* context)
-{	wmfDefaultZtream* defstr = (wmfDefaultZtream*) context;
-
-	wmfAPI* API = defstr->API;
-
-	WMF_DEBUG (API,"cannot reset ztream (compressed stream)");
+{	
+	WMF_DEBUG (((wmfDefaultZtream*) context)->API,
+		"cannot reset ztream (compressed stream)");
 
 	return (0);
 }

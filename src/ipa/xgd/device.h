@@ -20,9 +20,10 @@
 /* This is called by wmf_play() the *first* time the meta file is played
  */
 static void wmf_gd_device_open (wmfAPI* API)
-{	wmf_gd_t* ddata = WMF_GD_GetData (API);
-
-	/* gd_t* gd = (gd_t*) ddata->gd_data; */
+{	
+#ifndef HAVE_LIBPNG
+	wmf_gd_t* ddata = WMF_GD_GetData (API);
+#endif
 
 	WMF_DEBUG (API,"wmf_[gd_]device_open");
 

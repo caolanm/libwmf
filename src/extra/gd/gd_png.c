@@ -125,7 +125,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
   png_bytep image_data = NULL;
   png_bytepp row_pointers = NULL;
   gdImagePtr im = NULL;
-  int i, j, *open;
+  int i, j, *open=0;
   volatile int transparent = -1;
   volatile int palette_allocated = FALSE;
 
@@ -442,7 +442,7 @@ gdImagePngPtr (gdImagePtr im, int *size)
 void
 gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
 {
-  int i, j, bit_depth, interlace_type;
+  int i, j, bit_depth=1, interlace_type;
   int width = im->sx;
   int height = im->sy;
   int colors = im->colorsTotal;
@@ -579,7 +579,6 @@ gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
       int i;
       int j;
       int k;
-      int highTrans = -1;
       for (i = 0; (i < im->colorsTotal); i++)
 	{
 	  if ((!im->open[i]) &&

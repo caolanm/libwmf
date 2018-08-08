@@ -47,8 +47,6 @@ typedef struct {
 	gpointer                    user_data;
 
 	GByteArray                 *data;
-	gint                        width;
-	gint                        height;
 } WmfContext;
 
 static void
@@ -118,19 +116,21 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 	wmfAPI_Options    api_options;        
 	wmfD_Rect         bbox;
 
-	void             *gd_image = NULL;
 	int              *gd_pixels = NULL;
         
-	/* if needed, the natural width and height of the WMF
+	/* the natural width and height of the WMF or the user-specified with+height
 	 */
-	unsigned int      width, height;
+	gint              width, height;
 
-	double            units_per_inch;
 	double            resolution_x, resolution_y;
+
+	if (error != NULL)
+		*error = NULL;
 
 	/* TODO: be smarter about getting the resolution from screen 
 	 */
 	resolution_x = resolution_y = 72.0;
+	width = height = -1;
 
 	flags = WMF_OPT_IGNORE_NONFATAL | WMF_OPT_FUNCTION;
 	api_options.function = wmf_gd_function;
@@ -162,26 +162,23 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 	/* find out how large the app wants the pixbuf to be
 	 */
 	if (context->size_func != NULL)
-		(*context->size_func) (&context->width, &context->height, context->user_data);
+		(*context->size_func) (&width, &height, context->user_data);
 
 	/* if these are <= 0, assume user wants the natural size of the wmf
 	 */
-	if (context->width <= 0 || context->height <= 0) {
+	if (width <= 0 || height <= 0) {
 		err = wmf_display_size (API, &width, &height, resolution_x, resolution_y);
 
-		if (err != wmf_E_None || width <= 0. || height <= 0.) {
+		if (err != wmf_E_None || width <= 0 || height <= 0) {
 			g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
 				     "Couldn't determine image size");
 			goto _wmf_error;
 		}
-
-		context->width  = (gint) width;
-	        context->height = (gint) height;
 	}
 
 	ddata->bbox          = bbox;        
-	ddata->width         = context->width;
-	ddata->height        = context->height;
+	ddata->width         = width;
+	ddata->height        = height;
         
 	err = wmf_play (API, 0, &bbox);
 	if (err != wmf_E_None) {
@@ -190,18 +187,16 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 		goto _wmf_error;
 	}
 
-	gd_image = ddata->gd_image;
-
 	wmf_mem_close (API);
 
-	if (gd_image) gd_pixels = wmf_gd_image_pixels (gd_image);
+	if (ddata->gd_image != NULL) gd_pixels = wmf_gd_image_pixels (ddata->gd_image);
 	if (gd_pixels == NULL) {
 		g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
 			     "Couldn't decode WMF file - no output (huh?)");
 		goto _wmf_error;
 	}
 
-	pixels = pixbuf_gd_convert (gd_pixels, context->width, context->height);
+	pixels = pixbuf_gd_convert (gd_pixels, width, height);
 	if (pixels == NULL) {
 		g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_INSUFFICIENT_MEMORY,
 			     "Couldn't create RGBA buffer");
@@ -212,8 +207,7 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 	API = NULL;
 
 	pixbuf = gdk_pixbuf_new_from_data (pixels, GDK_COLORSPACE_RGB, TRUE, 8,
-					   context->width, context->height,
-					   context->width * 4,
+					   width, height, width * 4,
 					   pixbuf_destroy_function, NULL);
 	if (pixbuf == NULL) {
 		g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
@@ -248,6 +242,8 @@ gdk_pixbuf__wmf_image_load_increment (gpointer data,
 {
 	WmfContext *context = (WmfContext *)data;
 
+	if (error != NULL)
+		*error = NULL;
 	g_byte_array_append (context->data, buf, size);
 	return TRUE;
 }
@@ -261,13 +257,14 @@ gdk_pixbuf__wmf_image_begin_load (GdkPixbufModuleSizeFunc size_func,
 {
 	WmfContext *context    = g_new0 (WmfContext, 1);
 
+	if (error != NULL)
+		*error = NULL;
+
 	context->prepared_func = prepared_func;
 	context->updated_func  = updated_func;
 	context->size_func     = size_func;
 	context->user_data     = user_data;        
 	context->data          = g_byte_array_new ();
-	context->width         = -1;
-	context->height        = -1;
 
 	return (gpointer)context;
 }
@@ -297,6 +294,7 @@ fill_info (GdkPixbufFormat *info)
 	};
 	static gchar *extensions[] = { 
 		"wmf", 
+		"apm",
 		NULL 
 	};
 

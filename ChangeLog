@@ -1,3 +1,7 @@
+v. 0.2.8.4
+	* 3 patches from Caolan at RedHat: remove unnecessary extra linked
+	  libs; remove some warnings; rh154813 which (same redhat issuzilla
+	  bug id) I theorize fixes some upsidedown wmfs.
 v. 0.2.8.3
 	* configure.ac: Don't use -lm on Windows. mingw has an (empty)
 	  dummy libm, but it confuses libtool.) [Tor Lillqvist  <tml@iki.fi>]

@@ -249,7 +249,9 @@ gdImageJpegCtx (gdImagePtr im, gdIOCtx * outfile, int quality)
 	}
     }
   jpeg_finish_compress (&cinfo);
+#if BITS_IN_JSAMPLE == 12
 error:
+#endif
   jpeg_destroy_compress (&cinfo);
   gdFree (row);
 }

@@ -260,11 +260,6 @@ static void wmf_fig_draw_ellipse (wmfAPI* API,wmfDrawArc_t* draw_arc)
 	int a;
 	int b;
 
-	int start_x;
-	int start_y;
-	int end_x;
-	int end_y;
-	
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]draw_ellipse");
 
 	wmf_stream_printf (API,out,"# wmf_[fig_]draw_ellipse\n");
@@ -389,8 +384,6 @@ static void wmf_fig_poly_line (wmfAPI* API,wmfPolyLine_t* poly_line)
 	U16 sub_length;
 	U16 sub_count;
 
-	int npoints;
-
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]poly_line");
 
 	if (out == 0) return;
@@ -461,8 +454,6 @@ static void wmf_fig_draw_polygon (wmfAPI* API,wmfPolyLine_t* poly_line)
 
 	U16 i;
 
-	int npoints;
-	
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]draw_polygon");
 
 	if (out == 0) return;

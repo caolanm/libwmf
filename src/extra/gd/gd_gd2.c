@@ -262,13 +262,13 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
   int i;
   int ncx, ncy, nc, cs, cx, cy;
   int x, y, ylo, yhi, xlo, xhi;
-  int ch, vers, fmt;
+  int vers, fmt;
   t_chunk_info *chunkIdx = NULL;	/* So we can gdFree it with impunity. */
   unsigned char *chunkBuf = NULL;	/* So we can gdFree it with impunity. */
   int chunkNum = 0;
-  int chunkMax;
+  int chunkMax=0;
   uLongf chunkLen;
-  int chunkPos;
+  int chunkPos=0;
   int compMax;
   int bytesPerPixel;
   char *compBuf = NULL;		/* So we can gdFree it with impunity. */
@@ -450,9 +450,9 @@ gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int srcy, int w, int h)
   t_chunk_info *chunkIdx = NULL;
   char *chunkBuf = NULL;
   int chunkNum;
-  int chunkMax;
+  int chunkMax=0;
   uLongf chunkLen;
-  int chunkPos;
+  int chunkPos=0;
   int compMax;
   char *compBuf = NULL;
 
@@ -635,10 +635,11 @@ gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int srcy, int w, int h)
 		    {
 		      if (im->trueColor)
 			{
-			  ch = chunkBuf[chunkPos++] << 24 +
-			    chunkBuf[chunkPos++] << 16 +
-			    chunkBuf[chunkPos++] << 8 +
-			    chunkBuf[chunkPos++];
+			  ch = (chunkBuf[chunkPos] << 24) +
+			    (chunkBuf[chunkPos+1] << 16) +
+			    (chunkBuf[chunkPos+2] << 8) +
+			    (chunkBuf[chunkPos+3]);
+			  chunkPos+=4;
 			}
 		      else
 			{
@@ -710,12 +711,12 @@ _gdImageGd2 (gdImagePtr im, gdIOCtx * out, int cs, int fmt)
   char *chunkData = NULL;	/* So we can gdFree it with impunity. */
   char *compData = NULL;	/* So we can gdFree it with impunity. */
   uLongf compLen;
-  int idxPos;
+  int idxPos=0;
   int idxSize;
   t_chunk_info *chunkIdx = NULL;
   int posSave;
   int bytesPerPixel = im->trueColor ? 4 : 1;
-  int compMax;
+  int compMax=0;
 
   /*printf("Trying to write GD2 file\n"); */
 

@@ -1011,7 +1011,7 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 	double x2;
 	double y2;
 	double r2;
-	double r2_min;
+	double r2_min = 0;
 
 	if ((polyline->pt == 0) || (polypoly->pt == 0)) return; /* erk!! */
 
@@ -2383,7 +2383,7 @@ static int meta_dc_color (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	}
 
 	if (API->flags & API_ENABLE_EDITING)
-	{	if (value = wmf_attr_query (API, attrlist, "color"))
+	{	if ((value = wmf_attr_query (API, attrlist, "color")))
 		{	if ((*value) == '#')
 			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
 				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);
@@ -3104,7 +3104,7 @@ static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	WMF_PEN_SET_HEIGHT (pen,(double) par_U16_w * ABS (P->dc->pixel_height));
 
 	if (API->flags & API_ENABLE_EDITING)
-	{	if (value = wmf_attr_query (API, attrlist, "color"))
+	{	if ((value = wmf_attr_query (API, attrlist, "color")))
 		{	if ((*value) == '#')
 			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
 				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);
@@ -3206,7 +3206,7 @@ static int meta_brush_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrl
 	WMF_BRUSH_SET_STYLE (brush,ParU16 (API,Record,0));
 
 	if (API->flags & API_ENABLE_EDITING)
-	{	if (value = wmf_attr_query (API, attrlist, "color"))
+	{	if ((value = wmf_attr_query (API, attrlist, "color")))
 		{	if ((*value) == '#')
 			{	if (sscanf (value+1, "%lx", &rgbhex) == 1)
 				{	par_U16_rg = (U16) ((rgbhex >> 8) & 0xffff);

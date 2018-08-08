@@ -222,7 +222,8 @@ static double PixelWidth (wmfAPI* API)
 	case (MM_HIENGLISH): /* each unit is 0.001 inch */
 	case (MM_TWIPS):     /* each unit is 1/1440 inch */
 	case (MM_DPI):       /* isotropic; placeable meta file */
-
+		if (P->dc->Window.width < 0)
+			return -P->dc->pixel_width;
 	break;
 
 	default:
@@ -267,7 +268,8 @@ static double PixelHeight (wmfAPI* API)
 	case (MM_HIENGLISH): /* each unit is 0.001 inch */
 	case (MM_TWIPS):     /* each unit is 1/1440 inch */
 	case (MM_DPI):       /* isotropic; placeable meta file */
-
+		if (P->dc->Window.height < 0)
+			return -P->dc->pixel_height;
 	break;
 
 	default:

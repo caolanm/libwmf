@@ -25,7 +25,7 @@ char *
 gdImageStringTTF (gdImage * im, int *brect, int fg, char *fontlist,
 		  double ptsize, double angle, int x, int y, char *string)
 {
-  gdImageStringFT (im, brect, fg, fontlist, ptsize,
+  return gdImageStringFT (im, brect, fg, fontlist, ptsize,
 		   angle, x, y, string);
 }
 
@@ -331,7 +331,7 @@ fontFetch (char **error, void *key)
   int n;
   int font_found = 0;
   unsigned short platform, encoding;
-  char *fontsearchpath, *fontpath, *fontlist;
+  char *fontsearchpath, *fontlist;
   char *fullname = NULL;
   char *name, *path, *dir;
   char *strtok_ptr;
@@ -536,8 +536,8 @@ tweenColorRelease (void *element)
 /* static */ char *
 gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 {
-  unsigned char *pixel;
-  int *tpixel;
+  unsigned char *pixel = 0;
+  int *tpixel = 0;
   int x, y, row, col, pc;
 
   tweencolor_t *tc_elem;
@@ -643,6 +643,14 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
   return (char *) NULL;
 }
 
+int
+gdroundupdown (FT_F26Dot6 v1, int updown)
+{
+  return (!updown)
+    ? (v1 < 0 ? ((v1 - 63) >> 6) : v1 >> 6)
+    : (v1 > 0 ? ((v1 + 63) >> 6) : v1 >> 6);
+}
+
 extern int any2eucjp (char *, char *, unsigned int);
 
 /********************************************************************/
@@ -720,7 +728,7 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
   if (font->have_char_map_sjis)
     {
 #endif
-      if (tmpstr = (char *) gdMalloc (BUFSIZ))
+      if ((tmpstr = (char *) gdMalloc (BUFSIZ)))
 	{
 	  any2eucjp (tmpstr, string, BUFSIZ);
 	  next = tmpstr;
@@ -923,14 +931,6 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
   if (tmpstr)
     gdFree (tmpstr);
   return (char *) NULL;
-}
-
-int
-gdroundupdown (FT_F26Dot6 v1, int updown)
-{
-  return (!updown)
-    ? (v1 < 0 ? ((v1 - 63) >> 6) : v1 >> 6)
-    : (v1 > 0 ? ((v1 + 63) >> 6) : v1 >> 6);
 }
 
 #endif /* HAVE_LIBFREETYPE */

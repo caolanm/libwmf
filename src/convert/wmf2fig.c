@@ -74,14 +74,16 @@ int  explicit_wmf_error (char*,wmf_error_t);
 int wmf2fig_draw (PlotData* pdata)
 {	int status = 0;
 
+#if 0
 	unsigned int wmf_width;
 	unsigned int wmf_height;
 
 	unsigned int page_width;
 	unsigned int page_height;
+#endif
 
 	unsigned long flags;
-
+#if 0
 	int page_margin;
 
 	float def_width;
@@ -89,7 +91,7 @@ int wmf2fig_draw (PlotData* pdata)
 
 	float ratio_wmf;
 	float ratio_page;
-
+#endif
 	static char* Default_Creator = "wmf2fig";
 
 	ImageContext IC;

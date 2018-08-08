@@ -1377,11 +1377,13 @@ static wmfXML_FontInfo* ipa_font_sys_map (wmfAPI* API,wmfFont* font)
  * Checks XML Fontmap entry is valid before loading face.
  */
 static FT_Face ipa_font_sys_face (wmfAPI* API,wmfFont* font,wmfXML_FontInfo* FI)
-{	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
+{	
+#if 0
+	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
+	struct stat stat_buf;
+#endif
 
 	FT_Face face = 0;
-
-	struct stat stat_buf;
 
 	if (FI == 0) return (0);
 
@@ -1486,8 +1488,6 @@ static FT_Face ipa_font_gs_face (wmfAPI* API,wmfFont* font,wmfGS_FontInfo* FI)
 {	wmfFontmapData* font_data = (wmfFontmapData*) ((wmfFontData*) API->font_data)->user_data;
 
 	FT_Face face = 0;
-
-	unsigned int i;
 
 	char* aalias = 0;
 

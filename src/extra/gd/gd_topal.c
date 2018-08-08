@@ -28,6 +28,7 @@
 
 #include "gd.h"
 #include "gdhelpers.h"
+#include <string.h>
 
 /*
  * This module implements the well-known Heckbert paradigm for color
@@ -981,9 +982,9 @@ find_best_colors (gdImagePtr im, my_cquantize_ptr cquantize,
   register int *bptr;		/* pointer into bestdist[] array */
   int *cptr;			/* pointer into bestcolor[] array */
   int dist0, dist1, dist2;	/* initial distance values */
-  register int dist3;		/* current distance in inner loop */
+  register int dist3 = 0;	/* current distance in inner loop */
   int xx0, xx1, xx2;		/* distance increments */
-  register int xx3;
+  register int xx3 = 0;
   int inc0, inc1, inc2, inc3;	/* initial values for increments */
   /* This array holds the distance to the nearest-so-far color for each cell */
   int bestdist[BOX_C0_ELEMS * BOX_C1_ELEMS * BOX_C2_ELEMS * BOX_C3_ELEMS];

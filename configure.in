@@ -268,7 +268,7 @@ WMF_X_LDFLAGS=""
 WMF_X_CFLAGS="$X_CFLAGS"
 if [ test "x$no_x" != "xyes" ]; then
 	WMF_X_CONFIG_CFLAGS="$X_CFLAGS"
-	WMF_X_LDFLAGS="$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
+	WMF_X_LDFLAGS="$X_LIBS -lX11"
 	libwmf_x=yes
 fi
 

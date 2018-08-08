@@ -125,8 +125,6 @@ static void wmf_fig_region_paint (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 static void wmf_fig_region_clip (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 {	wmf_fig_t* ddata = WMF_FIG_GetData (API);
 
-	unsigned int i;
-
 	wmfStream* out = ddata->out;
 
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]region_clip");
