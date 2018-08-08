@@ -250,6 +250,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
 	{
 	  fprintf (stderr, "gd-png error: cannot allocate gray palette\n");
 	  png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+	  gdImageDestroy(im);
 	  return NULL;
 	}
       palette_allocated = TRUE;
@@ -318,6 +319,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
     {
       fprintf (stderr, "gd-png error: cannot allocate image data\n");
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
+      gdImageDestroy(im);
       return NULL;
     }
   if ((row_pointers = (png_bytepp) gdMalloc (height * sizeof (png_bytep))) == NULL)
@@ -325,6 +327,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       fprintf (stderr, "gd-png error: cannot allocate row pointers\n");
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
       gdFree (image_data);
+      gdImageDestroy(im);
       return NULL;
     }
 
