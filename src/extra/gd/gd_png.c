@@ -320,6 +320,8 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       fprintf (stderr, "gd-png error: cannot allocate image data\n");
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
       gdImageDestroy(im);
+      if (palette_allocated)
+        gdFree (palette);
       return NULL;
     }
   if ((row_pointers = (png_bytepp) gdMalloc (height * sizeof (png_bytep))) == NULL)
@@ -328,6 +330,8 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
       gdFree (image_data);
       gdImageDestroy(im);
+      if (palette_allocated)
+        gdFree (palette);
       return NULL;
     }
 
