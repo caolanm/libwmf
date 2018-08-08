@@ -681,7 +681,7 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
   font_t *font;
   fontkey_t fontkey;
   char *next;
-  char *tmpstr = 0;
+  char *tmpstr = NULL;
   int render = (im && (im->trueColor || (fg <= 255 && fg >= -255)));
   FT_BitmapGlyph bm;
 
@@ -933,8 +933,7 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
       brect[7] = y - gdroundupdown (brect[7], d2 < 0);
     }
 
-  if (tmpstr)
-    gdFree (tmpstr);
+  gdFree (tmpstr);
   return (char *) NULL;
 }
 
