@@ -1,3 +1,6 @@
+v. 0.2.9
+	* merge in my fixes from fedora libwmf
+
 v. 0.2.8.4
 	* 3 patches from Caolan at RedHat: remove unnecessary extra linked
 	  libs; remove some warnings; rh154813 which (same redhat issuzilla

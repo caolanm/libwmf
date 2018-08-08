@@ -1,3 +1,10 @@
+libwmf-0.2.9 Release Notes
+--------------------------
+
+Seeing as wvware.sourceforge.net seems to be dead, but libwmf is still in use
+and has had a bunch of security bugs reported against, and I've a history with
+libwmf, I'll call this libwmf 0.2.9 and merge in my (Red Hat) fixes.
+
 libwmf-0.2.2 Release Notes
 --------------------------
 
