@@ -289,6 +289,7 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
 
   if (im == NULL)
     {
+      gdFree (chunkIdx);
       return 0;
     };
   bytesPerPixel = im->trueColor ? 4 : 1;
