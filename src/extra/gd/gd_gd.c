@@ -42,7 +42,7 @@ _gdGetColors (gdIOCtx * in, gdImagePtr im, int gd2xFlag)
 	    {
 	      goto fail1;
 	    }
-	  if (&im->colorsTotal > gdMaxColors)
+	  if (im->colorsTotal > gdMaxColors)
 	    {
 	      goto fail1;
 	    }

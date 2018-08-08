@@ -414,7 +414,7 @@ char *StrSubstringMax(const char *string, size_t max, const char *find)
  * sign ::= ( '-' | '+' )
  * decimal_point ::= '.'
  */
-double StrToDouble(const char *source, const char **endp)
+double StrToDouble(const char *source, char **endp)
 {
 #if defined(TRIO_C99)
   return strtod(source, endp);
@@ -534,7 +534,7 @@ double StrToDouble(const char *source, const char **endp)
 /*************************************************************************
  * StrToFloat
  */
-float StrToFloat(const char *source, const char **endp)
+float StrToFloat(const char *source, char **endp)
 {
 #if defined(TRIO_C99)
   return strtof(source, endp);

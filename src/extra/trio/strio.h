@@ -212,8 +212,8 @@ int StrMatch(char *string, char *pattern);
 int StrMatchCase(char *string, char *pattern);
 size_t StrSpanFunction(char *source, int (*Function)(int));
 char *StrSubstringMax(const char *string, size_t max, const char *find);
-float StrToFloat(const char *source, const char **target);
-double StrToDouble(const char *source, const char **target);
+float StrToFloat(const char *source, char **target);
+double StrToDouble(const char *source, char **target);
 int StrToUpper(char *target);
 
 #endif /* TRIO_STRIO_H */

@@ -53,6 +53,7 @@ static const char rcsid[] = "@(#)$Id: trio.c,v 1.1 2001/06/07 08:23:02 fjfrankli
  * Include files
  */
 
+#include <stddef.h>
 #include "trio.h"
 #include "triop.h"
 #include "strio.h"
