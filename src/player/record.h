@@ -96,6 +96,7 @@ static wmfRecord OffsetRecord (wmfAPI* API,wmfRecord* record,unsigned long index
 	new_record.function = record->function;
 	new_record.size = 0;
 	new_record.parameter = 0;
+	new_record.position = 0;
 
 	if (index > record->size)
 	{	WMF_ERROR (API,"Bad record - unexpectedly short!");
