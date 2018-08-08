@@ -65,6 +65,18 @@ gdImageCreate (int sx, int sy)
 {
   int i;
   gdImagePtr im;
+
+  if (overflow2(sx, sy)) {
+    return NULL;
+  }
+
+  if (overflow2(sizeof (unsigned char *), sy)) {
+    return NULL;
+  }
+  if (overflow2(sizeof (unsigned char), sx)) {
+    return NULL;
+  }
+
   im = (gdImage *) gdMalloc (sizeof (gdImage));
   memset (im, 0, sizeof (gdImage));
   /* Row-major ever since gd 1.3 */
