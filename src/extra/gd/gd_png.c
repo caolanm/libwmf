@@ -396,16 +396,19 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
 	}
       break;
     default:
-      /* Palette image, or something coerced to be one */
-      for (j = 0; j < height; ++j)
-	{
-	  for (i = 0; i < width; ++i)
-	    {
-	      register png_byte idx = row_pointers[j][i];
-	      im->pixels[j][i] = idx;
-	      open[idx] = 0;
-	    }
-	}
+      if (!im->trueColor)
+      {
+        /* Palette image, or something coerced to be one */
+        for (j = 0; j < height; ++j)
+	  {
+	    for (i = 0; i < width; ++i)
+	      {
+	        register png_byte idx = row_pointers[j][i];
+	        im->pixels[j][i] = idx;
+	        open[idx] = 0;
+	      }
+	  }
+      }
     }
 #ifdef DEBUG
   if (!im->trueColor)
