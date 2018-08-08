@@ -526,6 +526,7 @@ int bbox_translate (PlotData* pdata,char* bbox)
 	}
 	if (status || (geom_height == 0) || (geom_x && (geom_y == 0)))
 	{	fputs ("usage: wmf2eps --bbox=WxH+X+Y\n",stderr);
+		free (geom);
 		return (2);
 	}
 
@@ -551,6 +552,7 @@ int bbox_translate (PlotData* pdata,char* bbox)
 
 	if (status)
 	{	fputs ("usage: wmf2eps --bbox=WxH+X+Y\n",stderr);
+		free (geom);
 		return (2 + status);
 	}
 
