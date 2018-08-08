@@ -1429,11 +1429,9 @@ static wmfGS_FontInfo* ipa_font_gs_map (wmfAPI* API,wmfFont* font)
 	if (GS->len == 0) return (0);
 
 	name = font->lfFaceName;
-	if (name == 0)
-	{	WMF_DEBUG (API,"No font name?");
-		API->err = wmf_E_Glitch;
-		return (0);
-	}
+
+	if (name == 0 || name[0] == 0)
+		name = "Times";
 
 	/* Find first white-space character or eol
 	 */
