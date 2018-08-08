@@ -184,6 +184,14 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
 
   png_get_IHDR (png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 		&interlace_type, NULL, NULL);
+  if (overflow2(sizeof (int), width)) 
+    {
+      return NULL;
+    }
+  if (overflow2(sizeof (int) * width, height)) 
+    {
+      return NULL;
+    }  
   if ((color_type == PNG_COLOR_TYPE_RGB) ||
       (color_type == PNG_COLOR_TYPE_RGB_ALPHA))
     {
