@@ -8,13 +8,21 @@ DIRHEAVY = .
 DEFHEAVY = 
 endif
 
+if LIBWMF_GDK_PIXBUF
+GDK_PIXBUF_PLUGIN = io-wmf.la
+GDK_PIXBUF_DEFS = -DGDK_PIXBUF_ENABLE_BACKEND=1
+else
+GDK_PIXBUF_PLUGIN = 
+GDK_PIXBUF_DEFS = 
+endif
+
 DIST_SUBDIRS = extra ipa . convert
 
 SUBDIRS = $(DIRHEAVY)
 
-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
+CFLAGS = @CFLAGS@ @WMF_CFLAGS@ @GDK_PIXBUF_CFLAGS@
 
-DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) \
+DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) $(GDK_PIXBUF_DEFS) \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DVERSION=\"@VERSION@\" \
 	-DWMF_FONTDIR=\"@WMF_FONTDIR@\" \
@@ -31,7 +39,7 @@ libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c recorder.c
 
 libwmflite_la_LDFLAGS = -lm \
 	-no-undefined \
-	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+	-version-info $(LT_LITE_CURRENT):$(LT_LITE_REVISION):$(LT_LITE_AGE) \
 	-release $(LT_RELEASE) -export-dynamic
 
 libwmf_la_SOURCES = font.c stream.c wmf.c xml.c
@@ -54,6 +62,16 @@ libwmf_la_LDFLAGS = \
 	-no-undefined \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
 	-release $(LT_RELEASE) -export-dynamic
+
+loaderdir = $(libdir)/$(GDK_PIXBUF_DIR)
+
+loader_LTLIBRARIES = $(GDK_PIXBUF_PLUGIN)
+
+io_wmf_la_SOURCES = io-wmf.c
+
+io_wmf_la_LIBADD = libwmf.la @GDK_PIXBUF_LIBS@
+
+io_wmf_la_LDFLAGS = -no-undefined -module -avoid-version
 
 PLAYERHEADERS = \
 	player/clip.h \

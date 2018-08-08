@@ -206,6 +206,62 @@ wmf_error_t wmf_size (wmfAPI* API,float* width,float* height)
 }
 
 /**
+ * Get estimate of image display size.
+ * 
+ * @param API    the API handle
+ * @param width  width return
+ * @param height height return
+ * @param res_x  x-resolution of display
+ * @param res_y  y-resolution of display
+ * 
+ * wmf_display_size() returns image width in \p *width and image height in \p *height.
+ * wmf_size() is used to get the calculated/estimate width and height of the image,
+ * and these values are converted to integer width and height estimates for display.
+ * 
+ * @return Returns the library error state (\b wmf_E_None on success).
+ *         Possible library error state of \b wmf_E_Glitch (the metafile has not been scanned).
+ */
+wmf_error_t wmf_display_size (wmfAPI* API,unsigned int* width,unsigned int* height,
+			      double res_x,double res_y)
+{	unsigned int units_per_inch = 1440;
+
+	double disp_width;
+	double disp_height;
+
+	float est_width;
+	float est_height;
+
+	WMF_DEBUG (API,"~~~~~~~~wmf_display_size");
+
+	if (ERR (API))
+	{	WMF_DEBUG (API,"bailing...");
+		return (API->err);
+	}
+
+	wmf_size (API, &est_width, &est_height);
+
+	if (ERR (API))
+	{	WMF_DEBUG (API,"bailing...");
+		return (API->err);
+	}
+
+	if (PLACEABLE (API))
+	{	units_per_inch = DPI (API);
+	}
+	else if ((est_width * est_height) < (1024 * 1024))
+	{	units_per_inch = 72;
+	}
+
+	disp_width  = ((double) est_width ) * res_x / (double) units_per_inch;
+	disp_height = ((double) est_height) * res_y / (double) units_per_inch;
+
+	if (width)  *width  = (unsigned int) disp_width;
+	if (height) *height = (unsigned int) disp_height;
+
+	return API->err;
+}
+
+/**
  * Play the metafile.
  * 
  * @param API   the API handle

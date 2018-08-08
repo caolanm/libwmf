@@ -104,19 +104,35 @@ gdImageCreateTrueColor (int sx, int sy)
 {
   int i;
   gdImagePtr im;
+  unsigned long cpa_size;
+
   im = (gdImage *) gdMalloc (sizeof (gdImage));
+  if (im == 0) return 0;
   memset (im, 0, sizeof (gdImage));
+
+  cpa_size = sizeof (int) * (unsigned long) sx * (unsigned long) sy;
+  im->_tpixels = (int *) gdMalloc (cpa_size);
+  if (im->_tpixels == 0)
+    {
+      gdFree (im);
+      return 0;
+    }
+  memset (im->_tpixels, 0, cpa_size);
+
   im->tpixels = (int **) gdMalloc (sizeof (int *) * sy);
+  if (im->tpixels == 0)
+    {
+      gdFree (im->_tpixels);
+      gdFree (im);
+      return 0;
+    }
+  for (i = 0; i < sy; i++) im->tpixels[i] = im->_tpixels + (i * sx);
+
   im->polyInts = 0;
   im->polyAllocated = 0;
   im->brush = 0;
   im->tile = 0;
   im->style = 0;
-  for (i = 0; (i < sy); i++)
-    {
-      im->tpixels[i] = (int *) gdCalloc (
-					  sx, sizeof (int));
-    }
   im->sx = sx;
   im->sy = sy;
   im->transparent = (-1);
@@ -143,10 +159,7 @@ gdImageDestroy (gdImagePtr im)
     }
   if (im->tpixels)
     {
-      for (i = 0; (i < im->sy); i++)
-	{
-	  gdFree (im->tpixels[i]);
-	}
+      gdFree (im->_tpixels);
       gdFree (im->tpixels);
     }
   if (im->polyInts)

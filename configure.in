@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/player.c)
 
-WMF_PACKAGE=libwmf
+LIBWMF_PACKAGE=libwmf
+AC_SUBST(LIBWMF_PACKAGE)
 
 dnl This next section is courtesy gtk+
 dnl 
@@ -15,39 +16,41 @@ dnl
 #
 WMF_MAJOR_VERSION=0
 WMF_MINOR_VERSION=2
-WMF_MICRO_VERSION=7
-WMF_INTERFACE_AGE=0
-WMF_BINARY_AGE=0
-WMF_VERSION=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION.$WMF_MICRO_VERSION
+WMF_MICRO_VERSION=8
 
-AC_SUBST(WMF_MAJOR_VERSION)
-AC_SUBST(WMF_MINOR_VERSION)
-AC_SUBST(WMF_MICRO_VERSION)
-AC_SUBST(WMF_INTERFACE_AGE)
-AC_SUBST(WMF_BINARY_AGE)
-AC_SUBST(WMF_VERSION)
+WMF_INTERFACE_AGE=0
+WMF_BINARY_AGE=1
+
+WMFLITE_INTERFACE_AGE=1
+WMFLITE_BINARY_AGE=1
 
 dnl spec file substitutions
-LIBWMF_PACKAGE=$WMF_PACKAGE
-LIBWMF_VERSION=$WMF_VERSION
+LIBWMF_VERSION=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION.$WMF_MICRO_VERSION
 LIBWMF_RELEASE=1
-AC_SUBST(LIBWMF_PACKAGE)
 AC_SUBST(LIBWMF_VERSION)
 AC_SUBST(LIBWMF_RELEASE)
 
 # libtool versioning
 LT_RELEASE=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION
+AC_SUBST(LT_RELEASE)
+
 LT_CURRENT=`expr $WMF_MICRO_VERSION - $WMF_INTERFACE_AGE`
 LT_REVISION=$WMF_INTERFACE_AGE
 LT_AGE=`expr $WMF_BINARY_AGE - $WMF_INTERFACE_AGE`
-AC_SUBST(LT_RELEASE)
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
+LT_LITE_CURRENT=`expr $WMF_MICRO_VERSION - $WMFLITE_INTERFACE_AGE`
+LT_LITE_REVISION=$WMFLITE_INTERFACE_AGE
+LT_LITE_AGE=`expr $WMFLITE_BINARY_AGE - $WMFLITE_INTERFACE_AGE`
+AC_SUBST(LT_LITE_CURRENT)
+AC_SUBST(LT_LITE_REVISION)
+AC_SUBST(LT_LITE_AGE)
+
 # For automake.
-VERSION=$WMF_VERSION
-PACKAGE=$WMF_PACKAGE
+PACKAGE=$LIBWMF_PACKAGE
+VERSION=$LIBWMF_VERSION
 
 dnl Initialize automake stuff
 AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
@@ -713,6 +716,28 @@ AM_CONDITIONAL(LIBWMF_OPT_PLOT,[ test "x$libwmf_plot" != "xno" ])
 CPPFLAGS=$_cppflags
 LDFLAGS=$_ldflags
 
+dnl Dom's gdk-pixbuf plugin
+
+wmf_gdk_pixbuf=no
+
+GDK_PIXBUF_CFLAGS=""
+GDK_PIXBUF_LIBS=""
+GDK_PIXBUF_DIR=""
+
+if test $LIBWMF_BUILDSTYLE != lite; then
+	PKG_CHECK_MODULES(GDK_PIXBUF,gdk-pixbuf-2.0 >= 2.1.2,[
+		GTK_VERSION=`$PKG_CONFIG --variable=gtk_binary_version gtk+-2.0`
+		GDK_PIXBUF_DIR="gtk-2.0/$GTK_VERSION/loaders"
+		wmf_gdk_pixbuf=yes
+	],[	wmf_gdk_pixbuf=no
+	])
+fi
+AM_CONDITIONAL(LIBWMF_GDK_PIXBUF,[test $wmf_gdk_pixbuf = yes])
+
+AC_SUBST(GDK_PIXBUF_CFLAGS)
+AC_SUBST(GDK_PIXBUF_LIBS)
+AC_SUBST(GDK_PIXBUF_DIR)
+
 dnl Other options...
 
 AC_ARG_WITH(docdir,[  --with-docdir=DIR       install documentation in DIR],[
@@ -767,7 +792,6 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 		WMF_GS_FONTMAP=/usr/share/ghostscript/5.50/Fontmap
 		if test -d /usr/share/ghostscript; then
 			for i in `ls /usr/share/ghostscript`; do
-				echo "/usr/share/ghostscript/$i/"
 				if test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
 					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap.GS"
 				elif test -r "/usr/share/ghostscript/$i/Fontmap"; then
@@ -860,4 +884,6 @@ echo "	System XML fontmap file:	$WMF_SYS_FONTMAP"
 echo "	Non-system XML fontmap file:	$WMF_XTRA_FONTMAP"
 echo "	ghostscript fontmap file:	$WMF_GS_FONTMAP"
 echo "	ghostscript font directory:	$WMF_GS_FONTDIR"
+echo ""
+echo "	building gdk-pixbuf plug-in?	$wmf_gdk_pixbuf"
 echo ""

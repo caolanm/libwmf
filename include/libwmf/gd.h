@@ -48,7 +48,9 @@ struct _wmf_gd_t
 		int (*function) (void* context,char* buffer,int length);
 	} sink;
 
-	void* gd_image; /* pointer to gdImage; null prior to wmf_play () */
+	/* pointer to gdImage; null prior to wmf_play ()
+	 */
+	void* gd_image;
 
 	unsigned int width;
 	unsigned int height;
@@ -68,6 +70,14 @@ struct _wmf_gd_t
 #define WMF_GD_GetData(Z) ((wmf_gd_t*)((Z)->device_data))
 
 extern void wmf_gd_function (wmfAPI*);
+
+/**
+ * If using the wmf_gd_image option to write to a GD image, collected from
+ * the void* gd_image member of the device data struct above, the true-color
+ * pixels (stored in a contiguous array of height * width integers) of the
+ * image can be retrieved using wmf_gd_image_pixels()
+ */
+extern int * wmf_gd_image_pixels (void * gd_image);
 
 #ifdef __cplusplus
 }

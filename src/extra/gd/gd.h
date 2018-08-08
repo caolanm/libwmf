@@ -131,6 +131,7 @@ typedef struct gdImageStruct {
 		have that capability. JPEG doesn't. */
 	int saveAlphaFlag;
 	gdClipSet* clip; /* See <gd_clip.h> */
+	int * _tpixels; /* contiguous pixel array */
 } gdImage;
 
 typedef gdImage * gdImagePtr;

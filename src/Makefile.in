@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -67,6 +67,9 @@ DLLTOOL = @DLLTOOL@
 ECHO = @ECHO@
 EXEEXT = @EXEEXT@
 FREETYPE_CONFIG = @FREETYPE_CONFIG@
+GDK_PIXBUF_CFLAGS = @GDK_PIXBUF_CFLAGS@
+GDK_PIXBUF_DIR = @GDK_PIXBUF_DIR@
+GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GD_DEFS = @GD_DEFS@
 LIBTOOL = @LIBTOOL@
 LIBWMF_BUILDSTYLE = @LIBWMF_BUILDSTYLE@
@@ -76,16 +79,19 @@ LIBWMF_VERSION = @LIBWMF_VERSION@
 LN_S = @LN_S@
 LT_AGE = @LT_AGE@
 LT_CURRENT = @LT_CURRENT@
+LT_LITE_AGE = @LT_LITE_AGE@
+LT_LITE_CURRENT = @LT_LITE_CURRENT@
+LT_LITE_REVISION = @LT_LITE_REVISION@
 LT_RELEASE = @LT_RELEASE@
 LT_REVISION = @LT_REVISION@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
+PKG_CONFIG = @PKG_CONFIG@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
-WMF_BINARY_AGE = @WMF_BINARY_AGE@
 WMF_CFLAGS = @WMF_CFLAGS@
 WMF_CONFIG_CFLAGS = @WMF_CONFIG_CFLAGS@
 WMF_DEFS = @WMF_DEFS@
@@ -93,13 +99,8 @@ WMF_DOCDIR = @WMF_DOCDIR@
 WMF_FONTDIR = @WMF_FONTDIR@
 WMF_GS_FONTDIR = @WMF_GS_FONTDIR@
 WMF_GS_FONTMAP = @WMF_GS_FONTMAP@
-WMF_INTERFACE_AGE = @WMF_INTERFACE_AGE@
 WMF_LIBFLAGS = @WMF_LIBFLAGS@
-WMF_MAJOR_VERSION = @WMF_MAJOR_VERSION@
-WMF_MICRO_VERSION = @WMF_MICRO_VERSION@
-WMF_MINOR_VERSION = @WMF_MINOR_VERSION@
 WMF_SYS_FONTMAP = @WMF_SYS_FONTMAP@
-WMF_VERSION = @WMF_VERSION@
 WMF_XTRA_FONTMAP = @WMF_XTRA_FONTMAP@
 XML2_CONFIG = @XML2_CONFIG@
 @LIBWMF_BUILD_ALL_TRUE@LIBHEAVY = libwmf.la
@@ -108,14 +109,18 @@ XML2_CONFIG = @XML2_CONFIG@
 @LIBWMF_BUILD_ALL_FALSE@DIRHEAVY = .
 @LIBWMF_BUILD_ALL_TRUE@DEFHEAVY = -DLIBWMF_INCLUDE_TRIO_H=1
 @LIBWMF_BUILD_ALL_FALSE@DEFHEAVY = 
+@LIBWMF_GDK_PIXBUF_TRUE@GDK_PIXBUF_PLUGIN = io-wmf.la
+@LIBWMF_GDK_PIXBUF_FALSE@GDK_PIXBUF_PLUGIN = 
+@LIBWMF_GDK_PIXBUF_TRUE@GDK_PIXBUF_DEFS = -DGDK_PIXBUF_ENABLE_BACKEND=1
+@LIBWMF_GDK_PIXBUF_FALSE@GDK_PIXBUF_DEFS = 
 
 DIST_SUBDIRS = extra ipa . convert
 
 SUBDIRS = $(DIRHEAVY)
 
-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
+CFLAGS = @CFLAGS@ @WMF_CFLAGS@ @GDK_PIXBUF_CFLAGS@
 
-DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) 	-DPACKAGE=\"@PACKAGE@\" 	-DVERSION=\"@VERSION@\" 	-DWMF_FONTDIR=\"@WMF_FONTDIR@\" 	-DWMF_GS_FONTDIR=\"@WMF_GS_FONTDIR@\" 	-DWMF_SYS_FONTMAP=\"@WMF_SYS_FONTMAP@\" 	-DWMF_XTRA_FONTMAP=\"@WMF_XTRA_FONTMAP@\" 	-DWMF_GS_FONTMAP=\"@WMF_GS_FONTMAP@\"
+DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) $(GDK_PIXBUF_DEFS) 	-DPACKAGE=\"@PACKAGE@\" 	-DVERSION=\"@VERSION@\" 	-DWMF_FONTDIR=\"@WMF_FONTDIR@\" 	-DWMF_GS_FONTDIR=\"@WMF_GS_FONTDIR@\" 	-DWMF_SYS_FONTMAP=\"@WMF_SYS_FONTMAP@\" 	-DWMF_XTRA_FONTMAP=\"@WMF_XTRA_FONTMAP@\" 	-DWMF_GS_FONTMAP=\"@WMF_GS_FONTMAP@\"
 
 
 INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_builddir)
@@ -124,7 +129,7 @@ lib_LTLIBRARIES = libwmflite.la $(LIBHEAVY)
 
 libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c recorder.c
 
-libwmflite_la_LDFLAGS = -lm 	-no-undefined 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) 	-release $(LT_RELEASE) -export-dynamic
+libwmflite_la_LDFLAGS = -lm 	-no-undefined 	-version-info $(LT_LITE_CURRENT):$(LT_LITE_REVISION):$(LT_LITE_AGE) 	-release $(LT_RELEASE) -export-dynamic
 
 
 libwmf_la_SOURCES = font.c stream.c wmf.c xml.c
@@ -138,6 +143,16 @@ libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO) @WMF_LIBFLAGS
 libwmf_la_LDFLAGS =  	-no-undefined 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) 	-release $(LT_RELEASE) -export-dynamic
 
 
+loaderdir = $(libdir)/$(GDK_PIXBUF_DIR)
+
+loader_LTLIBRARIES = $(GDK_PIXBUF_PLUGIN)
+
+io_wmf_la_SOURCES = io-wmf.c
+
+io_wmf_la_LIBADD = libwmf.la @GDK_PIXBUF_LIBS@
+
+io_wmf_la_LDFLAGS = -no-undefined -module -avoid-version
+
 PLAYERHEADERS =  	player/clip.h 	player/color.h 	player/coord.h 	player/dc.h 	player/defaults.h 	player/meta.h 	player/record.h 	player/region.h
 
 
@@ -146,7 +161,7 @@ EXTRA_DIST = wmfdefs.h metadefs.h player.h $(PLAYERHEADERS) recorder.h 	api.h bb
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../wmfconfig.h
 CONFIG_CLEAN_FILES = 
-LTLIBRARIES =  $(lib_LTLIBRARIES)
+LTLIBRARIES =  $(lib_LTLIBRARIES) $(loader_LTLIBRARIES)
 
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
@@ -174,6 +189,8 @@ libwmflite_la_OBJECTS =  api.lo bbuf.lo meta.lo player.lo recorder.lo
 @LIBWMF_OPT_SYS_GD_TRUE@@LIBWMF_OPT_TRIO_FALSE@ipa/libipa.la \
 @LIBWMF_OPT_SYS_GD_TRUE@@LIBWMF_OPT_TRIO_FALSE@libwmflite.la
 libwmf_la_OBJECTS =  font.lo stream.lo wmf.lo xml.lo
+io_wmf_la_DEPENDENCIES =  libwmf.la
+io_wmf_la_OBJECTS =  io-wmf.lo
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -183,10 +200,10 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
-SOURCES = $(libwmflite_la_SOURCES) $(libwmf_la_SOURCES)
-OBJECTS = $(libwmflite_la_OBJECTS) $(libwmf_la_OBJECTS)
+SOURCES = $(libwmflite_la_SOURCES) $(libwmf_la_SOURCES) $(io_wmf_la_SOURCES)
+OBJECTS = $(libwmflite_la_OBJECTS) $(libwmf_la_OBJECTS) $(io_wmf_la_OBJECTS)
 
 all: all-redirect
 .SUFFIXES:
@@ -222,6 +239,31 @@ uninstall-libLTLIBRARIES:
 	@$(NORMAL_UNINSTALL)
 	list='$(lib_LTLIBRARIES)'; for p in $$list; do \
 	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(libdir)/$$p; \
+	done
+
+mostlyclean-loaderLTLIBRARIES:
+
+clean-loaderLTLIBRARIES:
+	-test -z "$(loader_LTLIBRARIES)" || rm -f $(loader_LTLIBRARIES)
+
+distclean-loaderLTLIBRARIES:
+
+maintainer-clean-loaderLTLIBRARIES:
+
+install-loaderLTLIBRARIES: $(loader_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(loaderdir)
+	@list='$(loader_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(loaderdir)/$$p"; \
+	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(loaderdir)/$$p; \
+	  else :; fi; \
+	done
+
+uninstall-loaderLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	list='$(loader_LTLIBRARIES)'; for p in $$list; do \
+	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(loaderdir)/$$p; \
 	done
 
 .c.o:
@@ -273,6 +315,9 @@ libwmflite.la: $(libwmflite_la_OBJECTS) $(libwmflite_la_DEPENDENCIES)
 
 libwmf.la: $(libwmf_la_OBJECTS) $(libwmf_la_DEPENDENCIES)
 	$(LINK) -rpath $(libdir) $(libwmf_la_LDFLAGS) $(libwmf_la_OBJECTS) $(libwmf_la_LIBADD) $(LIBS)
+
+io-wmf.la: $(io_wmf_la_OBJECTS) $(io_wmf_la_DEPENDENCIES)
+	$(LINK) -rpath $(loaderdir) $(io_wmf_la_LDFLAGS) $(io_wmf_la_OBJECTS) $(io_wmf_la_LIBADD) $(LIBS)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -352,7 +397,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+	  || (cd $(srcdir) && etags -o $$here/TAGS $(ETAGS_ARGS) $$tags  $$unique $(LISP))
 
 mostlyclean-tags:
 
@@ -401,13 +446,13 @@ installcheck: installcheck-recursive
 install-exec-am: install-libLTLIBRARIES
 install-exec: install-exec-recursive
 
-install-data-am:
+install-data-am: install-loaderLTLIBRARIES
 install-data: install-data-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-recursive
-uninstall-am: uninstall-libLTLIBRARIES
+uninstall-am: uninstall-libLTLIBRARIES uninstall-loaderLTLIBRARIES
 uninstall: uninstall-recursive
 all-am: Makefile $(LTLIBRARIES)
 all-redirect: all-recursive
@@ -415,7 +460,7 @@ install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs: installdirs-recursive
 installdirs-am:
-	$(mkinstalldirs)  $(DESTDIR)$(libdir)
+	$(mkinstalldirs)  $(DESTDIR)$(libdir) $(DESTDIR)$(loaderdir)
 
 
 mostlyclean-generic:
@@ -427,25 +472,27 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean-am:  mostlyclean-libLTLIBRARIES mostlyclean-compile \
+mostlyclean-am:  mostlyclean-libLTLIBRARIES \
+		mostlyclean-loaderLTLIBRARIES mostlyclean-compile \
 		mostlyclean-libtool mostlyclean-tags \
 		mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
 
-clean-am:  clean-libLTLIBRARIES clean-compile clean-libtool clean-tags \
-		clean-generic mostlyclean-am
+clean-am:  clean-libLTLIBRARIES clean-loaderLTLIBRARIES clean-compile \
+		clean-libtool clean-tags clean-generic mostlyclean-am
 
 clean: clean-recursive
 
-distclean-am:  distclean-libLTLIBRARIES distclean-compile \
-		distclean-libtool distclean-tags distclean-generic \
-		clean-am
+distclean-am:  distclean-libLTLIBRARIES distclean-loaderLTLIBRARIES \
+		distclean-compile distclean-libtool distclean-tags \
+		distclean-generic clean-am
 	-rm -f libtool
 
 distclean: distclean-recursive
 
 maintainer-clean-am:  maintainer-clean-libLTLIBRARIES \
+		maintainer-clean-loaderLTLIBRARIES \
 		maintainer-clean-compile maintainer-clean-libtool \
 		maintainer-clean-tags maintainer-clean-generic \
 		distclean-am
@@ -456,10 +503,13 @@ maintainer-clean: maintainer-clean-recursive
 
 .PHONY: mostlyclean-libLTLIBRARIES distclean-libLTLIBRARIES \
 clean-libLTLIBRARIES maintainer-clean-libLTLIBRARIES \
-uninstall-libLTLIBRARIES install-libLTLIBRARIES mostlyclean-compile \
-distclean-compile clean-compile maintainer-clean-compile \
-mostlyclean-libtool distclean-libtool clean-libtool \
-maintainer-clean-libtool install-data-recursive \
+uninstall-libLTLIBRARIES install-libLTLIBRARIES \
+mostlyclean-loaderLTLIBRARIES distclean-loaderLTLIBRARIES \
+clean-loaderLTLIBRARIES maintainer-clean-loaderLTLIBRARIES \
+uninstall-loaderLTLIBRARIES install-loaderLTLIBRARIES \
+mostlyclean-compile distclean-compile clean-compile \
+maintainer-clean-compile mostlyclean-libtool distclean-libtool \
+clean-libtool maintainer-clean-libtool install-data-recursive \
 uninstall-data-recursive install-exec-recursive \
 uninstall-exec-recursive installdirs-recursive uninstalldirs-recursive \
 all-recursive check-recursive installcheck-recursive info-recursive \

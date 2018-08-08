@@ -167,6 +167,8 @@ DOCUMENTATION = \
 	struct__wmfCanvasFont.html \
 	struct__wmfConstruct.html \
 	struct__wmfRecordBox.html \
-	doxygen.css
+	doxygen.css \
+	io-wmf_8c.html \
+	structWmfContext.html
 
 EXTRA_DIST = $(DOCUMENTATION)

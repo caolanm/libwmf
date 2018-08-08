@@ -1,9 +1,24 @@
+v. 0.2.8.1
+	* security fix (Artem Frolov)
+v. 0.2.8
+	* update wmf2x & wmf2gd to use wmf_display_size() (fjf)
+	* ditch wmf_gd_image_free(); api_destroy takes care of the image (fjf)
+	* add new wmf_display_size() function which returns integer
+	  size of image for display; io-wmf loader update (dom)
+	* add two convenience functions to xgd device layer for
+	  manipulating GD image post-conversion (fjf)
+	* give libwmflite its own interface/binary numbers (fjf)
+	* change gd.c (add _tpixels member to gdImageStruct)
+	- now allocates contiguous array for truecolor pixels (fjf)
+	* gdk-pixbuf plugin added (dom); config update (fjf)
+v. 0.2.7-2
 	* fix updated Fontmap[.GS] detection (fjf)
 	* add some more paranoia into the font loader (fjf)
 	* change a couple of C++ comments to C comments;
 	  configure.ac|in corrections (c. Olav Kolbu)
 	* fix non-XML case in wmf2x.c; simplify freetype2 detection (fjf)
 v. 0.2.7
+v. 0.2.7-Darwin
 	* update Fontmap[.GS] detection (guesswork, really) (fjf)
 	* don't include trio.h when --disable-heavy is used (fjf)
 	* remember to update both version numbers in configure.ac!

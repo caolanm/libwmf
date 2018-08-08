@@ -69,6 +69,11 @@ extern wmf_error_t wmf_play (wmfAPI*,unsigned long,wmfD_Rect*);
 extern wmf_error_t wmf_size (wmfAPI*,float*,float*);
 
 /**
+ * Supplies a display (integer-) width and height for the current metafile
+ */
+extern wmf_error_t wmf_display_size (wmfAPI*,unsigned int*,unsigned int*,double,double);
+
+/**
  * Sets user defines input stream functions for reading a metafile
  */
 extern wmf_error_t wmf_bbuf_input (wmfAPI*,wmfRead,wmfSeek,wmfTell,void*);

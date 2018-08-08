@@ -208,7 +208,7 @@ static void wmf_svg_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 	wmf_stream_printf (API,out,"%f %f %f %f ",cos_theta,sin_theta,-sin_theta,cos_theta);
 	wmf_stream_printf (API,out,"%f %f)\"\n\t>",pt.x,pt.y);
 
-	wmf_stream_printf (API,out,draw_text->str);
+	wmf_stream_printf (API,out,"%s",draw_text->str);
 
 /*	wmf_stream_printf (API,out,"</tspan></text>\n");
  */	wmf_stream_printf (API,out,"</text>\n");

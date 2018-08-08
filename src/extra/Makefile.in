@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.4-p5 from Makefile.am
+# Makefile.in generated automatically by automake 1.4-p6 from Makefile.am
 
 # Copyright (C) 1994, 1995-8, 1999, 2001 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -67,6 +67,9 @@ DLLTOOL = @DLLTOOL@
 ECHO = @ECHO@
 EXEEXT = @EXEEXT@
 FREETYPE_CONFIG = @FREETYPE_CONFIG@
+GDK_PIXBUF_CFLAGS = @GDK_PIXBUF_CFLAGS@
+GDK_PIXBUF_DIR = @GDK_PIXBUF_DIR@
+GDK_PIXBUF_LIBS = @GDK_PIXBUF_LIBS@
 GD_DEFS = @GD_DEFS@
 LIBTOOL = @LIBTOOL@
 LIBWMF_BUILDSTYLE = @LIBWMF_BUILDSTYLE@
@@ -76,16 +79,19 @@ LIBWMF_VERSION = @LIBWMF_VERSION@
 LN_S = @LN_S@
 LT_AGE = @LT_AGE@
 LT_CURRENT = @LT_CURRENT@
+LT_LITE_AGE = @LT_LITE_AGE@
+LT_LITE_CURRENT = @LT_LITE_CURRENT@
+LT_LITE_REVISION = @LT_LITE_REVISION@
 LT_RELEASE = @LT_RELEASE@
 LT_REVISION = @LT_REVISION@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
+PKG_CONFIG = @PKG_CONFIG@
 RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
-WMF_BINARY_AGE = @WMF_BINARY_AGE@
 WMF_CFLAGS = @WMF_CFLAGS@
 WMF_CONFIG_CFLAGS = @WMF_CONFIG_CFLAGS@
 WMF_DEFS = @WMF_DEFS@
@@ -93,13 +99,8 @@ WMF_DOCDIR = @WMF_DOCDIR@
 WMF_FONTDIR = @WMF_FONTDIR@
 WMF_GS_FONTDIR = @WMF_GS_FONTDIR@
 WMF_GS_FONTMAP = @WMF_GS_FONTMAP@
-WMF_INTERFACE_AGE = @WMF_INTERFACE_AGE@
 WMF_LIBFLAGS = @WMF_LIBFLAGS@
-WMF_MAJOR_VERSION = @WMF_MAJOR_VERSION@
-WMF_MICRO_VERSION = @WMF_MICRO_VERSION@
-WMF_MINOR_VERSION = @WMF_MINOR_VERSION@
 WMF_SYS_FONTMAP = @WMF_SYS_FONTMAP@
-WMF_VERSION = @WMF_VERSION@
 WMF_XTRA_FONTMAP = @WMF_XTRA_FONTMAP@
 XML2_CONFIG = @XML2_CONFIG@
 
@@ -112,7 +113,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -202,7 +203,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
+	  || (cd $(srcdir) && etags -o $$here/TAGS $(ETAGS_ARGS) $$tags  $$unique $(LISP))
 
 mostlyclean-tags:
 

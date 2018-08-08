@@ -71,6 +71,9 @@ int wmf2gd_draw (PlotData* pdata)
 	float ratio_wmf;
 	float ratio_bounds;
 
+	unsigned int disp_width  = 0;
+	unsigned int disp_height = 0;
+
 	unsigned long flags;
 	unsigned long max_flags;
 
@@ -143,7 +146,10 @@ int wmf2gd_draw (PlotData* pdata)
 
 	ddata->bbox = pdata->options.bbox;
 
-	wmf_size (API,&wmf_width,&wmf_height);
+	wmf_display_size (API,&disp_width,&disp_height,72,72);
+
+	wmf_width  = (float) disp_width;
+	wmf_height = (float) disp_height;
 
 	if ((wmf_width <= 0) || (wmf_height <= 0))
 	{	fputs ("Bad image size - but this error shouldn't occur...\n",stderr);

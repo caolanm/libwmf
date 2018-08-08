@@ -530,3 +530,13 @@ static int setlinestyle (wmfAPI* API,wmfDC* dc)
 	return (linestyle);
 }
 #endif /* HAVE_GD */
+
+int * wmf_gd_image_pixels (void * gd_image)
+{
+	int * pixels = 0;
+#ifdef HAVE_GD
+	gdImagePtr img = (gdImagePtr) gd_image;
+	if (img) pixels = img->_tpixels;
+#endif /* HAVE_GD */
+	return (pixels);
+}
