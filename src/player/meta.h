@@ -2585,6 +2585,8 @@ static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 			polyrect.BR[i] = clip->rects[i].BR;
 		}
 
+		if (FR->region_clip) FR->region_clip (API,&polyrect);
+
 		wmf_free (API,polyrect.TL);
 		wmf_free (API,polyrect.BR);
 	}
@@ -2593,9 +2595,10 @@ static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 		polyrect.BR = 0;
 
 		polyrect.count = 0;
+	
+		if (FR->region_clip) FR->region_clip (API,&polyrect);
 	}
 
-	if (FR->region_clip) FR->region_clip (API,&polyrect);
 
 	return (changed);
 }
