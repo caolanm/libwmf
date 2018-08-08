@@ -1524,7 +1524,7 @@ gdImageTrueColorToPalette (gdImagePtr im, int dither, int colorsWanted)
     }
   for (i = 0; (i < im->sy); i++)
     {
-      im->pixels[i] = gdCalloc (sizeof (unsigned char *), im->sx);
+      im->pixels[i] = (unsigned char *) gdCalloc (sizeof (unsigned char), im->sx);
       if (!im->pixels[i])
 	{
 	  goto outOfMemory;
