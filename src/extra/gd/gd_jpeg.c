@@ -3,7 +3,7 @@
 /*
  * gd_jpeg.c: Read and write JPEG (JFIF) format image files using the
  * gd graphics library (http://www.boutell.com/gd/).
- * 
+ *
  * This software is based in part on the work of the Independent JPEG
  * Group.  For more information on the IJG JPEG software (and JPEG
  * documentation, etc.), see ftp://ftp.uu.net/graphics/jpeg/.
@@ -270,7 +270,7 @@ static void
   jpeg_gdIOCtx_src (j_decompress_ptr cinfo,
 		    gdIOCtx * infile);
 
-/* 
+/*
  * Create a gd-format image from the JPEG-format INFILE.  Returns the
  * image, or NULL upon error.
  */
@@ -340,8 +340,8 @@ gdImageCreateFromJpegCtx (gdIOCtx * infile)
     }
 
   /*
-   * Force the image into RGB colorspace, but don't 
-   * reduce the number of colors anymore (GD 2.0) 
+   * Force the image into RGB colorspace, but don't
+   * reduce the number of colors anymore (GD 2.0)
    */
   cinfo.out_color_space = JCS_RGB;
 
@@ -403,7 +403,7 @@ gdImageCreateFromJpegCtx (gdIOCtx * infile)
      latest libjpeg, replaced by something else. Unfortunately
      there is still no right way to find out if the file was
      progressive or not; just declare your intent before you
-     write one by calling gdImageInterlace(im, 1) yourself. 
+     write one by calling gdImageInterlace(im, 1) yourself.
      After all, we're not really supposed to rework JPEGs and
      write them out again anyway. Lossy compression, remember? */
 #if 0
@@ -498,7 +498,7 @@ typedef struct
     gdIOCtx *infile;		/* source stream */
     unsigned char *buffer;	/* start of buffer */
     safeboolean start_of_file;	/* have we gotten any data yet? */
-     
+
   }
 my_source_mgr;
 
@@ -564,38 +564,32 @@ fill_input_buffer (j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
   size_t nbytes = 0;
-  
+
   /* size_t got; */
   /* char *s; */
     memset (src->buffer, 0, INPUT_BUF_SIZE);
-  
+
     while (nbytes < INPUT_BUF_SIZE)
     {
-      
-	int got = gdGetBuf (src->buffer + nbytes, 
+
+	int got = gdGetBuf (src->buffer + nbytes,
 			    INPUT_BUF_SIZE - nbytes,
 			    src->infile);
-      
+
 	if ((got == EOF) || (got == 0))
 	{
-	  
 	  /* EOF or error. If we got any data, don't worry about it.
-	     If we didn't, then this is unexpected. */ 
+	     If we didn't, then this is unexpected. */
 	    if (!nbytes)
 	    {
-	      
 		nbytes = -1;
-	      
 	    }
-	  
 	    break;
-	  
 	}
-      
+
 	nbytes += got;
-      
     }
-  
+
     if (nbytes <= 0)
     {
       if (src->start_of_file)	/* Treat empty input file as fatal error */
@@ -672,11 +666,9 @@ skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 static void
 term_source (j_decompress_ptr cinfo)
 {
-  
 #if 0
 /* never used */
     my_src_ptr src = (my_src_ptr) cinfo->src;
-  
 #endif
 }
 
@@ -709,7 +701,6 @@ jpeg_gdIOCtx_src (j_decompress_ptr cinfo,
       src->buffer = (unsigned char *)
 	(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
 				    INPUT_BUF_SIZE * sizeof (unsigned char));
-      
     }
 
   src = (my_src_ptr) cinfo->src;
