@@ -42,6 +42,7 @@
 #include "player/defaults.h" /* Provides: default settings               */
 #include "player/record.h"   /* Provides: parameter mechanism            */
 #include "player/meta.h"     /* Provides: record interpreters            */
+#include <stdint.h>
 
 /**
  * @internal
@@ -132,8 +133,14 @@ wmf_error_t wmf_scan (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
 		}
 	}
 
-/*	P->Parameters = (unsigned char*) wmf_malloc (API,(MAX_REC_SIZE(API)-3) * 2 * sizeof (unsigned char));
- */	P->Parameters = (unsigned char*) wmf_malloc (API,(MAX_REC_SIZE(API)  ) * 2 * sizeof (unsigned char));
+	if (MAX_REC_SIZE(API) > UINT32_MAX / 2)
+	{
+		API->err = wmf_E_InsMem;
+		WMF_DEBUG (API,"bailing...");
+		return (API->err);
+	}
+	
+ 	P->Parameters = (unsigned char*) wmf_malloc (API,(MAX_REC_SIZE(API)  ) * 2 * sizeof (unsigned char));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
