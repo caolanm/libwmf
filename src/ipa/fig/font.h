@@ -63,7 +63,7 @@ static void wmf_fig_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 
 	figPoint pt;
 
-	char* ps_name = 0;
+	const char* ps_name = 0;
 
 	float ratio;
 	float theta;
@@ -115,9 +115,12 @@ static void wmf_fig_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 	
 	fig_font = -1; /* Default. */
 	ps_name = WMF_FONT_PSNAME (font);
-	for (i = 0; i < 35; i++)
-	{	if (strcmp (ps_name,PSFontNo[i].PS_FontName) == 0)
-		{	fig_font = PSFontNo[i].FIG_FontNumber;
+	if (ps_name)
+	{
+		for (i = 0; i < 35; i++)
+		{	if (strcmp (ps_name,PSFontNo[i].PS_FontName) == 0)
+			{	fig_font = PSFontNo[i].FIG_FontNumber;
+			}
 		}
 	}
 
