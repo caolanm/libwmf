@@ -1651,16 +1651,16 @@ gdImageTrueColorToPalette (gdImagePtr im, int dither, int colorsWanted)
 outOfMemory:
   if (im->trueColor)
     {
-      /* On failure only */
-      for (i = 0; i < im->sy; i++)
-	{
-	  if (im->pixels[i])
-	    {
-	      gdFree (im->pixels[i]);
-	    }
-	}
       if (im->pixels)
 	{
+          /* On failure only */
+          for (i = 0; i < im->sy; i++)
+	    {
+	      if (im->pixels[i])
+	        {
+	          gdFree (im->pixels[i]);
+	        }
+	    }
 	  gdFree (im->pixels);
 	}
       im->pixels = 0;
