@@ -3820,7 +3820,6 @@ TrioGetCharacterClass(const char *format,
 	    {
 	      /* Trailing minus is included */
 	      characterclass[(int)ch]++;
-	      ch = range_end;
 	      break; /* for */
 	    }
 	  if (range_end == NIL)
