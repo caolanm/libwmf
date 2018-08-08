@@ -601,7 +601,7 @@ int wmf_ipa_bmp_color (wmfAPI* API,wmfBMP* bmp,wmfRGB* rgb,unsigned int x,unsign
 	rgb->g = 0;
 	rgb->b = 0;
 
-	if (bmp->data && (x >= 0) && (x < bmp->width) && (y >= 0) && (y < bmp->height))
+	if (bmp->data && x < bmp->width && y < bmp->height)
 	{	status = ExtractColor (API,bmp,rgb,x,y);
 	}
 	else if ((API->flags & WMF_OPT_IGNORE_NONFATAL) == 0)
