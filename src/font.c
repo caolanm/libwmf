@@ -911,11 +911,6 @@ static void xml2_start (void* user_data,const char* tag,const char** attributes)
 	FI.version = 0;
 	FI.alias = 0;
 
-	if (attributes == 0)
-	{	WMF_DEBUG (API,"xml2_start: found NULL instead of ptr-to-NULL!\n");
-		return;
-	}
-
 	attr = attributes;
 	while (*attr)
 	{	if (strcmp ((*attr),"format") == 0)
