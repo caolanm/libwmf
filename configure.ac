@@ -1,5 +1,5 @@
-AC_INIT([libwmf],[0.2.8],[wvware-devel@sourceforge.net])
-AC_CONFIG_SRCDIR([src/player.c])
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(src/player.c)
 
 LIBWMF_PACKAGE=libwmf
 AC_SUBST(LIBWMF_PACKAGE)
@@ -57,11 +57,6 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 
 # Specify a configuration file
 AM_CONFIG_HEADER(wmfconfig.h)
-
-AH_TOP([
-#ifndef LIBWMF_CONFIG_H
-#define LIBWMF_CONFIG_H
-])
 
 # CFLAGS to be listed by libwmf-config should be added to this:
 WMF_CONFIG_CFLAGS=
@@ -151,7 +146,7 @@ dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(time.h)
 AC_CHECK_HEADER(unistd.h,[
-	AC_DEFINE(HAVE_UNISTD_H,1,[define if you have unistd.h])
+	AC_DEFINE(HAVE_UNISTD_H)
 	GD_DEFS="$GD_DEFS -DHAVE_UNISTD_H"
 ])
 
@@ -179,13 +174,13 @@ AC_CHECK_FUNCS(vsnprintf,,check_for_vsnprintf=yes)
 
 if [ test "x$check_for_vsnprintf" = "xyes" ]; then
 	AC_CHECK_FUNC(_vsnprintf,[
-		AC_DEFINE(HAVE_VSNPRINTF,1,[define if you have vsnprintf])
-		AC_DEFINE(vsnprintf,_vsnprintf,[define to your implementation of vsnprintf])
+		AC_DEFINE(HAVE_VSNPRINTF)
+		AC_DEFINE(vsnprintf,_vsnprintf)
 	],[	dnl Hmm. On the off-chance, check for vsnprintf in libdb.
 		dnl This should, hopefully, solve the problem with Tru64 4.x
 		dnl which is incompatible with trio (the latter's fault).
 		AC_CHECK_LIB(db,vsnprintf,[
-			AC_DEFINE(HAVE_VSNPRINTF,1,[define if you have vsnprintf])
+			AC_DEFINE(HAVE_VSNPRINTF)
 			WMF_LIBFLAGS="$WMF_LIBFLAGS -ldb"
 		],[	require_trio=yes
 		])
@@ -197,8 +192,8 @@ AC_CHECK_FUNCS(snprintf,,check_for_snprintf=yes)
 
 if [ test "x$check_for_snprintf" = "xyes" ]; then
 	AC_CHECK_FUNC(_snprintf,[
-		AC_DEFINE(HAVE_SNPRINTF,1,[define if you have snprintf])
-		AC_DEFINE(snprintf,_snprintf,[define to your implementation of snprintf])
+		AC_DEFINE(HAVE_SNPRINTF)
+		AC_DEFINE(snprintf,_snprintf)
 	])
 fi
 
@@ -209,7 +204,7 @@ if [ test "x$check_for_vfscanf" = "xyes" ]; then
 	AC_MSG_CHECKING(for vfscanf in stdio.h)
 	AC_EGREP_HEADER(vfscanf,stdio.h,[
 		AC_MSG_RESULT(yes)
-		AC_DEFINE(HAVE_VFSCANF,1,[define if you have vfscanf])
+		AC_DEFINE(HAVE_VFSCANF)
 	],[	AC_MSG_RESULT(no)
 	])
 fi
@@ -217,9 +212,6 @@ fi
 fi # $LIBWMF_BUILDSTYLE = heavy
 
 AM_CONDITIONAL(LIBWMF_OPT_TRIO,[ test "x$require_trio" = "xyes" ])
-
-dnl - but always define this; the re-definitions are selective anyway...
-AC_DEFINE(TRIO_REPLACE_STDIO,1,[If any *printf or *scanf functions are missing, cover them with trio functions])
 
 dnl Checks for libraries, etc.
 
@@ -243,7 +235,7 @@ if test $LIBWMF_BUILDSTYLE = lite; then
 fi # $LIBWMF_BUILDSTYLE = lite
 
 if [ test $libwmf_layers = no ]; then
-	AC_DEFINE(WITHOUT_LAYERS,1,[defining this will disable egs, fig, svg & foreign layers])
+	AC_DEFINE(WITHOUT_LAYERS,1)
 fi
 
 AM_CONDITIONAL(LIBWMF_OPT_MODULES,[ test $libwmf_layers = modules ])
@@ -369,9 +361,9 @@ if test $libwmf_xml = libxml2 -o $libwmf_xml = unknown; then
 fi
 
 if test $libwmf_xml = expat; then
-	AC_DEFINE(HAVE_EXPAT,1,[define if you have expat])
+	AC_DEFINE(HAVE_EXPAT)
 elif test $libwmf_xml = libxml2; then
-	AC_DEFINE(HAVE_LIBXML2,1,[define if you have libxml2])
+	AC_DEFINE(HAVE_LIBXML2)
 else
 	libwmf_xml=none
 	WMF_XML_CFLAGS=""
@@ -532,7 +524,7 @@ AC_CHECK_HEADER(png.h,[
 ],[	AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *)
 ])
 
-AC_DEFINE(HAVE_LIBPNG,1,[define if you have libpng])
+AC_DEFINE(HAVE_LIBPNG)
 GD_DEFS="$GD_DEFS -DHAVE_LIBPNG"
 
 fi # $LIBWMF_BUILDSTYLE = heavy
@@ -575,7 +567,7 @@ if [ test "$search_for_jpeg" != "no" ]; then
 			else
 				WMF_JPEG_LDFLAGS="-ljpeg"
 			fi
-			AC_DEFINE(HAVE_LIBJPEG,1,[define if you have libjpeg])
+			AC_DEFINE(HAVE_LIBJPEG)
 			GD_DEFS="$GD_DEFS -DHAVE_LIBJPEG"
 			libwmf_gd_jpeg=yes
 		])
@@ -657,7 +649,7 @@ if [ test "$search_for_gd" != "no" ]; then
 fi
 
 if [ test "x$libwmf_gd" != "xnone" ]; then
-	AC_DEFINE(HAVE_GD,1,[define if you have libgd])
+	AC_DEFINE(HAVE_GD,1)
 	build_gd_layer=yes
 else
 	build_gd_layer=no
@@ -691,7 +683,7 @@ WMF_PLOT_LDFLAGS=""
 _cppflags=$CPPFLAGS
 _ldflags=$LDFLAGS
 
-# AC_ARG_WITH(plot,[  --with-plot=DIR         use GNU plotutils (>= 2.4.0) in DIR (default no)],[
+#AC_ARG_WITH(plot,[  --with-plot=DIR         use GNU plotutils (>= 2.4.0) in DIR (default no)],[
 #	if [ test "x$withval" != "xno" ]; then
 #		AC_MSG_ERROR([* * * plotutils is not supported, sorry * * *])
 #		if [ test "x$withval" != "xyes" ]; then
@@ -719,7 +711,7 @@ if [ test "$search_for_plot" != "no" ]; then
 				else
 					WMF_PLOT_LDFLAGS="$LIBPLOT_LIBS"
 				fi
-				AC_DEFINE(HAVE_LIBPLOT,1,[define if you have libplot])
+				AC_DEFINE(HAVE_LIBPLOT)
 				libwmf_plot=maybe
 			else
 				AC_MSG_ERROR(* * * sorry - unable to link against libplot * * *)
@@ -744,8 +736,8 @@ GDK_PIXBUF_DIR=""
 
 if test $LIBWMF_BUILDSTYLE != lite; then
 	PKG_CHECK_MODULES(GDK_PIXBUF,gdk-pixbuf-2.0 >= 2.1.2,[
-		GTK_VERSION=`$PKG_CONFIG --variable=gtk_binary_version gtk+-2.0`
-		GDK_PIXBUF_DIR="gtk-2.0/$GTK_VERSION/loaders"
+		GDK_PIXBUF_VERSION=`$PKG_CONFIG --variable=gdk_pixbuf_binary_version gdk-pixbuf-2.0`
+		GDK_PIXBUF_DIR="gdk-pixbuf-2.0/$GDK_PIXBUF_VERSION/loaders"
 		wmf_gdk_pixbuf=yes
 	],[	wmf_gdk_pixbuf=no
 	])
@@ -767,14 +759,15 @@ AC_ARG_WITH(docdir,[  --with-docdir=DIR       install documentation in DIR],[
 	fi
 ])
 
-AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
-	WMF_FONTDIR=$withval
-],[	if test "x$prefix" = "xNONE"; then
-		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
-	else
-		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
-	fi
-])
+#AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
+#	WMF_FONTDIR=$withval
+#],[	if test "x$prefix" = "xNONE"; then
+#		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
+#	else
+#		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
+#	fi
+#])
+WMF_FONTDIR=$datadir/$PACKAGE/fonts
 
 AC_ARG_WITH(sysfontmap,[  --with-sysfontmap=FILE  [default is /usr/share/fonts/fontmap]],[
 	WMF_SYS_FONTMAP=$withval
@@ -810,7 +803,9 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 		WMF_GS_FONTMAP=/usr/share/ghostscript/5.50/Fontmap
 		if test -d /usr/share/ghostscript; then
 			for i in `ls /usr/share/ghostscript`; do
-				if test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
+				if test -r "/usr/share/ghostscript/$i/Resource/Init/Fontmap.GS"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Resource/Init/Fontmap.GS"
+				elif test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
 					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap.GS"
 				elif test -r "/usr/share/ghostscript/$i/Fontmap"; then
 					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap"
@@ -869,12 +864,7 @@ AC_SUBST(WMF_GS_FONTDIR)
 AC_SUBST(WMF_DEFS)
 AC_SUBST(GD_DEFS)
 
-AH_BOTTOM([
-
-#endif /* ! LIBWMF_CONFIG_H */
-])
-
-AC_CONFIG_FILES([
+AC_OUTPUT([
 Makefile
 doc/Makefile
 doc/caolan/Makefile
@@ -891,10 +881,9 @@ src/extra/trio/Makefile
 src/extra/gd/Makefile
 src/ipa/Makefile
 src/convert/Makefile
-libwmf-config
+libwmf.pc
 libwmf.spec
 ])
-AC_OUTPUT
 
 echo ""
 echo "	Support for X:			$libwmf_x"

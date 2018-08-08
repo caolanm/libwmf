@@ -2,19 +2,8 @@
 
 exec_prefix_set=no
 
-case `uname` in
-  CYGWIN*)
-    prefix=`bash -c "type -p libwmf-config"`
-    prefix=`dirname $prefix`
-    prefix=`dirname $prefix`
-    prefix=`cygpath -m "$prefix"`
-    exec_prefix="$prefix"
-  ;;
-  *)
-    prefix=@prefix@
-    exec_prefix=@exec_prefix@
-  ;;
-esac
+prefix=`pkg-config --variable=prefix libwmf`
+exec_prefix=`pkg-config --variable=exec_prefix libwmf`
 
 usage()
 {
@@ -64,7 +53,7 @@ while test $# -gt 0; do
       echo_exec_prefix=yes
       ;;
     --version)
-      echo @LIBWMF_VERSION@
+      pkg-config --modversion libwmf
       ;;
     --cflags)
       echo_cflags=yes
@@ -93,46 +82,10 @@ if test "$echo_exec_prefix" = "yes"; then
 	echo $exec_prefix
 fi
 
-wmf_cflags="@WMF_CONFIG_CFLAGS@"
-wmf_liblflags="@WMF_LIBFLAGS@"
-
-case `uname` in
-  CYGWIN*)
-    wmf_cflags=`echo $wmf_cflags | sed -e "s%@prefix@%$prefix%"`
-    wmf_liblflags=`echo $wmf_liblflags | sed -e "s%@prefix@%$prefix%"`
-  ;;
-esac
-
-libwmf_buildstyle=@LIBWMF_BUILDSTYLE@
-if test $libwmf_buildstyle = heavy; then
-	wmf_libs="-lwmf -lwmflite"
-else
-	wmf_libs="-lwmflite"
-fi
-
 if test "$echo_cflags" = "yes"; then
-	includes="$wmf_cflags"
-	if test "$lib_gd" = "yes"; then
-		includes="$includes -I@includedir@/libwmf/gd"
-	fi
-	if test "$lib_wmf" = "yes"; then
-		includes="$includes"
-	fi
-	echo $includes
+    pkg-config --cflags libwmf
 fi
 
 if test "$echo_libs" = "yes"; then
-	libdirs=-L@libdir@
-	my_wmf_libs=
-	for i in $wmf_libs ; do
-		if test "x$i" != "x-L@libdir@" ; then
-			if test -z "$my_wmf_libs" ; then
-				my_wmf_libs="$i"
-			else
-				my_wmf_libs="$my_wmf_libs $i"
-			fi
-		fi
-	done
-
-	echo $my_wmf_libs
+    pkg-config --libs libwmf
 fi      
