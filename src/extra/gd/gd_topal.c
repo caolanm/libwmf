@@ -650,10 +650,20 @@ compute_color (gdImagePtr im, my_cquantize_ptr cquantize,
 	    }
 	}
     }
-  im->red[icolor] = (int) ((c0total + (total >> 1)) / total);
-  im->green[icolor] = (int) ((c1total + (total >> 1)) / total);
-  im->blue[icolor] = (int) ((c2total + (total >> 1)) / total);
-  im->alpha[icolor] = (int) ((c3total + (total >> 1)) / total);
+  if (total)
+  {
+    im->red[icolor] = (int) ((c0total + (total >> 1)) / total);
+    im->green[icolor] = (int) ((c1total + (total >> 1)) / total);
+    im->blue[icolor] = (int) ((c2total + (total >> 1)) / total);
+    im->alpha[icolor] = (int) ((c3total + (total >> 1)) / total);
+  }
+  else
+  {
+    im->red[icolor] = 255;
+    im->green[icolor] = 255;
+    im->blue[icolor] = 255;
+    im->alpha[icolor] = 255;
+  }
   im->open[icolor] = 0;
   if (im->colorsTotal <= icolor)
     {
