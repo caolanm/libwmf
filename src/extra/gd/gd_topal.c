@@ -1655,6 +1655,10 @@ outOfMemory:
 	}
       im->pixels = 0;
     }
+
+  if (!cquantize)
+    return;
+
   for (i = 0; i < HIST_C0_ELEMS; i++)
     {
       if (cquantize->histogram[i])
@@ -1682,8 +1686,5 @@ outOfMemory:
     {
       gdFree (cquantize->error_limiter_storage);
     }
-  if (cquantize)
-    {
-      gdFree (cquantize);
-    }
+  gdFree (cquantize);
 }
