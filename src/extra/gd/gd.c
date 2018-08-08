@@ -106,6 +106,18 @@ gdImageCreateTrueColor (int sx, int sy)
   gdImagePtr im;
   unsigned long cpa_size;
 
+  if (overflow2(sx, sy)) {
+    return NULL;
+  }
+
+  if (overflow2(sizeof (int *), sy)) {
+    return NULL;
+  }
+
+  if (overflow2(sizeof(int), sx)) {
+    return NULL;
+  }
+
   im = (gdImage *) gdMalloc (sizeof (gdImage));
   if (im == 0) return 0;
   memset (im, 0, sizeof (gdImage));

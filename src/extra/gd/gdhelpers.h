@@ -15,6 +15,8 @@ void *gdCalloc(size_t nmemb, size_t size);
 void *gdMalloc(size_t size);
 void *gdRealloc(void *ptr, size_t size);
 
+int overflow2(int a, int b);
+
 #pragma GCC visibility pop
 
 #endif /* GDHELPERS_H */
