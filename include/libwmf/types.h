@@ -23,7 +23,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include <freetype/freetype.h>
+#include <ft2build.h>
+#include FT_FREETYPE_H
 
 #include <libwmf/fund.h>
 

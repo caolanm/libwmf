@@ -1,3 +1,5 @@
+v. 0.2.8.2
+	* proper freetype header inclusion (c. "war")
 v. 0.2.8.1
 	* security fix (Artem Frolov)
 v. 0.2.8

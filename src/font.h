@@ -20,10 +20,10 @@
 #ifndef WMF_FONT_H
 #define WMF_FONT_H
 
-#include <freetype/freetype.h>
-#include <freetype/ftglyph.h>
+#include <ft2build.h>
 
-
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
 
 static void ipa_font_add_wmf (wmfAPI*,wmfFontMap*);
 static void ipa_font_add_sub (wmfAPI*,wmfMapping*);
