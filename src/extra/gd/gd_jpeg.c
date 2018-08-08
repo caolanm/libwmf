@@ -563,7 +563,7 @@ static safeboolean
 fill_input_buffer (j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
-  size_t nbytes = 0;
+  int nbytes = 0;
 
   /* size_t got; */
   /* char *s; */
