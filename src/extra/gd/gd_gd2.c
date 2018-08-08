@@ -362,10 +362,9 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
 			{
 			  if (!gdGetInt (&im->tpixels[y][x], in))
 			    {
-			      /*printf("EOF while reading\n"); */
-			      /*gdImageDestroy(im); */
-			      /*return 0; */
-			      im->tpixels[y][x] = 0;
+                               fprintf(stderr, "gd2: EOF while reading\n");
+                               gdImageDestroy(im);
+                               return NULL;
 			    }
 			}
 		      else
@@ -373,10 +372,9 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
 			  int ch;
 			  if (!gdGetByte (&ch, in))
 			    {
-			      /*printf("EOF while reading\n"); */
-			      /*gdImageDestroy(im); */
-			      /*return 0; */
-			      ch = 0;
+                              fprintf(stderr, "gd2: EOF while reading\n");
+                              gdImageDestroy(im);
+                              return NULL;
 			    }
 			  im->pixels[y][x] = ch;
 			}
