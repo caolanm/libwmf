@@ -1013,7 +1013,7 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 	double r2;
 	double r2_min;
 
-	if ((polyline->pt == 0) || (polypoly->pt == 0)) return; // erk!!
+	if ((polyline->pt == 0) || (polypoly->pt == 0)) return; /* erk!! */
 
 	if ((polypoly->pt[ipoly] == 0) || (polypoly->count[ipoly] < 3)) return;
 
@@ -1028,7 +1028,7 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 	last = 0;
 	if (ipoly < (polypoly->npoly - 1))
 	{	if ((polypoly->pt[ipoly+1] == 0) || (polypoly->count[ipoly+1] < 3))
-		{	last = 1; // erk!!
+		{	last = 1; /* erk!! */
 		}
 	}
 	else

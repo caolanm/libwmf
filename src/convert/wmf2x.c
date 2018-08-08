@@ -123,14 +123,19 @@ int wmf2x_draw (PlotData* pdata)
 	ddata->icon_name = icon_name;
 
 	length = strlen (pdata->wmf_filename);
+#if defined (HAVE_EXPAT) || defined (HAVE_LIBXML2)
 	if (length > 4)
-	{	if ((strcmp (pdata->wmf_filename + length - 4, ".xml") == 0) ||
+	{
+		if ((strcmp (pdata->wmf_filename + length - 4, ".xml") == 0) ||
 		    (strcmp (pdata->wmf_filename + length - 4, ".XML") == 0))
 		{	err = wmf_wmfxml_import (API,pdata->wmf_filename);
 		}
 		else err = wmf_file_open (API,pdata->wmf_filename);
 	}
 	else err = wmf_file_open (API,pdata->wmf_filename);
+#else
+	err = wmf_file_open (API,pdata->wmf_filename);
+#endif
 	status = explicit_wmf_error ("wmf_file_open",err);
 
 	if (status)

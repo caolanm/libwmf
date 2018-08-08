@@ -305,7 +305,9 @@ fi # $LIBWMF_BUILDSTYLE = lite
 if test $libwmf_xml = expat -o $libwmf_xml = unknown; then
 	if test "x$WMF_XML_DIR" != "x"; then
 		_cppflags=$CPPFLAGS
+		_ldflags=$LDFLAGS
 		CPPFLAGS="$CPPFLAGS -I$WMF_XML_DIR/include"
+		LDFLAGS="$LDFLAGS -L$WMF_XML_DIR/lib"
 		WMF_XML_CFLAGS="-I$WMF_XML_DIR/include"
 		WMF_XML_LDFLAGS="-L$WMF_XML_DIR/lib -lexpat"
 	else
@@ -318,13 +320,14 @@ if test $libwmf_xml = expat -o $libwmf_xml = unknown; then
 		],[	if test $libwmf_xml = expat; then
 				AC_MSG_ERROR([* * * unable to find expat * * *])
 			fi
-		],$WMF_XML_LDFLAGS)
+		])
 	],[	if test $libwmf_xml = expat; then
 			AC_MSG_ERROR([* * * unable to find expat * * *])
 		fi
 	])
 	if test "x$WMF_XML_DIR" != "x"; then
 		CPPFLAGS=$_cppflags
+		LDFLAGS=$_ldflags
 	fi
 fi
 
@@ -402,54 +405,15 @@ fi
 CPPFLAGS="$freetype_cflags $CPPFLAGS"
 LDFLAGS="$LDFLAGS $freetype_libs"
 
-dnl Check existence of freetype library first:
-
 AC_CHECK_LIB(freetype,FT_Init_FreeType,[
-	have_freetype=yes
 	WMF_FT_LDFLAGS="$freetype_libs"
+],[	AC_MSG_ERROR([* * * freetype(2) is required * * *])
 ])
-
-if [ test "$have_freetype" != "yes" ]; then
-	AC_MSG_ERROR(* * * unable to find libfreetype which is required by libwmf * * *)
-fi
-
-dnl Then check existence of freetype header:
-
-AC_CHECK_HEADER(freetype/freetype.h,[
-	AC_MSG_CHECKING(whether it's freetype 2)
-	AC_EGREP_HEADER(FT_Library,freetype/freetype.h,[
-		AC_MSG_RESULT(yes)
-		have_ft_header=yes
-		WMF_FT_CFLAGS="$freetype_cflags"
-		WMF_FT_CONFIG_CFLAGS="$freetype_cflags"
-	],[	AC_MSG_RESULT(no)
-		have_ft_header=no
-	])
-],[	have_ft_header=no
+AC_CHECK_HEADER(ft2build.h,[
+	WMF_FT_CFLAGS="$freetype_cflags"
+	WMF_FT_CONFIG_CFLAGS="$freetype_cflags"
+],[	AC_MSG_ERROR([* * * freetype(2) is required * * *])
 ])
-
-if [ test "$have_ft_header" != "yes" ]; then
-	no_ft_cppflags=$CPPFLAGS
-	CPPFLAGS="-I/usr/include/freetype2 $CPPFLAGS"
-	AC_CHECK_HEADER(freetype/ftglyph.h,[
-		WMF_FT_CFLAGS="-I/usr/include/freetype2"
-		WMF_FT_CONFIG_CFLAGS="-I/usr/include/freetype2"
-	],[	CPPFLAGS=$no_ft_cppflags
-		CPPFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include $CPPFLAGS"
-		AC_CHECK_HEADER(freetype/fttypes.h,[
-			WMF_FT_CFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include"
-			WMF_FT_CONFIG_CFLAGS="-I/usr/local/include/freetype2 -I/usr/local/include"
-		],[	AC_MSG_ERROR([* * * Okay, I give up. Where are those darned headers? * * *])
-		])
-	])
-	AC_MSG_CHECKING(whether it's freetype 2)
-	AC_EGREP_HEADER(FT_Face,freetype/freetype.h,[
-		AC_MSG_RESULT(yes, very cool!)
-		have_ft_header=yes
-	],[	AC_MSG_RESULT(no, hmm...)
-		AC_MSG_ERROR([* * * Okay, I give up. Where are those darned headers? * * *])
-	])
-fi
 
 GD_DEFS="$GD_DEFS -DHAVE_LIBFREETYPE"
 
@@ -801,11 +765,20 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 		WMF_GS_FONTMAP='c:/gs/fonts/fontmap'
 	else
 		WMF_GS_FONTMAP=/usr/share/ghostscript/5.50/Fontmap
-		for i in $WMF_GS_FONTMAP /usr/share/ghostscript/*/Fontmap /usr/share/ghostscript/*/Fontmap.GS; do
-			if test -r "$i"; then
-				WMF_GS_FONTMAP=$i
-			fi
-		done
+		if test -d /usr/share/ghostscript; then
+			for i in `ls /usr/share/ghostscript`; do
+				echo "/usr/share/ghostscript/$i/"
+				if test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap.GS"
+				elif test -r "/usr/share/ghostscript/$i/Fontmap"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap"
+				elif test -r "/usr/share/ghostscript/$i/lib/Fontmap.GS"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/lib/Fontmap.GS"
+				elif test -r "/usr/share/ghostscript/$i/lib/Fontmap"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/lib/Fontmap"
+				fi
+			done
+		fi
 	fi
 ])
 

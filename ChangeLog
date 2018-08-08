@@ -1,3 +1,8 @@
+	* fix updated Fontmap[.GS] detection (fjf)
+	* add some more paranoia into the font loader (fjf)
+	* change a couple of C++ comments to C comments;
+	  configure.ac|in corrections (c. Olav Kolbu)
+	* fix non-XML case in wmf2x.c; simplify freetype2 detection (fjf)
 v. 0.2.7
 	* update Fontmap[.GS] detection (guesswork, really) (fjf)
 	* don't include trio.h when --disable-heavy is used (fjf)

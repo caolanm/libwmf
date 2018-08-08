@@ -508,6 +508,11 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 	int i;
 	int length;
 
+	if ((face == 0) || (str == 0))
+	{	WMF_DEBUG (API,"wmf_ipa_font_stringwidth: NULL face or str - ??");
+		return 0;
+	}
+
 	FT_Set_Char_Size (face,0,12 * 64,300,100);
 
 	FT_Set_Transform (face,0,0);
@@ -521,7 +526,9 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 	length = strlen (str);
 
 	for (i = 0; i < length; i++)
-	{	/* convert character code to glyph index */ /* === Should this be unsigned ?? ==== */
+	{	/* convert character code to glyph index */
+		/* ==== Should this be unsigned ??  ==== */
+
 		glyph_index = FT_Get_Char_Index (face,str[i]);
 
 		if (use_kerning && previous && glyph_index)
@@ -530,10 +537,12 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 			width += (float) (delta.x >> 6);
 		}
 
-		/* load glyph image into the slot.  DO NOT RENDER IT! */
-		FT_Load_Glyph (face,glyph_index,FT_LOAD_DEFAULT);
+		if (glyph_index)
+		{	/* load glyph image into the slot.  DO NOT RENDER IT! */
+			FT_Load_Glyph (face,glyph_index,FT_LOAD_DEFAULT);
 
-		width += (float) (face->glyph->advance.x >> 6);
+			if (face->glyph) width += (float) (face->glyph->advance.x >> 6);
+		}
 
 		previous = glyph_index;
 	}
@@ -1280,7 +1289,12 @@ void wmf_ipa_font_map (wmfAPI* API,wmfFont* font)
  */
 	mapping = ipa_font_std (API,font);
 
-	if (mapping) ipa_font_face (API,font,mapping);
+	if (mapping)
+	{	if (ipa_font_face (API,font,mapping)) return;
+	}
+
+	WMF_ERROR (API,"wmf_ipa_font_map: failed to load *any* font!");
+	API->err = wmf_E_BadFile;
 }
 
 /**
