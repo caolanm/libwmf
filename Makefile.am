@@ -1,10 +1,10 @@
 if LIBWMF_BUILD_ALL
-DIRHEAVY = . src include fonts doc
+DIRHEAVY = . src include fonts
 else
 DIRHEAVY = . src include
 endif
 
-DIST_SUBDIRS = . src include fonts doc
+DIST_SUBDIRS = . src include fonts
 
 SUBDIRS = $(DIRHEAVY)
 
