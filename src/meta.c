@@ -165,15 +165,9 @@ wmf_error_t wmf_header_read (wmfAPI* API)
 		API->File->wmfheader->MaxRecordSize = wmf_read_32 (API,0,0);
 		API->File->wmfheader->NumOfParams   = wmf_read_16 (API);
 
-		if (API->bbuf.tell == 0)
-		{	WMF_ERROR (API,"wmf_header_read: Glitch! No tell() function!");
-			API->err = wmf_E_Glitch;
-		}
-		else
-		{	API->File->pos = WMF_TELL (API);
-			header_end = API->File->pos;
-			write_header (API, header_start, header_end);
-		}
+		API->File->pos = WMF_TELL (API);
+		header_end = API->File->pos;
+		write_header (API, header_start, header_end);
 	}
 	else
 	{	WMF_ERROR (API,"wmf_header_read: this isn't a wmf file");
