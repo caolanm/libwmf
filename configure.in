@@ -58,10 +58,6 @@ AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
 # Specify a configuration file
 AM_CONFIG_HEADER(wmfconfig.h)
 
-# A despicable hack:
-AUTOHEADER="autoheader -l patches"
-AC_SUBST(AUTOHEADER)
-
 # CFLAGS to be listed by libwmf-config should be added to this:
 WMF_CONFIG_CFLAGS=
 
