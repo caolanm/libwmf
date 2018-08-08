@@ -2255,7 +2255,10 @@ gdImageCreateFromXbm (FILE * fd)
 	}
       h[1] = ch;
       h[2] = '\0';
-      sscanf (h, "%x", &b);
+      if (sscanf (h, "%x", &b) != 1)
+        {
+	  goto fail;
+        }
       for (bit = 1; (bit <= 128); (bit = bit << 1))
 	{
 	  gdImageSetPixel (im, x++, y, (b & bit) ? 1 : 0);
