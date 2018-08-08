@@ -884,7 +884,7 @@ src/extra/trio/Makefile
 src/extra/gd/Makefile
 src/ipa/Makefile
 src/convert/Makefile
-libwmf-config
+libwmf.pc
 libwmf.spec
 ])
 

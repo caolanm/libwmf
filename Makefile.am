@@ -10,6 +10,9 @@ SUBDIRS = $(DIRHEAVY)
 
 bin_SCRIPTS = libwmf-config
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libwmf.pc
+
 WMFEXAMPLES = \
 	examples/2doorvan.wmf \
 	examples/Eg.wmf \
