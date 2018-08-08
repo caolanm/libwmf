@@ -674,6 +674,7 @@ gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
       if (row_pointers == NULL)
 	{
 	  fprintf (stderr, "gd-png error: unable to allocate row_pointers\n");
+	  return;
 	}
       for (j = 0; j < height; ++j)
 	{
