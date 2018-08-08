@@ -218,32 +218,32 @@ target_alias = @target_alias@
 fontdir = @WMF_FONTDIR@
 bin_SCRIPTS = libwmf-fontmap
 FONTS = \
-	n019003l.afm \
-	n019003l.pfb \
-	n019004l.afm \
-	n019004l.pfb \
-	n019023l.afm \
-	n019023l.pfb \
-	n019024l.afm \
-	n019024l.pfb \
-	n021003l.afm \
-	n021003l.pfb \
-	n021004l.afm \
-	n021004l.pfb \
-	n021023l.afm \
-	n021023l.pfb \
-	n021024l.afm \
-	n021024l.pfb \
-	n022003l.afm \
-	n022003l.pfb \
-	n022004l.afm \
-	n022004l.pfb \
-	n022023l.afm \
-	n022023l.pfb \
-	n022024l.afm \
-	n022024l.pfb \
-	s050000l.afm \
-	s050000l.pfb
+	NimbusMonoPS-Bold.afm \
+	NimbusMonoPS-Bold.t1 \
+	NimbusMonoPS-BoldItalic.afm \
+	NimbusMonoPS-BoldItalic.t1 \
+	NimbusMonoPS-Italic.afm \
+	NimbusMonoPS-Italic.t1 \
+	NimbusMonoPS-Regular.afm \
+	NimbusMonoPS-Regular.t1 \
+	NimbusRoman-Bold.afm \
+	NimbusRoman-BoldItalic.t1 \
+	NimbusRoman-BoldItalic.afm \
+	NimbusRoman-Bold.t1 \
+	NimbusRoman-Italic.afm \
+	NimbusRoman-Italic.t1 \
+	NimbusRoman-Regular.afm \
+	NimbusRoman-Regular.t1 \
+	NimbusSans-Bold.afm \
+	NimbusSans-Bold.t1 \
+	NimbusSans-BoldItalic.afm \
+	NimbusSans-BoldItalic.t1 \
+	NimbusSans-Italic.afm \
+	NimbusSans-Italic.t1 \
+	NimbusSans-Regular.afm \
+	NimbusSans-Regular.t1 \
+	StandardSymbolsPS.afm \
+	StandardSymbolsPS.t1
 
 font_DATA = $(FONTS) fontmap
 EXTRA_DIST = libwmf-fontmap.in LICENSE $(FONTS)

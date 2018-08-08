@@ -804,7 +804,9 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 		WMF_GS_FONTMAP=/usr/share/ghostscript/5.50/Fontmap
 		if test -d /usr/share/ghostscript; then
 			for i in `ls /usr/share/ghostscript`; do
-				if test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
+				if test -r "/usr/share/ghostscript/$i/Resource/Init/Fontmap.GS"; then
+					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Resource/Init/Fontmap.GS"
+				elif test -r "/usr/share/ghostscript/$i/Fontmap.GS"; then
 					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap.GS"
 				elif test -r "/usr/share/ghostscript/$i/Fontmap"; then
 					WMF_GS_FONTMAP="/usr/share/ghostscript/$i/Fontmap"
