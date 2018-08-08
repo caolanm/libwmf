@@ -811,7 +811,7 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
 	    {
 	      ch = c & 0xFF;	/* don't extend sign */
 	    }
-	  next++;
+	  if (*next) next++;
 	}
       else
 	{
