@@ -3831,7 +3831,6 @@ TrioGetCharacterClass(const char *format,
 	  for (i = (int)range_begin; i <= (int)range_end; i++)
 	    characterclass[i]++;
 	    
-	  ch = range_end;
 	  break;
 
 	case QUALIFIER_COLON: /* Character class expressions */
