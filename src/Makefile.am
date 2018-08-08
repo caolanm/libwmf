@@ -37,7 +37,7 @@ lib_LTLIBRARIES = libwmflite.la $(LIBHEAVY)
 
 libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c recorder.c
 
-libwmflite_la_LDFLAGS = -lm \
+libwmflite_la_LDFLAGS = $(SYS_LIBM) \
 	-no-undefined \
 	-version-info $(LT_LITE_CURRENT):$(LT_LITE_REVISION):$(LT_LITE_AGE) \
 	-release $(LT_RELEASE) -export-dynamic
@@ -69,7 +69,7 @@ loader_LTLIBRARIES = $(GDK_PIXBUF_PLUGIN)
 
 io_wmf_la_SOURCES = io-wmf.c
 
-io_wmf_la_LIBADD = libwmf.la @GDK_PIXBUF_LIBS@
+io_wmf_la_LIBADD = libwmf.la libwmflite.la @GDK_PIXBUF_LIBS@
 
 io_wmf_la_LDFLAGS = -no-undefined -module -avoid-version
 

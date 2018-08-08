@@ -1,3 +1,18 @@
+v. 0.2.8.3
+	* configure.ac: Don't use -lm on Windows. mingw has an (empty)
+	  dummy libm, but it confuses libtool.) [Tor Lillqvist  <tml@iki.fi>]
+	* libwm-config.in: Make installation-location-independent when run
+	  in a Cygwin shell. [Tor Lillqvist  <tml@iki.fi>]
+	* src/Makefile.am: Don't use -lm on Windows. Add libwmflite.la to
+	  io_wmf_la_LIBADD. [Tor Lillqvist  <tml@iki.fi>]
+	* src/wmf.c: Don't use hardcoded path for WMF_FONTDIR on Windows.
+	  Instead, assume being built as a DLL, and look up the DLL
+	  location in a DllMain routine, and use that to build the font
+	  directory path at run-time. [Tor Lillqvist  <tml@iki.fi>]
+	* src/font.c: Don't use hardcoded path for WMF_XTRA_FONTMAP either.
+	  (remap_font_file_name): On Windows, if a font file name starts
+	  with the build-time prefix, replace that with the run-time
+	  installation prefix. [Tor Lillqvist  <tml@iki.fi>]
 v. 0.2.8.2
 	* proper freetype header inclusion (c. "war")
 v. 0.2.8.1

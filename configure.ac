@@ -1,4 +1,4 @@
-AC_INIT([libwmf],[0.2.7],[wvware-devel@sourceforge.net])
+AC_INIT([libwmf],[0.2.8],[wvware-devel@sourceforge.net])
 AC_CONFIG_SRCDIR([src/player.c])
 
 LIBWMF_PACKAGE=libwmf
@@ -117,6 +117,21 @@ AC_EXEEXT
 AC_OBJEXT
 AC_MINGW32
 # End Tests for Windows
+
+AC_MSG_CHECKING([for Win32])
+case "$host" in
+  *-*-mingw*)
+    os_win32=yes
+    SYS_LIBM=""
+    ;;
+  *)
+    os_win32=no
+    SYS_LIBM="-lm"
+    ;;
+esac
+AC_MSG_RESULT([$os_win32])
+
+AC_SUBST(SYS_LIBM)
 
 dnl Checks for programs.
 
@@ -841,7 +856,7 @@ WMF_CONFIG_CFLAGS="$WMF_FT_CONFIG_CFLAGS $WMF_Z_CONFIG_CFLAGS $WMF_X_CONFIG_CFLA
 AC_SUBST(WMF_CONFIG_CFLAGS)
 
 WMF_LIBFLAGS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LDFLAGS"
-WMF_LIBFLAGS="$WMF_LIBFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS -lm"
+WMF_LIBFLAGS="$WMF_LIBFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
 
 AC_SUBST(WMF_LIBFLAGS)
 
