@@ -683,6 +683,7 @@ gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
 	      fprintf (stderr, "gd-png error: unable to allocate rows\n");
 	      for (i = 0; i < j; ++i)
 		gdFree (row_pointers[i]);
+	      gdFree (row_pointers);
 	      return;
 	    }
 	  for (i = 0; i < width; ++i)
