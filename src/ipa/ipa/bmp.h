@@ -646,18 +646,10 @@ int wmf_ipa_bmp_interpolate (wmfAPI* API,wmfBMP* bmp,wmfRGB* rgb,float x,float y
 	{	i1 = bmp->width - 2;
 		i2 = bmp->width - 1;
 	}
-	if (i1 < 0)
-	{	i1 = 0;
-		i2 = 1;
-	}
 
 	if (j1 >= (bmp->height - 2))
 	{	j1 = bmp->height - 2;
 		j2 = bmp->height - 1;
-	}
-	if (j1 < 0)
-	{	j1 = 0;
-		j2 = 1;
 	}
 
 	if ((i1 == i2) && (j1 == j2)) return (wmf_ipa_bmp_color (API,bmp,rgb,i1,j1));
