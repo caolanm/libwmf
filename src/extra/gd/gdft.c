@@ -848,7 +848,10 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
       /* load glyph image into the slot (erase previous one) */
       err = FT_Load_Glyph (face, glyph_index, FT_LOAD_DEFAULT);
       if (err)
+      {
+	gdFree (tmpstr);
 	return "Problem loading glyph";
+      }
 
       /* transform glyph image */
       FT_Get_Glyph (slot, &image);
@@ -884,7 +887,10 @@ gdImageStringFT (gdImage * im, int *brect, int fg, char *fontlist,
 	    {
 	      err = FT_Glyph_To_Bitmap (&image, ft_render_mode_normal, 0, 1);
 	      if (err)
+	      {
+		gdFree (tmpstr);
 		return "Problem rendering glyph";
+	      }
 	    }
 
 	  /* now, draw to our target surface */
