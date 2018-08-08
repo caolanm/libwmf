@@ -50,7 +50,7 @@ _gd2GetHeader (gdIOCtxPtr in, int *sx, int *sy,
   int i;
   int ch;
   char id[5];
-  t_chunk_info *cidx;
+  t_chunk_info *cidx = NULL;
   int sidx;
   int nc;
 
@@ -166,6 +166,7 @@ _gd2GetHeader (gdIOCtxPtr in, int *sx, int *sy,
 	    };
 	};
       *chunkIdx = cidx;
+      cidx = NULL;
     };
 
   GD2_DBG (printf ("gd2 header complete\n"));
@@ -173,6 +174,7 @@ _gd2GetHeader (gdIOCtxPtr in, int *sx, int *sy,
   return 1;
 
 fail1:
+  gdFree (cidx);
   return 0;
 }
 
