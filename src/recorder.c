@@ -403,7 +403,7 @@ int wmf_canvas_set_pen (wmfAPI * API, wmfCanvas * canvas,
       endcap = 0;
     }
   join &= 0xf000;
-  if (endcap > 0x2000)
+  if (join > 0x2000)
     {
       WMF_DEBUG (API, "Attempt to set unsupported join style.");
       join = 0;
