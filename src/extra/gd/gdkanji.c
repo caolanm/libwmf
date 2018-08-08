@@ -337,6 +337,7 @@ han2zen (int *p1, int *p2)
 
 /* Recast strcpy to handle unsigned chars used below. */
 #define ustrcpy(A,B) (strcpy((char*)(A),(const char*)(B)))
+#define ustrncpy(A,B, maxsize) (strncpy((char*)(A),(const char*)(B), maxsize))
 
 static void
 do_convert (unsigned char *to, unsigned char *from, const char *code)
@@ -467,6 +468,7 @@ do_check_and_conv (unsigned char *to, unsigned char *from)
   static unsigned char tmp[BUFSIZ];
   int p1, p2, i, j;
   int kanji = TRUE;
+  int copy_string = FALSE;
 
   switch (DetectKanjiCode (from))
     {
@@ -485,12 +487,12 @@ do_check_and_conv (unsigned char *to, unsigned char *from)
     case NEC:
       debug ("Kanji code is NEC Kanji.");
       error ("cannot convert NEC Kanji.");
-      ustrcpy (tmp, from);
+      copy_string = TRUE;
       kanji = FALSE;
       break;
     case EUC:
       debug ("Kanji code is EUC.");
-      ustrcpy (tmp, from);
+      copy_string = TRUE;
       break;
     case SJIS:
       debug ("Kanji code is SJIS.");
@@ -498,20 +500,26 @@ do_check_and_conv (unsigned char *to, unsigned char *from)
       break;
     case EUCORSJIS:
       debug ("Kanji code is EUC or SJIS.");
-      ustrcpy (tmp, from);
+      copy_string = TRUE;
       kanji = FALSE;
       break;
     case ASCII:
       debug ("This is ASCII string.");
-      ustrcpy (tmp, from);
+      copy_string = TRUE;
       kanji = FALSE;
       break;
     default:
       debug ("This string includes unknown code.");
-      ustrcpy (tmp, from);
+      copy_string = TRUE;
       kanji = FALSE;
       break;
     }
+
+  if (copy_string)
+  {
+    ustrncpy (tmp, from, BUFSIZ);
+    tmp[BUFSIZ-1] = '\0';
+  }
 
   /* Hankaku Kana ---> Zenkaku Kana */
   if (kanji)
