@@ -1129,7 +1129,7 @@ fill_inverse_cmap (gdImagePtr im, my_cquantize_ptr cquantize,
  * Map some rows of pixels to the output colormapped representation.
  */
 
-void
+static void
 pass2_no_dither (gdImagePtr im, my_cquantize_ptr cquantize)
 /* This version performs no dithering */
 {
@@ -1217,7 +1217,7 @@ pass2_no_dither (gdImagePtr im, my_cquantize_ptr cquantize)
 #endif
 
 
-void
+static void
 pass2_fs_dither (gdImagePtr im, my_cquantize_ptr cquantize)
 
 /* This version performs Floyd-Steinberg dithering */

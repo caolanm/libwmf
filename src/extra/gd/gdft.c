@@ -533,7 +533,7 @@ tweenColorRelease (void *element)
 }
 
 /* draw_bitmap - transfers glyph bitmap to GD image */
-/* static */ char *
+static char *
 gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 {
   unsigned char *pixel = 0;
@@ -643,7 +643,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
   return (char *) NULL;
 }
 
-int
+static int
 gdroundupdown (FT_F26Dot6 v1, int updown)
 {
   return (!updown)
@@ -651,7 +651,9 @@ gdroundupdown (FT_F26Dot6 v1, int updown)
     : (v1 > 0 ? ((v1 + 63) >> 6) : v1 >> 6);
 }
 
+#pragma GCC visibility push(hidden)
 extern int any2eucjp (char *, char *, unsigned int);
+#pragma GCC visibility pop
 
 /********************************************************************/
 /* gdImageStringFT -  render a utf8 string onto a gd image          */

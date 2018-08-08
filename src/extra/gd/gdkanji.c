@@ -555,6 +555,11 @@ do_check_and_conv (unsigned char *to, unsigned char *from)
   return kanji;
 }
 
+#pragma GCC visibility push(hidden)
+int
+any2eucjp (unsigned char *dest, unsigned char *src, unsigned int dest_max);
+#pragma GCC visibility pop
+
 int
 any2eucjp (unsigned char *dest, unsigned char *src, unsigned int dest_max)
 {

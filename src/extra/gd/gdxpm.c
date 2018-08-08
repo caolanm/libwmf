@@ -10,6 +10,7 @@
 #include "gd.h"
 #include "gdhelpers.h"
 
+#if 0
 #ifndef HAVE_XPM
 gdImagePtr
 gdImageCreateFromXpm (char *filename)
@@ -145,4 +146,5 @@ gdImageCreateFromXpm (char *filename)
   gdFree (colors);
   return (im);
 }
+#endif
 #endif

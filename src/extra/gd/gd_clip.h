@@ -1,6 +1,8 @@
 #ifndef GD_CLIP_H
 #define GD_CLIP_H 1
 
+#pragma GCC visibility push(hidden)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,5 +24,7 @@ typedef struct {
 #ifdef __cplusplus
 }
 #endif
+
+#pragma GCC visibility pop
 
 #endif /* GD_CLIP_H */

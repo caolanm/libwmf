@@ -2,6 +2,8 @@
 #ifndef _GDFONTS_H_
 #define _GDFONTS_H_ 1
 
+#pragma GCC visibility push(hidden)
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,6 +25,8 @@ extern gdFontPtr gdFontSmall;
 #ifdef __cplusplus
 }
 #endif
+
+#pragma GCC visibility pop
 
 #endif
 

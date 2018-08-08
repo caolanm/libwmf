@@ -99,7 +99,7 @@ gdImageJpegPtr (gdImagePtr im, int *size, int quality)
   return rv;
 }
 
-void jpeg_gdIOCtx_dest (j_compress_ptr cinfo, gdIOCtx * outfile);
+static void jpeg_gdIOCtx_dest (j_compress_ptr cinfo, gdIOCtx * outfile);
 
 void
 gdImageJpegCtx (gdImagePtr im, gdIOCtx * outfile, int quality)
@@ -266,7 +266,7 @@ gdImageCreateFromJpeg (FILE * inFile)
   return im;
 }
 
-void
+static void
   jpeg_gdIOCtx_src (j_decompress_ptr cinfo,
 		    gdIOCtx * infile);
 
@@ -511,7 +511,7 @@ typedef my_source_mgr *my_src_ptr;
  * before any data is actually read.
  */
 
-void
+static void
 init_source (j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
@@ -559,7 +559,7 @@ init_source (j_decompress_ptr cinfo)
 
 #define END_JPEG_SEQUENCE "\r\n[*]--:END JPEG:--[*]\r\n"
 
-safeboolean
+static safeboolean
 fill_input_buffer (j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
@@ -627,7 +627,7 @@ fill_input_buffer (j_decompress_ptr cinfo)
  * buffer is the application writer's problem.
  */
 
-void
+static void
 skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
@@ -669,7 +669,7 @@ skip_input_data (j_decompress_ptr cinfo, long num_bytes)
  * for error exit.
  */
 
-void
+static void
 term_source (j_decompress_ptr cinfo)
 {
   
@@ -742,7 +742,7 @@ typedef my_destination_mgr *my_dest_ptr;
  * before any data is actually written.
  */
 
-void
+static void
 init_destination (j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
@@ -780,7 +780,7 @@ init_destination (j_compress_ptr cinfo)
  * write it out when emptying the buffer externally.
  */
 
-safeboolean
+static safeboolean
 empty_output_buffer (j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
@@ -805,7 +805,7 @@ empty_output_buffer (j_compress_ptr cinfo)
  * for error exit.
  */
 
-void
+static void
 term_destination (j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;

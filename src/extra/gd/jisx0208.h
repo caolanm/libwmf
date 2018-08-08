@@ -1,5 +1,8 @@
 #ifndef JISX0208_H
 #define JISX0208_H
+
+#pragma GCC visibility push(hidden)
+
 /* This file was derived from "src/VF_Ftype.c" in VFlib2-2.24.2
    by Dr. Kakugawa */
 
@@ -1201,5 +1204,7 @@ static unsigned short UnicodeTbl[][94] = {
 0x9C00, 0x9D70, 0x9D6B, 0xFA2D, 0x9E19, 0x9ED1, 0x0000, 0x0000,
 0x2170, 0x2171, 0x2172, 0x2173, 0x2174, 0x2175, 0x2176, 0x2177,
 0x2178, 0x2179, 0xFFE2, 0xFFE4, 0xFF07, 0xFF02}};
+
+#pragma GCC visibility pop
 
 #endif /* JISX0208_H */

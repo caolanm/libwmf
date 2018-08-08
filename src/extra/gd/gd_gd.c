@@ -11,6 +11,11 @@
 /* Exported functions: */
 extern void gdImageGd (gdImagePtr im, FILE * out);
 
+#pragma GCC visibility push(hidden)
+int _gdGetColors (gdIOCtx * in, gdImagePtr im, int gd2xFlag);
+void _gdPutColors (gdImagePtr im, gdIOCtx * out);
+#pragma GCC visibility pop
+
 
 /* Use this for commenting out debug-print statements. */
 /* Just use the first '#define' to allow all the prints... */

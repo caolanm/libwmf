@@ -1,6 +1,8 @@
 #ifndef GDHELPERS_H 
 #define GDHELPERS_H 1
 
+#pragma GCC visibility push(hidden)
+
 /* TBB: strtok_r is not universal; provide an implementation of it. */
 
 extern char *gd_strtok_r(char *s, char *sep, char **state);
@@ -12,6 +14,8 @@ extern char *gd_strtok_r(char *s, char *sep, char **state);
 void *gdCalloc(size_t nmemb, size_t size);
 void *gdMalloc(size_t size);
 void *gdRealloc(void *ptr, size_t size);
+
+#pragma GCC visibility pop
 
 #endif /* GDHELPERS_H */
 

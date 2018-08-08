@@ -41,6 +41,9 @@
 /*********************************************************/
 
 /* #include <malloc.h> */
+
+#pragma GCC visibility push(hidden)
+
 #ifndef NULL
 #define NULL (void *)0
 #endif
@@ -81,3 +84,5 @@ gdCacheDelete( gdCache_head_t *head );
 
 void *
 gdCacheGet( gdCache_head_t *head, void *keydata );
+
+#pragma GCC visibility pop

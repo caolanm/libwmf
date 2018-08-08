@@ -2,6 +2,8 @@
 #define GD_IO_H 1
 
 #include <stdio.h>
+
+#pragma GCC visibility push(hidden)
  
 typedef struct gdIOCtx {
 	int	(*getC)(struct gdIOCtx*);
@@ -35,5 +37,7 @@ int gdGetInt(int *result, gdIOCtx *ctx);
 
 int gdSeek(gdIOCtx *ctx, const int);
 long gdTell(gdIOCtx *ctx);
+
+#pragma GCC visibility pop
 
 #endif

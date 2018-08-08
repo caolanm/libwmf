@@ -25,6 +25,8 @@ extern "C" {
 #include <gd_io.h>
 #include <gd_clip.h>
 
+#pragma GCC visibility push(hidden)
+
 /* The maximum number of palette entries in palette-based images.
 	In the wonderful new world of gd 2.0, you can of course have
 	many more colors when using truecolor mode. */
@@ -496,6 +498,8 @@ int gdImageCompare(gdImagePtr im1, gdImagePtr im2);
 
 /* resolution affects ttf font rendering, particularly hinting */
 #define GD_RESOLUTION           96      /* pixels per inch */
+
+#pragma GCC visibility pop
 
 #ifdef __cplusplus
 }

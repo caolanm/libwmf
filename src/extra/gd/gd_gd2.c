@@ -34,8 +34,10 @@ typedef struct
   }
 t_chunk_info;
 
+#pragma GCC visibility push(hidden)
 extern int _gdGetColors (gdIOCtx * in, gdImagePtr im, int gd2xFlag);
 extern void _gdPutColors (gdImagePtr im, gdIOCtx * out);
+#pragma GCC visibility pop
 
 /* */
 /* Read the extra info in the gd2 header. */

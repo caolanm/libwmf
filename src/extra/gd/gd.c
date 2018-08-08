@@ -249,6 +249,7 @@ typedef struct
   }
 HWBType;
 
+#if 0
 static HWBType *
 RGB_to_HWB (RGBType RGB, HWBType * HWB)
 {
@@ -308,7 +309,6 @@ HWB_Diff (int r1, int g1, int b1, int r2, int g2, int b2)
   return diff;
 }
 
-#if 0
 /*
  * This is not actually used, but is here for completeness, in case someone wants to
  * use the HWB stuff for anything else...
@@ -355,6 +355,7 @@ HWB_to_RGB (HWBType HWB, RGBType * RGB)
 }
 #endif
 
+#if 0
 int
 gdImageColorClosestHWB (gdImagePtr im, int r, int g, int b)
 {
@@ -384,6 +385,7 @@ gdImageColorClosestHWB (gdImagePtr im, int r, int g, int b)
     }
   return ct;
 }
+#endif
 
 int
 gdImageColorExact (gdImagePtr im, int r, int g, int b)
@@ -677,7 +679,7 @@ gdImageSetPixel (gdImagePtr im, int x, int y, int color)
     }
 }
 
-int
+static int
 gdImageGetTrueColorPixel (gdImagePtr im, int x, int y)
 {
   int p = gdImageGetPixel (im, x, y);
@@ -1286,11 +1288,11 @@ strlen16 (unsigned short *s)
   return len;
 }
 
-#ifndef HAVE_LSQRT
+#if 0
 /* If you don't have a nice square root function for longs, you can use
    ** this hack
  */
-long
+static long
 lsqrt (long n)
 {
   long result = (long) sqrt ((double) n);
@@ -2250,7 +2252,7 @@ gdImagePolygon (gdImagePtr im, gdPointPtr p, int n, int c)
     }
 }
 
-int gdCompareInt (const void *a, const void *b);
+static int gdCompareInt (const void *a, const void *b);
 
 /* THANKS to Kirsten Schulz for the polygon fixes! */
 
