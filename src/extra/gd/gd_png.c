@@ -133,8 +133,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
   volatile int palette_allocated = FALSE;
 
   /* Make sure the signature can't match by dumb luck -- TBB */
-  /* GRR: isn't sizeof(infile) equal to the size of the pointer? */
-  memset (infile, 0, sizeof (infile));
+  memset (sig, 0, sizeof (sig));
 
   /* first do a quick check that the file really is a PNG image; could
    * have used slightly more general png_sig_cmp() function instead */
