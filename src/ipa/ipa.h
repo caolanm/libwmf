@@ -46,7 +46,7 @@ static void ldr_bmp_png (wmfAPI* API,wmfBMP_Draw_t* bmp_draw,FILE* out);
 static size_t         ReadBlob (BMPSource*,size_t,unsigned char*);
 static int            ReadBlobByte (BMPSource*);
 static unsigned short ReadBlobLSBShort (BMPSource*);
-static unsigned long  ReadBlobLSBLong (BMPSource*);
+static unsigned int   ReadBlobLSBLong (BMPSource*);
 static long           TellBlob (BMPSource*);
 static int            DecodeImage (wmfAPI*,wmfBMP*,BMPSource*,unsigned int,unsigned char*);
 static void           ReadBMPImage (wmfAPI*,wmfBMP*,BMPSource*);

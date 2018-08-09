@@ -806,8 +806,8 @@ static unsigned short ReadBlobLSBShort (BMPSource* src)
 	return (value);
 }
 
-static unsigned long ReadBlobLSBLong (BMPSource* src)
-{	unsigned long value;
+static unsigned int ReadBlobLSBLong (BMPSource* src)
+{	unsigned int value;
 
 	unsigned char buffer[4];
 
