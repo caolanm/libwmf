@@ -1186,8 +1186,8 @@ TrioPreprocess(int type,
 #if defined(SPECIFIER_CHAR_UPPER)
 	    case SPECIFIER_CHAR_UPPER:
 	      flags |= FLAGS_LONG;
-	      /* FALLTHROUGH */
 #endif
+	      /* FALLTHROUGH */
 	    case SPECIFIER_CHAR:
 	      parameters[pos].type = FORMAT_CHAR;
 	      break;
@@ -1195,8 +1195,8 @@ TrioPreprocess(int type,
 #if defined(SPECIFIER_STRING_UPPER)
 	    case SPECIFIER_STRING_UPPER:
 	      flags |= FLAGS_LONG;
-	      /* FALLTHROUGH */
 #endif
+	      /* FALLTHROUGH */
 	    case SPECIFIER_STRING:
 	      parameters[pos].type = FORMAT_STRING;
 	      break;
@@ -1292,8 +1292,8 @@ TrioPreprocess(int type,
 # if defined(SPECIFIER_HEXFLOAT_UPPER)
 	    case SPECIFIER_HEXFLOAT_UPPER:
 	      flags |= FLAGS_UPPER;
-	      /* FALLTHROUGH */
 # endif
+	      /* FALLTHROUGH */
 	    case SPECIFIER_HEXFLOAT:
 	      base = BASE_HEX;
 	      parameters[pos].type = FORMAT_DOUBLE;
