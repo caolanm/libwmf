@@ -3742,7 +3742,8 @@ TrioSkipWhitespaces(trio_T *self)
   int ch;
 
   ch = self->current;
-  while (isspace(ch))
+  //add in check for EOF to silence coverity warnings
+  while (ch != EOF && isspace(ch))
     {
       self->InStream(self, &ch);
     }
