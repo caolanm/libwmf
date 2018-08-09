@@ -312,7 +312,7 @@ static void xml_end (void * user_data, const char * name)
 		remaining -= 2;
 		length++;
 	}
-	if (remaining == 1) WMF_DEBUG (API, "xml_end: WMF Record has unexpected length!");
+	if (remaining == 1) { WMF_DEBUG (API, "xml_end: WMF Record has unexpected length!"); }
 
 	if (length)
 	{	mem_append (input_data, buffer, length);

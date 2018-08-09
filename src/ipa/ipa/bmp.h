@@ -512,8 +512,8 @@ wmfBMP wmf_ipa_bmp_copy (wmfAPI* API,wmfBMP* bmp,unsigned int width,unsigned int
 	float x;
 	float y;
 
-	int i;
-	int j;
+	unsigned int i;
+	unsigned int j;
 
 	int opacity;
 
@@ -642,12 +642,12 @@ int wmf_ipa_bmp_interpolate (wmfAPI* API,wmfBMP* bmp,wmfRGB* rgb,float x,float y
 	j1 = (unsigned int) floor (y);
 	j2 = (unsigned int) ceil (y);
 
-	if (i1 >= (bmp->width - 2))
+	if (i1 >= (unsigned int)(bmp->width - 2))
 	{	i1 = bmp->width - 2;
 		i2 = bmp->width - 1;
 	}
 
-	if (j1 >= (bmp->height - 2))
+	if (j1 >= (unsigned int)(bmp->height - 2))
 	{	j1 = bmp->height - 2;
 		j2 = bmp->height - 1;
 	}

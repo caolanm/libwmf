@@ -529,7 +529,7 @@ void* wmf_realloc (wmfAPI* API,void* mem,size_t size)
 
 	void* more = 0;
 
-	int i;
+	unsigned int i;
 
 	if (mem == 0) return (wmf_malloc (API,size));
 
@@ -571,7 +571,7 @@ void* wmf_realloc (wmfAPI* API,void* mem,size_t size)
 void wmf_free (wmfAPI* API,void* mem)
 {	wmfMemoryManager* MM = (wmfMemoryManager*) API->memory_data;
 
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < MM->count; i++)
 		if (MM->list[i] == mem)
@@ -599,7 +599,7 @@ void wmf_free (wmfAPI* API,void* mem)
 void wmf_detach (wmfAPI* API,void* mem)
 {	wmfMemoryManager* MM = (wmfMemoryManager*) API->memory_data;
 
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < MM->count; i++)
 		if (MM->list[i] == mem)

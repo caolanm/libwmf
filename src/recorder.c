@@ -595,8 +595,8 @@ static int s_create_pen (wmfAPI * API, wmfConstruct * construct)
 {
   unsigned long Size = 3 + 5;
 
-  unsigned short rg;
-  unsigned short b;
+  unsigned short rg = 0;
+  unsigned short b = 0;
 
   wmfRecordBox rbox;
 
@@ -626,8 +626,8 @@ static int s_create_brush (wmfAPI * API, wmfConstruct * construct)
 {
   unsigned long Size = 3 + 4;
 
-  unsigned short rg;
-  unsigned short b;
+  unsigned short rg = 0;
+  unsigned short b = 0;
 
   wmfRecordBox rbox;
 
@@ -877,8 +877,8 @@ static int s_set_bgcolor (wmfAPI * API, wmfConstruct * construct)
 {
   unsigned long Size = 3 + 2;
 
-  unsigned short rg;
-  unsigned short b;
+  unsigned short rg = 0;
+  unsigned short b = 0;
 
   wmfRecordBox rbox;
 
@@ -932,8 +932,8 @@ static int s_set_textcolor (wmfAPI * API, wmfConstruct * construct)
 {
   unsigned long Size = 3 + 2;
 
-  unsigned short rg;
-  unsigned short b;
+  unsigned short rg = 0;
+  unsigned short b = 0;
 
   wmfRecordBox rbox;
 

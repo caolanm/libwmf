@@ -394,7 +394,7 @@ static void eps_path_fill (wmfAPI* API,wmfDC* dc,wmfD_Rect* bbox)
 				break;
 			}
 		}
-		/* no break here - TODO: implement bitmap fill */
+		/* fallthrough - TODO: implement bitmap fill */
 	default:
 		if (API->flags & WMF_OPT_IGNORE_NONFATAL)
 		{	WMF_DEBUG (API,"Unsupported brush style!");
@@ -405,6 +405,7 @@ static void eps_path_fill (wmfAPI* API,wmfDC* dc,wmfD_Rect* bbox)
 			API->err = wmf_E_Glitch;
 			break;
 		}
+		/* fallthrough - no break here */
 	case BS_SOLID:
 		rgb = WMF_BRUSH_COLOR (brush);
 

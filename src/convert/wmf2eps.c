@@ -168,7 +168,7 @@ int wmf2eps_draw (PlotData* pdata)
 		}
 		page_margin = Default_Margin;
 
-		if ((page_width < 2 * page_margin) || (page_height < 2 * page_margin))
+		if ((page_width < 2U * page_margin) || (page_height < 2U * page_margin))
 		{	page_margin = 0;
 			fputs ("wmf2eps: warning: small page: no margins.\n",stderr);
 		}

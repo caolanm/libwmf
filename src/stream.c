@@ -235,7 +235,7 @@ int wmf_stream_printf (wmfAPI* API,wmfStream* stream,char* format,...)
 	for (;;)
 	{	length = vsnprintf (API->string_buffer.buffer,API->string_buffer.length,format,argp);
 
-		if ((length >= 0) && (length < (API->string_buffer.length - 1))) break; /* i.e., success */
+		if ((length >= 0) && ((unsigned int)length < (API->string_buffer.length - 1))) break; /* i.e., success */
 
 		if (wmf_strbuf_grow (API) == 0) break; /* i.e., probably a memory failure */
 	}

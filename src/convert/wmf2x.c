@@ -239,7 +239,8 @@ int wmf2x_draw (PlotData* pdata)
 
 			XGetWindowAttributes (ddata->display,ddata->window,&attributes);
 
-			if ((ddata->x_width != attributes.width) || (ddata->x_height != attributes.height))
+			if ((ddata->x_width != (unsigned int)attributes.width) ||
+		            (ddata->x_height != (unsigned int)attributes.height))
 			{	ddata->x_width  = attributes.width;
 				ddata->x_height = attributes.height;
 

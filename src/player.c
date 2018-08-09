@@ -357,7 +357,7 @@ wmf_error_t wmf_play (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
 }
 
 static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
-{	int i;
+{	unsigned int i;
 	int byte;
 	int changed;
 

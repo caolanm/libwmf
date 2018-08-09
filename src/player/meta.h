@@ -401,14 +401,17 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 				d_pt.x = drawarc.BR.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '4':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.BR.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '3':
 				d_pt.x = drawarc.TL.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '2':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.TL.y;
@@ -431,14 +434,17 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.TL.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '1':
 				d_pt.x = drawarc.BR.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '4':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.BR.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '3':
 				d_pt.x = drawarc.TL.x;
 				d_pt.y = c_pt.y;
@@ -461,14 +467,17 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 				d_pt.x = drawarc.TL.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '2':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.TL.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '1':
 				d_pt.x = drawarc.BR.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '4':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.BR.y;
@@ -491,14 +500,17 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.BR.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '3':
 				d_pt.x = drawarc.TL.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '2':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.TL.y;
 				D_Coord_Register (API,d_pt,scope);
+				/* fallthrough */
 			case '1':
 				d_pt.x = drawarc.BR.x;
 				d_pt.y = c_pt.y;
@@ -2347,7 +2359,7 @@ static int meta_dc_set (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		}
 		else
 		{	WMF_DC_SET_OPAQUE (P->dc);
-			if (par_U16 != OPAQUE) WMF_DEBUG (API,"unexpected background mode; assuming opaque...");
+			if (par_U16 != OPAQUE) { WMF_DEBUG (API,"unexpected background mode; assuming opaque..."); }
 		}
 	break;
 
@@ -2657,7 +2669,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		}
 
 		if (WMF_DC_TEXTALIGN (P->dc) & TA_UPDATECP)
-		{	if ((Record->size) < (1 + (length + 1) / 2))
+		{	if ((Record->size) < (unsigned int)(1 + (length + 1) / 2))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -2666,7 +2678,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			l_pt = P->current;
 		}
 		else
-		{	if ((Record->size) < (3 + (length + 1) / 2))
+		{	if ((Record->size) < (unsigned int)(3 + (length + 1) / 2))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -3147,7 +3159,7 @@ static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 
 	if (SCAN (API)) wmf_ipa_color_add (API,&color);
 
-	if (WMF_PEN_STYLE (pen) != PS_NULL) WMF_DEBUG (API,"Non-null pen style...");
+	if (WMF_PEN_STYLE (pen) != PS_NULL) { WMF_DEBUG (API,"Non-null pen style..."); }
 
 	WMF_DC_SET_PEN (P->dc,pen);
 

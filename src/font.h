@@ -110,15 +110,15 @@ static wmfFontMap WMFFontMap[] = {
 /* Sub-string match if not in the above list;
  */
 static wmfMapping SubFontMap[] = {
-	{	"Arial",		"Helvetica"	},
-	{	"Courier",		"Courier"	},
-	{	"Fixed",		"Courier"	},
-	{	"Helvetica",		"Helvetica"	},
-	{	"Sans",			"Helvetica"	},
-	{	"Sym",			"Symbol"	},
-	{	"Terminal",		"Courier"	},
-	{	"Times",		"Times"		},
-	{	"Wingdings",		"Symbol"	}};
+	{	"Arial",		"Helvetica", ft_encoding_adobe_standard	},
+	{	"Courier",		"Courier", ft_encoding_adobe_standard	},
+	{	"Fixed",		"Courier", ft_encoding_adobe_standard	},
+	{	"Helvetica",		"Helvetica", ft_encoding_adobe_standard	},
+	{	"Sans",			"Helvetica", ft_encoding_adobe_standard	},
+	{	"Sym",			"Symbol", ft_encoding_adobe_standard	},
+	{	"Terminal",		"Courier", ft_encoding_adobe_standard	},
+	{	"Times",		"Times", ft_encoding_adobe_standard	},
+	{	"Wingdings",		"Symbol", ft_encoding_adobe_standard	}};
 
 /* If all else fails, assume Times
  */

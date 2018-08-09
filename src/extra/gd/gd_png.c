@@ -128,7 +128,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
   png_bytep image_data = NULL;
   png_bytepp row_pointers = NULL;
   gdImagePtr im = NULL;
-  int i, j, *open=0;
+  int i, j, *open;
   volatile int transparent = -1;
   volatile int palette_allocated = FALSE;
 
@@ -175,6 +175,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       return NULL;
     }
 #endif
+  open = NULL;
 
   png_set_sig_bytes (png_ptr, 8);	/* we already read the 8 signature bytes */
 
@@ -454,7 +455,7 @@ gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
   int i, j, bit_depth=1, interlace_type;
   int width = im->sx;
   int height = im->sy;
-  int colors = im->colorsTotal;
+  int colors;
   int *open = im->open;
   int mapping[gdMaxColors];	/* mapping[gd_index] == png_index */
   png_byte trans_values[256];
@@ -494,6 +495,7 @@ gdImagePngCtx (gdImagePtr im, gdIOCtx * outfile)
       return;
     }
 #endif
+  colors = im->colorsTotal;
 
   png_set_write_fn (png_ptr, (void *) outfile, gdPngWriteData, gdPngFlushData);
 

@@ -542,7 +542,8 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 {
   unsigned char *pixel = 0;
   int *tpixel = 0;
-  int x, y, row, col, pc;
+  int x, y, pc;
+  unsigned row, col;
 
   tweencolor_t *tc_elem;
   tweencolorkey_t tc_key;

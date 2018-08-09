@@ -467,7 +467,7 @@ static void svg_style_fill (wmfAPI* API,wmfDC* dc)
 				break;
 			}
 		}
-		/* no break here - TODO: implement bitmap fill */
+		/* fallthrough - TODO: implement bitmap fill */
 	default:
 		if (API->flags & WMF_OPT_IGNORE_NONFATAL)
 		{	WMF_DEBUG (API,"Unsupported brush style!");
@@ -478,6 +478,7 @@ static void svg_style_fill (wmfAPI* API,wmfDC* dc)
 			API->err = wmf_E_Glitch;
 			break;
 		}
+		/* fallthrough - no break here */
 	case BS_SOLID:
 	break;
 	}
