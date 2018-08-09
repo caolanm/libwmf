@@ -7,7 +7,7 @@ echo_help=no
 
 while test $# -gt 0; do
 	case "$1" in
-	-*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
+	-*=*) optarg=$(echo "$1" | sed 's/[-_a-zA-Z0-9]*=//') ;;
 	*)    optarg= ;;
 	esac
 
@@ -42,12 +42,12 @@ if test $echo_help = yes; then
 	cat <<EOF
 Usage: libwmf-fontmap --map=<fontmap> dir1 [dir2 [dir3 ...]]
 EOF
-	exit $1
+	exit "$1"
 fi
 
 echo font map = $font_map
 
-font_pwd=`pwd`
+font_pwd=$(pwd)
 
 if test -w $font_map; then
 	rm -f $font_map
@@ -59,36 +59,38 @@ cat > $font_map <<EOF
 EOF
 
 for i in $font_dir; do
-	if test -d $i; then
-		cd $i;
-		font_cwd=`pwd`;
-		echo scanning $i;
+	if test -d "$i"; then
+		cd "$i" || continue
+		font_cwd=$(pwd)
+		echo scanning "$i"
 
-		for j in `ls *.afm 2> /dev/null`; do
-			font_root=`echo $j | sed s/.afm//`
+		for j in *.afm; do
+			[ -e "$j" ] || continue
+			font_root=$(echo "$j" | sed s/.afm//)
 			font_metrics=$font_cwd/$font_root.afm
 			font_glyphs=
-			if test -r $font_cwd/$font_root.pfa; then
-				font_glyphs=$font_cwd/$font_root.pfa
-			elif test -r $font_cwd/$font_root.pfb; then
-				font_glyphs=$font_cwd/$font_root.pfb
-			elif test -r $font_cwd/$font_root.t1; then
-				font_glyphs=$font_cwd/$font_root.t1
+			if test -r "$font_cwd/$font_root.pfa"; then
+				font_glyphs="$font_cwd/$font_root.pfa"
+			elif test -r "$font_cwd/$font_root.pfb"; then
+				font_glyphs="$font_cwd/$font_root.pfb"
+			elif test -r "$font_cwd/$font_root.t1"; then
+				font_glyphs="$font_cwd/$font_root.t1"
 			fi
 			if test "x$font_glyphs" != "x"; then
-				echo font: $font_root
-				FontName=`grep "FontName " $font_metrics | sed "s/FontName //"`
-				FullName=`grep "FullName " $font_metrics | sed "s/FullName //"`
-				FamilyName=`grep "FamilyName " $font_metrics | sed "s/FamilyName //"`
-				Weight=`grep "Weight " $font_metrics | sed "s/Weight //"`
-				cd $font_pwd
-				echo '<font format="type1" metrics="'$font_metrics'" glyphs="'$font_glyphs'" name="'$FontName'" fullname="'$FullName'" familyname="'$FamilyName'" weight="'$Weight'" version="0.1" alias="'$FontName'"/>' >> $font_map
-				cd $font_cwd
+				echo font: "$font_root"
+				FontName=$(grep "FontName " "$font_metrics" | sed "s/FontName //")
+				FullName=$(grep "FullName " "$font_metrics" | sed "s/FullName //")
+				FamilyName=$(grep "FamilyName " "$font_metrics" | sed "s/FamilyName //")
+				Weight=$(grep "Weight " "$font_metrics" | sed "s/Weight //")
+				cd "$font_pwd" || continue
+				echo '<font format="type1" metrics="'"$font_metrics"'" glyphs="'"$font_glyphs"'" name="'"$FontName"'" fullname="'"$FullName"'" familyname="'"$FamilyName"'" weight="'"$Weight"'" version="0.1" alias="'"$FontName"'"/>' >> $font_map
+				cd "$font_cwd" || continue
 			fi
 		done
 
-		for j in `ls *.ttf 2> /dev/null`; do
-			font_root=`echo $j | sed s/.ttf//`
+		for j in *.ttf; do
+			[ -e "$j" ] || continue
+			font_root=$(echo "$j" | sed s/.ttf//)
 			font_recognized=yes
 			font_glyphs=$font_cwd/$font_root.ttf
 			case "$font_root" in
@@ -583,16 +585,16 @@ for i in $font_dir; do
 				;;
 			esac
 			if test $font_recognized = yes; then
-				echo font: $font_root
-				cd $font_pwd
-				echo '<font format="type1" metrics="'$font_metrics'" glyphs="'$font_glyphs'" name="'$FontName'" fullname="'$FullName'" familyname="'$FamilyName'" weight="'$Weight'" version="0.1" alias="'$FontName'"/>' >> $font_map
-				cd $font_cwd
+				echo font: "$font_root"
+				cd "$font_pwd" || continue
+				echo '<font format="type1" metrics="'"$font_metrics"'" glyphs="'"$font_glyphs"'" name="'"$FontName"'" fullname="'"$FullName"'" familyname="'"$FamilyName"'" weight="'"$Weight"'" version="0.1" alias="'"$FontName"'"/>' >> $font_map
+				cd "$font_cwd" || continue
 			else
-				echo "I don't know" $font_root
+				echo "I don't know" "$font_root"
 			fi
 		done
 
-		cd $font_pwd;
+		cd "$font_pwd" || continue
 	fi
 done
 
