@@ -127,7 +127,7 @@ static int ipa_b64_sink (void* context,const char* buffer,int length)
 	int i = 0;
 
 	while (i < length)
-	{	// coverity[overrun-local] - coverity seems to fail to see that ipa_b64_flush resets length to 0
+	{	// coverity[overrun-local : FALSE] - coverity seems to fail to see that ipa_b64_flush resets length to 0
 		b64->buffer[b64->length] = buffer[i];
 		i++;
 		b64->length++;

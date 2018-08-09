@@ -921,7 +921,7 @@ TrioPreprocess(int type,
 			    {
 			      if (! positional)
 				currentParam = precision + 1;
-			      /* coverity[copy_paste_error] - this is correct width, not precision */
+			      /* coverity[copy_paste_error : FALSE] - this is correct width, not precision */
 			      if (width > maxParam)
 				maxParam = precision;
 			    }
