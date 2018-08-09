@@ -334,7 +334,8 @@ fontFetch (char **error, void *key)
   char *fontsearchpath, *fontlist;
   char *fullname = NULL;
   char *name, *path, *dir;
-  char *strtok_ptr = NULL;
+  char dummy = 0;
+  char *strtok_ptr = &dummy;
   FT_Error err;
   FT_CharMap found = 0;
   FT_CharMap charmap;

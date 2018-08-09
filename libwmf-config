@@ -26,9 +26,6 @@ if test $# -eq 0; then
 	usage 1 1>&2
 fi
 
-lib_gd=no
-lib_wmf=yes
-
 while test $# -gt 0; do
   case "$1" in
   -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
@@ -62,10 +59,8 @@ while test $# -gt 0; do
       echo_libs=yes
       ;;
     gd)
-      lib_gd=yes
       ;;
     wmf)
-      lib_wmf=yes
       ;;
     *)
       usage 1 1>&2
