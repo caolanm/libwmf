@@ -775,7 +775,7 @@ TrioPreprocess(int type,
 {
 #if defined(TRIO_ERRORS)
   /* Count the number of times a parameter is referenced */
-  unsigned short usedEntries[MAX_PARAMETERS + 1];
+  unsigned short usedEntries[MAX_PARAMETERS];
 #endif
   /* Parameter counters */
   int parameterPosition;
@@ -1172,6 +1172,12 @@ TrioPreprocess(int type,
 	    }
 	  if (flags & FLAGS_SIZE_PARAMETER)
 	    {
+	      if (varsize < 0)
+	      {
+	        /* Bail out completely to make the error more obvious */
+	        return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+	      }
+
 #if defined(TRIO_ERRORS)
 	      usedEntries[varsize] += 1;
 #endif
@@ -1330,6 +1336,11 @@ TrioPreprocess(int type,
 			    parameters[pos].flags = FLAGS_USER_DEFINED;
 			    /* Adjust parameters for insertion of new one */
 			    pos++;
+			    if(currentParam >= MAX_PARAMETERS)
+			      {
+			        /* Bail out completely to make the error more obvious */
+			        return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+			      }
 # if defined(TRIO_ERRORS)
 			    usedEntries[currentParam] += 1;
 # endif
