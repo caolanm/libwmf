@@ -218,7 +218,10 @@ newDynamic (int initialSize, void *data)
     }
 
   if (!allocDynamic (dp, initialSize, data))
-    return NULL;
+    {
+      gdFree (dp);
+      return NULL;
+    }
 
   dp->pos = 0;
 
