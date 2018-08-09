@@ -96,6 +96,7 @@ gdPngWriteData (png_structp png_ptr,
 static void
 gdPngFlushData (png_structp png_ptr)
 {
+  (void)png_ptr;
 }
 
 gdImagePtr

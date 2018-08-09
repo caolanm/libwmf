@@ -557,7 +557,8 @@ const char * wmf_attr_add (wmfAPI * API, wmfAttributes * list,
 }
 
 const char * wmf_attr_query (wmfAPI * API, wmfAttributes * list, const char* name)
-{	unsigned long i;
+{	(void)API;
+	unsigned long i;
 
 	const char * value = 0;
 

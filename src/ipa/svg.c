@@ -216,34 +216,26 @@ static void wmf_svg_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 
 static void wmf_svg_udata_init (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]udata_init");
-
-	
 }
 
 static void wmf_svg_udata_copy (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]udata_copy");
-
-	
 }
 
 static void wmf_svg_udata_set (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]udata_set");
-
-	
 }
 
 static void wmf_svg_udata_free (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]udata_free");
-
-	
 }
 
 static svgFont svg_font (char* ps_name)

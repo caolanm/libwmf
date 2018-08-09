@@ -37,7 +37,7 @@ void wmf_set_viewport_origin (wmfAPI* API,wmfD_Coord d_pt)
 	P->Viewport_Origin = d_pt;
 }
 
-static wmfL_Coord L_Coord (wmfAPI* API,U16 u16_x,U16 u16_y)
+static wmfL_Coord L_Coord (U16 u16_x,U16 u16_y)
 {	wmfL_Coord l_pt;
 
 	l_pt.x = U16_2_S32 (u16_x);

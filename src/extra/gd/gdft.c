@@ -493,6 +493,8 @@ tweenColorFetch (char **error, void *key)
   int pixel, npixel, bg, fg;
   gdImagePtr im;
 
+  (void)error;
+
   a = (tweencolor_t *) gdMalloc (sizeof (tweencolor_t));
   pixel = a->pixel = b->pixel;
   bg = a->bgcolor = b->bgcolor;

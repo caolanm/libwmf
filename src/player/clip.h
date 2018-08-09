@@ -45,7 +45,7 @@ static void Clipping (wmfAPI* API,wmfRegion* clip,wmfRegion* vis,wmfD_Rect* rect
 		}
 	}
 
-	WmfSetRectRgn (API,&rgn,rect);
+	WmfSetRectRgn (&rgn,rect);
 
 	if ((clip->numRects == 0) && (flags & CLIP_INTERSECT))
 	{	(*clip) = rgn;
@@ -64,7 +64,7 @@ static void Clipping (wmfAPI* API,wmfRegion* clip,wmfRegion* vis,wmfD_Rect* rect
 			}
 		}
 
-		WmfSetRectRgn (API,clip,0);
+		WmfSetRectRgn (clip,0);
 		WmfCombineRgn (API,clip,vis,0,RGN_COPY);
 
 		if (ERR (API))

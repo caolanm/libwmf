@@ -19,21 +19,18 @@
 
 static void wmf_svg_region_frame (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)poly_rect;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]region_frame");
-
 }
 
 static void wmf_svg_region_paint (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)poly_rect;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]region_paint");
-
 }
 
 static void wmf_svg_region_clip (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)poly_rect;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]region_clip");
-
 }

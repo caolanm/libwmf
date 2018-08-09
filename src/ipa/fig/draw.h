@@ -19,7 +19,7 @@
 
 static void wmf_fig_flood_interior (wmfAPI* API,wmfFlood_t* flood)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)flood;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]flood_interior");
 
 	if (API->flags & WMF_OPT_IGNORE_NONFATAL)
@@ -33,7 +33,7 @@ static void wmf_fig_flood_interior (wmfAPI* API,wmfFlood_t* flood)
 
 static void wmf_fig_flood_exterior (wmfAPI* API,wmfFlood_t* flood)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)flood;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]flood_exterior");
 
 	if (API->flags & WMF_OPT_IGNORE_NONFATAL)
@@ -114,7 +114,8 @@ static void wmf_fig_draw_pie (wmfAPI* API,wmfDrawArc_t* draw_arc)
 }
 
 static void wmf_fig_draw_chord (wmfAPI* API,wmfDrawArc_t* draw_arc)
-{	wmf_fig_t* ddata = WMF_FIG_GetData (API);
+{	(void)draw_arc;
+	wmf_fig_t* ddata = WMF_FIG_GetData (API);
 
 	wmfStream* out = ddata->out;
 	

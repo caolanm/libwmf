@@ -219,7 +219,7 @@ fail1:
 
 static
 int
-_gd2ReadChunk (int offset, char *compBuf, int compSize, char *chunkBuf, uLongf * chunkLen, gdIOCtx * in)
+_gd2ReadChunk (int offset, unsigned char *compBuf, int compSize, unsigned char *chunkBuf, uLongf * chunkLen, gdIOCtx * in)
 {
   int zerr;
 
@@ -240,8 +240,8 @@ _gd2ReadChunk (int offset, char *compBuf, int compSize, char *chunkBuf, uLongf *
       return FALSE;
     };
   GD2_DBG (printf ("Got %d bytes. Uncompressing into buffer of %d bytes\n", compSize, *chunkLen));
-  zerr = uncompress ((unsigned char *) chunkBuf, chunkLen,
-		     (unsigned char *) compBuf, compSize);
+  zerr = uncompress (chunkBuf, chunkLen,
+		     compBuf, compSize);
   if (zerr != Z_OK)
     {
       GD2_DBG (printf ("Error %d from uncompress\n", zerr));
@@ -280,7 +280,7 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
   int chunkPos=0;
   int compMax;
   int bytesPerPixel;
-  char *compBuf = NULL;		/* So we can gdFree it with impunity. */
+  unsigned char *compBuf = NULL;		/* So we can gdFree it with impunity. */
 
   gdImagePtr im;
 
@@ -456,13 +456,13 @@ gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int srcy, int w, int h)
   int i;
   int ch, vers, fmt;
   t_chunk_info *chunkIdx = NULL;
-  char *chunkBuf = NULL;
+  unsigned char *chunkBuf = NULL;
   int chunkNum;
   int chunkMax=0;
   uLongf chunkLen;
   int chunkPos=0;
   int compMax;
-  char *compBuf = NULL;
+  unsigned char *compBuf = NULL;
 
   gdImagePtr im;
 

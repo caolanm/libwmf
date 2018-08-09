@@ -20,6 +20,7 @@
 static void wmf_svg_flood_interior (wmfAPI* API,wmfFlood_t* flood)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
 
+	(void)flood;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]flood_interior");
 
 	if (API->flags & WMF_OPT_IGNORE_NONFATAL)
@@ -34,6 +35,7 @@ static void wmf_svg_flood_interior (wmfAPI* API,wmfFlood_t* flood)
 static void wmf_svg_flood_exterior (wmfAPI* API,wmfFlood_t* flood)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
 
+	(void)flood;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]flood_exterior");
 
 	if (API->flags & WMF_OPT_IGNORE_NONFATAL)

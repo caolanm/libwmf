@@ -348,7 +348,7 @@ extern wmf_error_t wmf_wmfxml_import (wmfAPI*,const char*);
  * 
  * (debug build only)
  */
-#define WMF_DEBUG(Z,M)
+#define WMF_DEBUG(Z,M) (void)Z
 
 /**
  * @param Z the API handle

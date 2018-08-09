@@ -85,7 +85,8 @@ wmf_error_t wmf_player_init (wmfAPI* API)
  * @return Returns the library error state (\b wmf_E_None on success).
  */
 wmf_error_t wmf_scan (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
-{	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
+{	(void)flags;
+	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
 
 	WMF_DEBUG (API,"~~~~~~~~wmf_scan");
 
@@ -311,7 +312,8 @@ wmf_error_t wmf_display_size (wmfAPI* API,unsigned int* width,unsigned int* heig
  * @return Returns the library error state (\b wmf_E_None on success).
  */
 wmf_error_t wmf_play (wmfAPI* API,unsigned long flags,wmfD_Rect* d_r)
-{	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
+{	(void)flags;
+	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
 	wmfFunctionReference* FR = (wmfFunctionReference*) API->function_reference;
 
 	WMF_DEBUG (API,"~~~~~~~~wmf_play");
@@ -530,7 +532,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 		{
 		case META_SETMAPMODE:
 			SCAN_DIAGNOSTIC (API,"New Record: SETMAPMODE");
-			changed = meta_mapmode (API,&Record,atts);
+			changed = meta_mapmode (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setmapmode",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -541,7 +543,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETWINDOWORG:
 			SCAN_DIAGNOSTIC (API,"New Record: SETWINDOWORG");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setwindoworg",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -552,7 +554,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETVIEWPORTORG:
 			SCAN_DIAGNOSTIC (API,"New Record: SETVIEWPORTORG");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setviewportorg",
 					atts->atts, Record.parameter, Record.size * 2);
 			SCAN_DIAGNOSTIC (API,"\n");
@@ -560,7 +562,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETVIEWPORTEXT:
 			SCAN_DIAGNOSTIC (API,"New Record: SETVIEWPORTEXT");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setviewportext",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -571,7 +573,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETWINDOWEXT:
 			SCAN_DIAGNOSTIC (API,"New Record: SETWINDOWEXT");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setwindowext",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -582,7 +584,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_OFFSETWINDOWORG:
 			SCAN_DIAGNOSTIC (API,"New Record: OFFSETWINDOWORG");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "offsetwindoworg",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -593,7 +595,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_OFFSETVIEWPORTORG:
 			SCAN_DIAGNOSTIC (API,"New Record: OFFSETVIEWPORTORG");
-			changed = meta_orgext (API,&Record,atts);
+			changed = meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "offsetviewportorg",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -604,7 +606,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SCALEWINDOWEXT:
 			SCAN_DIAGNOSTIC (API,"New Record: SCALEWINDOWEXT");
-			changed = meta_scale (API,&Record,atts);
+			changed = meta_scale (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "scalewindowext",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -615,7 +617,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SCALEVIEWPORTEXT:
 			SCAN_DIAGNOSTIC (API,"New Record: SCALEVIEWPORTEXT");
-			changed = meta_scale (API,&Record,atts);
+			changed = meta_scale (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "scaleviewportext",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -639,7 +641,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_MOVETO:
 			SCAN_DIAGNOSTIC (API,"New Record: MOVETO");
-			changed = meta_moveto (API,&Record,atts);
+			changed = meta_moveto (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "moveto",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -650,7 +652,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_FLOODFILL:
 			SCAN_DIAGNOSTIC (API,"New Record: FLOODFILL");
-			changed = meta_flood (API,&Record,atts);
+			changed = meta_flood (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "floodfill",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -661,7 +663,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_EXTFLOODFILL:
 			SCAN_DIAGNOSTIC (API,"New Record: EXTFLOODFILL");
-			changed = meta_flood (API,&Record,atts);
+			changed = meta_flood (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "extfloodfill",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -672,7 +674,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETPIXEL:
 			SCAN_DIAGNOSTIC (API,"New Record: SETPIXEL");
-			changed = meta_pixel (API,&Record,atts);
+			changed = meta_pixel (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setpixel",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -683,7 +685,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_PIE:
 			SCAN_DIAGNOSTIC (API,"New Record: PIE");
-			changed = meta_arc (API,&Record,atts);
+			changed = meta_arc (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "pie",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -694,7 +696,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_CHORD:
 			SCAN_DIAGNOSTIC (API,"New Record: CHORD");
-			changed = meta_arc (API,&Record,atts);
+			changed = meta_arc (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "chord",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -705,7 +707,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_ARC:
 			SCAN_DIAGNOSTIC (API,"New Record: ARC");
-			changed = meta_arc (API,&Record,atts);
+			changed = meta_arc (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "arc",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -716,7 +718,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_ELLIPSE:
 			SCAN_DIAGNOSTIC (API,"New Record: ELLIPSE");
-			changed = meta_ellipse (API,&Record,atts);
+			changed = meta_ellipse (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "ellipse",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -727,7 +729,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_LINETO:
 			SCAN_DIAGNOSTIC (API,"New Record: LINETO");
-			changed = meta_line (API,&Record,atts);
+			changed = meta_line (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "lineto",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -738,7 +740,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_POLYLINE:
 			SCAN_DIAGNOSTIC (API,"New Record: POLYLINE");
-			changed = meta_lines (API,&Record,atts);
+			changed = meta_lines (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "polyline",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -749,7 +751,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_POLYGON:
 			SCAN_DIAGNOSTIC (API,"New Record: POLYGON");
-			changed = meta_polygon (API,&Record,atts);
+			changed = meta_polygon (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "polygon",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -760,7 +762,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_POLYPOLYGON:
 			SCAN_DIAGNOSTIC (API,"New Record: POLYPOLYGON");
-			changed = meta_polygons (API,&Record,atts);
+			changed = meta_polygons (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "polypolygon",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -771,7 +773,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_ROUNDRECT:
 			SCAN_DIAGNOSTIC (API,"New Record: ROUNDRECT");
-			changed = meta_round (API,&Record,atts);
+			changed = meta_round (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "roundrect",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -782,7 +784,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_RECTANGLE:
 			SCAN_DIAGNOSTIC (API,"New Record: RECTANGLE");
-			changed = meta_rect (API,&Record,atts);
+			changed = meta_rect (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "rectangle",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -795,7 +797,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_FRAMEREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: FRAMEREGION");
-			changed = meta_rgn_brush (API,&Record,atts);
+			changed = meta_rgn_brush (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "frameregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -806,7 +808,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_FILLREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: FILLREGION");
-			changed = meta_rgn_brush (API,&Record,atts);
+			changed = meta_rgn_brush (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "fillregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -817,7 +819,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_INVERTREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: INVERTREGION");
-			changed = meta_rgn_paint (API,&Record,atts);
+			changed = meta_rgn_paint (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "invertregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -828,7 +830,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_PAINTREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: PAINTREGION");
-			changed = meta_rgn_paint (API,&Record,atts);
+			changed = meta_rgn_paint (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "paintregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -839,7 +841,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_CREATEREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: CREATEREGION");
-			changed = meta_rgn_create (API,&Record,atts);
+			changed = meta_rgn_create (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "createregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -850,7 +852,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SELECTCLIPREGION:
 			SCAN_DIAGNOSTIC (API,"New Record: SELECTCLIPREGION");
-			changed = meta_clip_select (API,&Record,atts);
+			changed = meta_clip_select (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "selectclipregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -861,7 +863,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_OFFSETCLIPRGN:
 			SCAN_DIAGNOSTIC (API,"New Record: OFFSETCLIPREGION");
-			changed = meta_clip_offset (API,&Record,atts);
+			changed = meta_clip_offset (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "offsetclipregion",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -872,7 +874,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_EXCLUDECLIPRECT:
 			SCAN_DIAGNOSTIC (API,"New Record: EXCLUDECLIPRECT");
-			changed = meta_clip_combine (API,&Record,atts);
+			changed = meta_clip_combine (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "excludecliprect",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -883,7 +885,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_INTERSECTCLIPRECT:
 			SCAN_DIAGNOSTIC (API,"New Record: INTERSECTCLIPRECT");
-			changed = meta_clip_combine (API,&Record,atts);
+			changed = meta_clip_combine (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "intersectcliprect",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -898,7 +900,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_SETDIBTODEV:
 			SCAN_DIAGNOSTIC (API,"New Record: SETDIBTODEV");
-			changed = meta_dib_draw (API,&Record,atts);
+			changed = meta_dib_draw (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setdibtodev",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -909,7 +911,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_STRETCHDIB:
 			SCAN_DIAGNOSTIC (API,"New Record: STRETCHDIB");
-			changed = meta_dib_draw (API,&Record,atts);
+			changed = meta_dib_draw (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "stretchdib",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -920,7 +922,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_DIBSTRETCHBLT:
 			SCAN_DIAGNOSTIC (API,"New Record: DIBSTRETCHBLT");
-			changed = meta_dib_draw (API,&Record,atts);
+			changed = meta_dib_draw (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "dibstretchblt",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -931,7 +933,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_DIBBITBLT:
 			SCAN_DIAGNOSTIC (API,"New Record: DIBBITBLT");
-			changed = meta_dib_draw (API,&Record,atts);
+			changed = meta_dib_draw (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "dibbitblt",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -942,7 +944,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_DIBCREATEPATTERNBRUSH:
 			SCAN_DIAGNOSTIC (API,"New Record: DIBCREATEPATTERNBRUSH");
-			changed = meta_dib_brush (API,&Record,atts);
+			changed = meta_dib_brush (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "dibcreatepatternbrush",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -953,7 +955,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_PATBLT:
 			SCAN_DIAGNOSTIC (API,"New Record: PATBLT");
-			changed = meta_rop_draw (API,&Record,atts);
+			changed = meta_rop_draw (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "patblt",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -966,7 +968,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_SETROP2:
 			SCAN_DIAGNOSTIC (API,"New Record: SETROP2");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setrop2",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -977,7 +979,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETTEXTJUSTIFICATION:
 			SCAN_DIAGNOSTIC (API,"New Record: SETTEXTJUSTIFICATION");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "settextjustification",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -988,7 +990,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETTEXTCHAREXTRA:
 			SCAN_DIAGNOSTIC (API,"New Record: SETTEXTCHAREXTRA");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "settextcharextra",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -999,7 +1001,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETPOLYFILLMODE:
 			SCAN_DIAGNOSTIC (API,"New Record: SETPOLYFILLMODE");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setpolyfillmode",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1010,7 +1012,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETSTRETCHBLTMODE:
 			SCAN_DIAGNOSTIC (API,"New Record: SETSTRETCHBLTMODE");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setstretchbltmode",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1021,7 +1023,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETTEXTALIGN:
 			SCAN_DIAGNOSTIC (API,"New Record: SETTEXTALIGN");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "settextalign",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1054,7 +1056,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETBKMODE:
 			SCAN_DIAGNOSTIC (API,"New Record: SETBKMODE");
-			changed = meta_dc_set (API,&Record,atts);
+			changed = meta_dc_set (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setbkmode",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1065,7 +1067,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SELECTOBJECT:
 			SCAN_DIAGNOSTIC (API,"New Record: SELECTOBJECT");
-			changed = meta_dc_select (API,&Record,atts);
+			changed = meta_dc_select (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "selectobject",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1078,7 +1080,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_TEXTOUT:
 			SCAN_DIAGNOSTIC (API,"New Record: TEXTOUT");
-			changed = meta_text (API,&Record,atts);
+			changed = meta_text (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "textout",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1089,7 +1091,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_EXTTEXTOUT:
 			SCAN_DIAGNOSTIC (API,"New Record: EXTTEXTOUT");
-			changed = meta_text (API,&Record,atts);
+			changed = meta_text (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "exttextout",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1100,7 +1102,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_CREATEFONTINDIRECT:
 			SCAN_DIAGNOSTIC (API,"New Record: CREATEFONTINDIRECT");
-			changed = meta_font_create (API,&Record,atts);
+			changed = meta_font_create (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "createfontindirect",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1111,7 +1113,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETMAPPERFLAGS:
 			SCAN_DIAGNOSTIC (API,"New Record: SETMAPPERFLAGS");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setmapperflags",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1124,7 +1126,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_CREATEPALETTE:
 			SCAN_DIAGNOSTIC (API,"New Record: CREATEPALETTE");
-			changed = meta_palette_create (API,&Record,atts);
+			changed = meta_palette_create (API);
 			if (SCAN (API)) wmf_write (API, Size, Function, "createpalette",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1135,7 +1137,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_REALIZEPALETTE:
 			SCAN_DIAGNOSTIC (API,"New Record: REALIZEPALETTE");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "realizepalette",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1146,7 +1148,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SELECTPALETTE:
 			SCAN_DIAGNOSTIC (API,"New Record: SELECTPALETTE");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "selectpalette",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1157,7 +1159,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETPALENTRIES:
 			SCAN_DIAGNOSTIC (API,"New Record: SETPALENTRIES");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setpalentries",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1170,7 +1172,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_SAVEDC:
 			SCAN_DIAGNOSTIC (API,"New Record: SAVEDC");
-			changed = meta_dc_save (API,&Record,atts);
+			changed = meta_dc_save (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "savedc",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1181,7 +1183,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_RESTOREDC:
 			SCAN_DIAGNOSTIC (API,"New Record: RESTOREDC");
-			changed = meta_dc_restore (API,&Record,atts);
+			changed = meta_dc_restore (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "restoredc",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1214,7 +1216,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_DELETEOBJECT:
 			SCAN_DIAGNOSTIC (API,"New Record: DELETEOBJECT");
-			changed = meta_delete (API,&Record,atts);
+			changed = meta_delete (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "deleteobject",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1227,7 +1229,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
  */
 		case META_ESCAPE:
 			SCAN_DIAGNOSTIC (API,"New Record: ESCAPE");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "escape",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))
@@ -1238,7 +1240,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		default:
 			SCAN_DIAGNOSTIC (API,"New Record: UNKNOWN");
-			changed = meta_unused (API,&Record,atts);
+			changed = meta_unused (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "unknown",
 					atts->atts, Record.parameter, Record.size * 2);
 			if (changed && ((Record.size * 2 + 6) == atts->length))

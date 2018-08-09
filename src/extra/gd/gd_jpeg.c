@@ -667,6 +667,7 @@ skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 static void
 term_source (j_decompress_ptr cinfo)
 {
+  (void)cinfo;
 #if 0
 /* never used */
     my_src_ptr src = (my_src_ptr) cinfo->src;

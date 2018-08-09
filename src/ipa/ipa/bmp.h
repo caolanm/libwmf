@@ -852,7 +852,7 @@ static long TellBlob (BMPSource* src)
 %
 %
 */
-static int DecodeImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src,unsigned int compression,unsigned char* pixels)
+static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsigned char* pixels)
 {	int byte;
 	int count;
 	int i;
@@ -1151,7 +1151,7 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 	{
 		if (bmp_info.bits_per_pixel == 8)	/* Convert run-length encoded raster pixels. */
 		{
-			if (!DecodeImage (API,bmp,src,(unsigned int) bmp_info.compression,data->image))
+			if (!DecodeImage (bmp,src,(unsigned int) bmp_info.compression,data->image))
 			{	WMF_ERROR (API,"corrupt bmp");
 				API->err = wmf_E_BadFormat;
 			}

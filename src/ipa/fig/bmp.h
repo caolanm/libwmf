@@ -19,10 +19,8 @@
 
 static void wmf_fig_rop_draw (wmfAPI* API,wmfROP_Draw_t* rop_draw)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)rop_draw;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]rop_draw");
-
-	
 }
 
 /* TODO ?? Care about bmp_draw->type

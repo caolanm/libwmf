@@ -52,6 +52,7 @@ typedef struct {
 static void
 pixbuf_destroy_function (guchar * pixels, gpointer data)
 {
+	(void)data;
 	g_free (pixels);
 }
 
@@ -167,8 +168,10 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 	/* if these are <= 0, assume user wants the natural size of the wmf
 	 */
 	if (width <= 0 || height <= 0) {
-		err = wmf_display_size (API, &width, &height, resolution_x, resolution_y);
-
+		unsigned int uwidth, uheight;
+		err = wmf_display_size (API, &uwidth, &uheight, resolution_x, resolution_y);
+		width = uwidth;
+		height = uheight;
 		if (err != wmf_E_None || width <= 0 || height <= 0) {
 			g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
 				     "Couldn't determine image size");

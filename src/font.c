@@ -589,7 +589,7 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 	return (width*72/(300*12));
 }
 
-static float ipa_char_position (wmfAPI* API,wmfFont* font,char* str,char* last)
+static float ipa_char_position (wmfFont* font,char* str,char* last)
 {	FT_Face face = WMF_FONT_FTFACE (font);
 
 	FT_Vector delta;
@@ -664,7 +664,7 @@ void wmf_ipa_draw_text (wmfAPI* API,wmfDrawText_t* draw_text,wmfCharDrawer ipa_d
 		buffer[0] = draw_text->str[i];
 		buffer[1] = 0;
 
-		text_width = ipa_char_position (API,draw_text->dc->font,draw_text->str,draw_text->str+i);
+		text_width = ipa_char_position (draw_text->dc->font,draw_text->str,draw_text->str+i);
 
 		text_width = (float) ((double) text_width * draw_text->font_height * draw_text->font_ratio);
 
@@ -1106,7 +1106,7 @@ static void ipa_font_gs_add (wmfAPI* API,wmfGS_FontData* FD,char* name,char* ali
 	FD->len++;
 }
 
-static char* ipa_font_gs_alias (wmfAPI* API,wmfGS_FontData* FD,char* name)
+static char* ipa_font_gs_alias (wmfGS_FontData* FD,char* name)
 {	char* alias = 0;
 
 	unsigned int i;
@@ -1492,7 +1492,7 @@ static FT_Face ipa_font_gs_face (wmfAPI* API,wmfFont* font,wmfGS_FontInfo* FI)
 
 	if (FI->alias[0] != '/') return (0);
 
-	aalias = ipa_font_gs_alias (API,&(font_data->GS),FI->alias+1);
+	aalias = ipa_font_gs_alias (&(font_data->GS),FI->alias+1);
 
 	if (aalias[0] != '(')
 	{	WMF_DEBUG (API,"font lookup is too complicated! Giving up...");

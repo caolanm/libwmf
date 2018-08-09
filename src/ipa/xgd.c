@@ -168,7 +168,8 @@ void wmf_gd_function (wmfAPI* API)
 }
 #ifdef HAVE_GD
 static void wmf_gd_udata_init (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
+{	(void)userdata;
+	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
 
 	/* gd_t* gd = (gd_t*) ddata->gd_data; */
 
@@ -177,7 +178,8 @@ static void wmf_gd_udata_init (wmfAPI* API,wmfUserData_t* userdata)
 }
 
 static void wmf_gd_udata_copy (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
+{	(void)userdata;
+	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
 
 	/* gd_t* gd = (gd_t*) ddata->gd_data; */
 
@@ -186,7 +188,8 @@ static void wmf_gd_udata_copy (wmfAPI* API,wmfUserData_t* userdata)
 }
 
 static void wmf_gd_udata_set (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
+{	(void)userdata;
+	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
 
 	/* gd_t* gd = (gd_t*) ddata->gd_data; */
 
@@ -195,7 +198,8 @@ static void wmf_gd_udata_set (wmfAPI* API,wmfUserData_t* userdata)
 }
 
 static void wmf_gd_udata_free (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
+{	(void)userdata;
+	/* wmf_gd_t* ddata = WMF_GD_GetData (API); */
 
 	/* gd_t* gd = (gd_t*) ddata->gd_data; */
 

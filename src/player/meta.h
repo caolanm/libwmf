@@ -20,7 +20,7 @@
 #ifndef WMFPLAYER_META_H
 #define WMFPLAYER_META_H
 
-static int meta_mapmode (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_mapmode (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	U16 par_U16;
@@ -37,7 +37,7 @@ static int meta_mapmode (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_orgext (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_orgext (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -99,7 +99,7 @@ static int meta_orgext (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_scale (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_scale (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -160,7 +160,7 @@ static int meta_scale (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_moveto (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_moveto (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -176,12 +176,12 @@ static int meta_moveto (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,1);
 	par_U16_y = ParU16 (API,Record,0);
 
-	P->current = L_Coord (API,par_U16_x,par_U16_y);
+	P->current = L_Coord (par_U16_x,par_U16_y);
 
 	return (changed);
 }
 
-static int meta_flood (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_flood (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -208,11 +208,11 @@ static int meta_flood (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_rg = ParU16 (API,Record,1);
 	par_U16_t  = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	flood.pt = wmf_D_Coord_translate (API,l_pt);
 
-	flood.color = rgb (API,par_U16_rg,par_U16_b);
+	flood.color = rgb (par_U16_rg,par_U16_b);
 
 	if (SCAN (API))
 	{	wmf_ipa_color_add (API,&(flood.color));
@@ -247,7 +247,7 @@ static int meta_flood (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_pixel (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_pixel (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -274,11 +274,11 @@ static int meta_pixel (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_b  = ParU16 (API,Record,1);
 	par_U16_rg = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawpixel.pt = wmf_D_Coord_translate (API,l_pt);
 
-	drawpixel.color = rgb (API,par_U16_rg,par_U16_b);
+	drawpixel.color = rgb (par_U16_rg,par_U16_b);
 
 	drawpixel.pixel_width  = ABS (P->dc->pixel_width );
 	drawpixel.pixel_height = ABS (P->dc->pixel_height);
@@ -297,7 +297,7 @@ static int meta_pixel (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_arc (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -329,21 +329,21 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,7);
 	par_U16_y = ParU16 (API,Record,6);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.TL = wmf_D_Coord_translate (API,l_pt);
 
 	par_U16_x = ParU16 (API,Record,5);
 	par_U16_y = ParU16 (API,Record,4);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.BR = wmf_D_Coord_translate (API,l_pt);
 
 	par_U16_x = ParU16 (API,Record,3);
 	par_U16_y = ParU16 (API,Record,2);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.end = wmf_D_Coord_translate (API,l_pt);
 
@@ -357,7 +357,7 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	{	/* start == end: This is probably an ellipse... TODO */
 	}
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.start = wmf_D_Coord_translate (API,l_pt);
 
@@ -576,7 +576,7 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_ellipse (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_ellipse (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -601,14 +601,14 @@ static int meta_ellipse (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,3);
 	par_U16_y = ParU16 (API,Record,2);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.TL = wmf_D_Coord_translate (API,l_pt);
 
 	par_U16_x = ParU16 (API,Record,1);
 	par_U16_y = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawarc.BR = wmf_D_Coord_translate (API,l_pt);
 
@@ -629,7 +629,7 @@ static int meta_ellipse (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_line (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_line (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -656,7 +656,7 @@ static int meta_line (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,1);
 	par_U16_y = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawline.to = wmf_D_Coord_translate (API,l_pt);
 
@@ -679,7 +679,7 @@ static int meta_line (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_lines (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_lines (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -723,7 +723,7 @@ static int meta_lines (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			index++;
 			par_U16_y = ParU16 (API,Record,index);
 			index++;
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
@@ -743,7 +743,7 @@ static int meta_lines (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		index++;
 		par_U16_y = ParU16 (API,Record,index);
 		index++;
-		l_pt = L_Coord (API,par_U16_x,par_U16_y);
+		l_pt = L_Coord (par_U16_x,par_U16_y);
 		polyline.pt[i] = wmf_D_Coord_translate (API,l_pt);
 	}
 
@@ -756,7 +756,7 @@ static int meta_lines (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_polygon (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_polygon (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -800,7 +800,7 @@ static int meta_polygon (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			index++;
 			par_U16_y = ParU16 (API,Record,index);
 			index++;
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
@@ -820,7 +820,7 @@ static int meta_polygon (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		index++;
 		par_U16_y = ParU16 (API,Record,index);
 		index++;
-		l_pt = L_Coord (API,par_U16_x,par_U16_y);
+		l_pt = L_Coord (par_U16_x,par_U16_y);
 		polyline.pt[i] = wmf_D_Coord_translate (API,l_pt);
 	}
 
@@ -833,7 +833,7 @@ static int meta_polygon (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_polygons (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -940,7 +940,7 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			index++;
 			par_U16_y = ParU16 (API,Record,index);
 			index++;
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			D_Coord_Register (API,d_pt,scope);
 		}
@@ -959,7 +959,7 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			index++;
 			par_U16_y = ParU16 (API,&Polygon,index);
 			index++;
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 			polypoly.pt[i][j] = wmf_D_Coord_translate (API,l_pt);
 		}
 		Polygon = OffsetRecord (API,&Polygon,index);
@@ -1095,7 +1095,7 @@ static void polypoly_construct (wmfAPI* API,wmfPolyPoly_t* polypoly,wmfPolyLine_
 	polyline->count++;
 }
 
-static int meta_round (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_round (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1120,14 +1120,14 @@ static int meta_round (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,5);
 	par_U16_y = ParU16 (API,Record,4);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawrect.TL = wmf_D_Coord_translate (API,l_pt);
 
 	par_U16_x = ParU16 (API,Record,3);
 	par_U16_y = ParU16 (API,Record,2);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawrect.BR = wmf_D_Coord_translate (API,l_pt);
 
@@ -1154,7 +1154,7 @@ static int meta_round (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_rect (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_rect (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1179,14 +1179,14 @@ static int meta_rect (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_x = ParU16 (API,Record,3);
 	par_U16_y = ParU16 (API,Record,2);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawrect.TL = wmf_D_Coord_translate (API,l_pt);
 
 	par_U16_x = ParU16 (API,Record,1);
 	par_U16_y = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	drawrect.BR = wmf_D_Coord_translate (API,l_pt);
 
@@ -1210,7 +1210,7 @@ static int meta_rect (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_rgn_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_rgn_brush (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1402,7 +1402,7 @@ static int meta_rgn_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist
 	return (changed);
 }
 
-static int meta_rgn_paint (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_rgn_paint (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1542,7 +1542,7 @@ static int meta_rgn_paint (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist
 	return (changed);
 }
 
-static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_rgn_create (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -1600,7 +1600,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 		return (changed);
 	}
 
-	WmfSetRectRgn (API,region,0);
+	WmfSetRectRgn (region,0);
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,"\t[0x%04x]",Record->function);
@@ -1621,7 +1621,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 		return (changed);
 	}
 
-	WmfSetRectRgn (API,&temp_region,0);
+	WmfSetRectRgn (&temp_region,0);
 
 	end = OffsetRecord (API,Record,10);
 	max_index = 10;
@@ -1665,7 +1665,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 
 			D_Rect (API,&d_r,x1,y1,x2,y2);
 
-			WmfSetRectRgn (API,&temp_region,&d_r);
+			WmfSetRectRgn (&temp_region,&d_r);
 			WmfCombineRgn (API,region,region,&temp_region,RGN_OR);
 		}
 	}
@@ -1675,7 +1675,7 @@ static int meta_rgn_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	return (changed);
 }
 
-static int meta_clip_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_clip_select (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -1737,7 +1737,7 @@ static int meta_clip_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	return (changed);
 }
 
-static int meta_clip_offset (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_clip_offset (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1764,7 +1764,7 @@ static int meta_clip_offset (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	par_U16_x = ParU16 (API,Record,1);
 	par_U16_y = ParU16 (API,Record,0);
 
-	l_pt = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt = L_Coord (par_U16_x,par_U16_y);
 
 	for (i = 0; i < clip->numRects; i++)
 	{	clip->rects[i].TL.x += l_pt.x;
@@ -1812,7 +1812,7 @@ static int meta_clip_offset (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	return (changed);
 }
 
-static int meta_clip_combine (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_clip_combine (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1905,7 +1905,7 @@ static int meta_clip_combine (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrl
 	return (changed);
 }
 
-static int meta_dib_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -1934,7 +1934,7 @@ static int meta_dib_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	double stretch_y;
 
 	if ((Record->function == META_DIBBITBLT) && ((Record->size) == 9)) /* Special case... */
-	{	changed = meta_rop_draw (API,Record,attrlist);
+	{	changed = meta_rop_draw (API,Record);
 		return (changed);
 	}
 
@@ -2060,11 +2060,11 @@ static int meta_dib_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	{	return (changed);
 	}
 
-	l_pt_TL = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt_TL = L_Coord (par_U16_x,par_U16_y);
 
 	bmp_draw.pt = wmf_D_Coord_translate (API,l_pt_TL);
 
-	l_pt = L_Coord (API,par_U16_w,par_U16_h);
+	l_pt = L_Coord (par_U16_w,par_U16_h);
 
 	width  = ABS (l_pt.x);
 	height = ABS (l_pt.y);
@@ -2130,7 +2130,7 @@ static int meta_dib_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_dib_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_dib_brush (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -2222,7 +2222,7 @@ static int meta_dib_brush (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist
 	return (changed);
 }
 
-static int meta_rop_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_rop_draw (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -2287,11 +2287,11 @@ static int meta_rop_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		return (changed);
 	}
 
-	l_pt_TL = L_Coord (API,par_U16_x,par_U16_y);
+	l_pt_TL = L_Coord (par_U16_x,par_U16_y);
 
 	rop_draw.TL = wmf_D_Coord_translate (API,l_pt_TL);
 
-	l_pt = L_Coord (API,par_U16_w,par_U16_h);
+	l_pt = L_Coord (par_U16_w,par_U16_h);
 
 	width  = ABS (l_pt.x);
 	height = ABS (l_pt.y);
@@ -2317,7 +2317,7 @@ static int meta_rop_draw (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_dc_set (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_dc_set (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -2417,7 +2417,7 @@ static int meta_dc_color (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	par_U16_b  = ParU16 (API,Record,1);
 	par_U16_rg = ParU16 (API,Record,0);
 
-	color = rgb (API,par_U16_rg,par_U16_b);
+	color = rgb (par_U16_rg,par_U16_b);
 
 	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
 	{	hash[0] = '#';
@@ -2453,7 +2453,7 @@ static int meta_dc_color (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_dc_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_dc_select (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -2506,7 +2506,7 @@ static int meta_dc_select (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist
 	return (changed);
 }
 
-static int meta_dc_save (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist) /* complete ?? */
+static int meta_dc_save (wmfAPI* API,wmfRecord* Record) /* complete ?? */
 {	int changed = 0;
 
 	wmfPlayer_t* P = (wmfPlayer_t*) API->player_data;
@@ -2523,7 +2523,7 @@ static int meta_dc_save (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist) 
 	return (changed);
 }
 
-static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_dc_restore (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -2615,7 +2615,7 @@ static int meta_dc_restore (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	return (changed);
 }
 
-static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_text (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -2691,7 +2691,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			par_U16_x  = ParU16 (API,Record,(Record->size)-1);
 			par_U16_y  = ParU16 (API,Record,(Record->size)-2);
 
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 		}
 
 		drawtext.pt = wmf_D_Coord_translate (API,l_pt);
@@ -2729,7 +2729,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			par_U16_x  = ParU16 (API,Record,1);
 			par_U16_y  = ParU16 (API,Record,0);
 
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 		}
 
 		drawtext.pt = wmf_D_Coord_translate (API,l_pt);
@@ -2747,14 +2747,14 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			par_U16_x  = ParU16 (API,Record,4); /* Is this right ?? */
 			par_U16_y  = ParU16 (API,Record,5);
 
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 
 			drawtext.TL = wmf_D_Coord_translate (API,l_pt);
 
 			par_U16_x  = ParU16 (API,Record,6); /* Is this right ?? */
 			par_U16_y  = ParU16 (API,Record,7);
 
-			l_pt = L_Coord (API,par_U16_x,par_U16_y);
+			l_pt = L_Coord (par_U16_x,par_U16_y);
 
 			drawtext.BR = wmf_D_Coord_translate (API,l_pt);
 
@@ -2834,9 +2834,9 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 			l_width += lpDx[i];
 		}
 
-		l_pt = L_Coord (API,0,0);
+		l_pt = L_Coord (0,0);
 		t_pt = wmf_D_Coord_translate (API,l_pt);
-		l_pt = L_Coord (API,l_width,0);
+		l_pt = L_Coord (l_width,0);
 		d_pt = wmf_D_Coord_translate (API,l_pt);
 
 		width = d_pt.x - t_pt.x;
@@ -3004,18 +3004,18 @@ static int meta_text (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		{	buffer[0] = str_save[i];
 			buffer[1] = 0;
 
-			l_pt = L_Coord (API,0,0);
+			l_pt = L_Coord (0,0);
 			o_pt = wmf_D_Coord_translate (API,l_pt);
-			l_pt = L_Coord (API,l_width,0);
+			l_pt = L_Coord (l_width,0);
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			d_pt.x -= o_pt.x;
 			d_pt.y -= o_pt.y;
 			drawtext.pt.x = t_pt.x + d_pt.x * cos_theta;
 			drawtext.pt.y = t_pt.y + d_pt.x * sin_theta;
 
-			l_pt = L_Coord (API,0,0);
+			l_pt = L_Coord (0,0);
 			o_pt = wmf_D_Coord_translate (API,l_pt);
-			l_pt = L_Coord (API,lpDx[i],0);
+			l_pt = L_Coord (lpDx[i],0);
 			d_pt = wmf_D_Coord_translate (API,l_pt);
 			d_pt.x -= o_pt.x;
 			d_pt.y -= o_pt.y;
@@ -3141,7 +3141,7 @@ static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 	par_U16_b  = ParU16 (API,Record,4);
 	par_U16_rg = ParU16 (API,Record,3);
 
-	color = rgb (API,par_U16_rg,par_U16_b);
+	color = rgb (par_U16_rg,par_U16_b);
 
 	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
 	{	hash[0] = '#';
@@ -3243,7 +3243,7 @@ static int meta_brush_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrl
 	par_U16_b  = ParU16 (API,Record,2);
 	par_U16_rg = ParU16 (API,Record,1);
 
-	color = rgb (API,par_U16_rg,par_U16_b);
+	color = rgb (par_U16_rg,par_U16_b);
 
 	if ((API->flags & API_ENABLE_EDITING) && ((value == 0) || changed))
 	{	hash[0] = '#';
@@ -3275,7 +3275,7 @@ static int meta_brush_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrl
 	return (changed);
 }
 
-static int meta_font_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_font_create (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
@@ -3399,7 +3399,7 @@ static int meta_font_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrli
 	return (changed);
 }
 
-static int meta_palette_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_palette_create (wmfAPI* API)
 {	int changed = 0;
 
 	wmfPlayer_t* P  = (wmfPlayer_t*) API->player_data;
@@ -3424,7 +3424,7 @@ static int meta_palette_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* att
 	return (changed);
 }
 
-static int meta_delete (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_delete (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	wmfPlayer_t*          P  = (wmfPlayer_t*)          API->player_data;
@@ -3470,7 +3470,7 @@ static int meta_delete (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 	return (changed);
 }
 
-static int meta_unused (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
+static int meta_unused (wmfAPI* API,wmfRecord* Record)
 {	int changed = 0;
 
 	if (SCAN (API) && DIAG (API))

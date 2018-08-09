@@ -339,7 +339,7 @@ wmfRGB* wmf_ipa_color (wmfAPI* API,unsigned long index)
 	return (color->rgb + index);
 }
 
-static wmfRGB rgb (wmfAPI* API,U16 one,U16 two)
+static wmfRGB rgb (U16 one,U16 two)
 {	wmfRGB color;
 
 	color.r = (unsigned char)  (one & 0x00FF);
@@ -356,7 +356,7 @@ static wmfRGB rgb (wmfAPI* API,U16 one,U16 two)
  * 
  * @return Returns \b wmf_white.
  */
-wmfRGB wmf_rgb_white (wmfAPI* API)
+wmfRGB wmf_rgb_white (void)
 {	return (wmf_white);
 }
 
@@ -367,7 +367,7 @@ wmfRGB wmf_rgb_white (wmfAPI* API)
  * 
  * @return Returns \b wmf_black.
  */
-wmfRGB wmf_rgb_black (wmfAPI* API)
+wmfRGB wmf_rgb_black (void)
 {	return (wmf_black);
 }
 
@@ -386,7 +386,8 @@ wmfRGB wmf_rgb_black (wmfAPI* API)
  * @return Returns the color.
  */
 wmfRGB wmf_rgb_color (wmfAPI* API,float red,float green,float blue)
-{	wmfRGB color;
+{	(void)API;
+	wmfRGB color;
 
 	int i_red;
 	int i_green;

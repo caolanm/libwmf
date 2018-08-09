@@ -19,10 +19,8 @@
 
 static void wmf_svg_rop_draw (wmfAPI* API,wmfROP_Draw_t* rop_draw)
 {	/* wmf_svg_t* ddata = WMF_SVG_GetData (API); */
-
+	(void)rop_draw;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[svg_]rop_draw");
-
-	
 }
 
 /* TODO ?? Care about bmp_draw->type

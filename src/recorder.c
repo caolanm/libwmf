@@ -1665,7 +1665,7 @@ int wmf_canvas_bitmap (wmfAPI * API, wmfCanvas * canvas,
       WMF_ERROR (API, "Coordinate out of range! (y > 0x7fff)");
       return -1;
     }
-  if ((bmp_size = s_bmp_query (API, buffer, length, &bmp_width, &bmp_height)) == 0)
+  if ((bmp_size = s_bmp_query ()) == 0)
     {
       WMF_ERROR (API, "Bad bitmap!");
       return -1;
@@ -1700,9 +1700,7 @@ int wmf_canvas_bitmap (wmfAPI * API, wmfCanvas * canvas,
   return 0;
 }
 
-static unsigned long s_bmp_query (wmfAPI * API,
-				  const unsigned char * buffer, unsigned long length,
-				  unsigned short * bmp_width, unsigned short * bmp_height)
+static unsigned long s_bmp_query (void)
 {
   return 0;
 }

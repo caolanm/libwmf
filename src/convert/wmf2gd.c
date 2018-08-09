@@ -221,7 +221,8 @@ void wmf2gd_init (PlotData* pdata,int argc,char** argv)
 }
 
 void wmf2gd_help (PlotData* pdata)
-{	fputs ("\
+{	(void)pdata;
+	fputs ("\
 Usage: wmf2gd [OPTION]... [-o <file.png>] <file.wmf>\n\
   or:  wmf2gd [OPTION]... [-t jpeg] [-o <file.jpg>] <file.wmf>\n\
   or:  wmf2gd [OPTION]... --auto <file1.wmf> [<file2.wmf> ...]\n\
@@ -432,7 +433,8 @@ int main (int argc,char** argv)
 }
 
 int explicit_wmf_error (char* str,wmf_error_t err)
-{	int status = 0;
+{	(void)str;
+	int status = 0;
 
 	switch (err)
 	{
@@ -504,7 +506,8 @@ int explicit_wmf_error (char* str,wmf_error_t err)
 }
 
 int wmf2gd_status (void* context,float p)
-{	int percent;
+{	(void)context;
+	int percent;
 
 	percent = (int) (p * 100);
 

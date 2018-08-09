@@ -31,7 +31,7 @@ static void ipa_font_add_ps (wmfAPI*,wmfMapping*);
 static void ipa_font_add_cache (wmfAPI*,wmfFT_CacheEntry*);
 static void ipa_font_add_api (wmfAPI*,char*);
 
-static float ipa_char_position (wmfAPI*,wmfFont*,char*,char*);
+static float ipa_char_position (wmfFont*,char*,char*);
 
 static wmfXML_FontInfo* ipa_font_sys_map (wmfAPI*,wmfFont*);
 static FT_Face          ipa_font_sys_face (wmfAPI*,wmfFont*,wmfXML_FontInfo*);
@@ -64,7 +64,7 @@ struct _XML2_FontData
 
 static void            ipa_font_gs_file (wmfAPI* API,wmfGS_FontData* FD,char* file);
 static void            ipa_font_gs_add (wmfAPI* API,wmfGS_FontData* FD,char* name,char* alias);
-static char*           ipa_font_gs_alias (wmfAPI* API,wmfGS_FontData* FD,char* name);
+static char*           ipa_font_gs_alias (wmfGS_FontData* FD,char* name);
 static char*           ipa_font_gs_readline (wmfAPI* API,FILE* in);
 static wmfGS_FontInfo* ipa_font_gs_map (wmfAPI* API,wmfFont* font);
 static FT_Face         ipa_font_gs_face (wmfAPI* API,wmfFont* font,wmfGS_FontInfo* FI);

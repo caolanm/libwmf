@@ -18,7 +18,8 @@
 
 
 static void wmf_x_flood_interior (wmfAPI* API,wmfFlood_t* flood)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)flood;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]flood_interior");
 
@@ -26,7 +27,8 @@ static void wmf_x_flood_interior (wmfAPI* API,wmfFlood_t* flood)
 }
 
 static void wmf_x_flood_exterior (wmfAPI* API,wmfFlood_t* flood)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)flood;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]flood_exterior");
 

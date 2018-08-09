@@ -86,8 +86,8 @@ extern unsigned int wmf_ipa_page_height (wmfAPI*,wmf_page_t);
 
 /* Other useful functions
  */
-extern wmfRGB wmf_rgb_white (wmfAPI*);
-extern wmfRGB wmf_rgb_black (wmfAPI*);
+extern wmfRGB wmf_rgb_white (void);
+extern wmfRGB wmf_rgb_black (void);
 extern wmfRGB wmf_rgb_color (wmfAPI*,float,float,float);
 
 /* Structure definitions

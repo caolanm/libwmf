@@ -66,6 +66,8 @@ debug (const char *format,...)
   vfprintf (stdout, format, args);
   fprintf (stdout, "\n");
   va_end (args);
+#else
+  (void)format;
 #endif
 }
 

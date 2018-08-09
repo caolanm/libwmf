@@ -138,7 +138,6 @@ static int s_set_textcolor  (wmfAPI *, wmfConstruct *);
 static int s_moveto (wmfAPI *, wmfConstruct *, unsigned short, unsigned short);
 static int s_lineto (wmfAPI *, wmfConstruct *, unsigned short, unsigned short);
 
-static unsigned long s_bmp_query (wmfAPI *, const unsigned char *, unsigned long,
-				  unsigned short *, unsigned short *);
+static unsigned long s_bmp_query (void);
 
 #endif /* ! WMFRECORDER_H */

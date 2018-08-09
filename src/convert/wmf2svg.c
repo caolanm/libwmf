@@ -243,7 +243,8 @@ void wmf2svg_init (PlotData* pdata,int argc,char** argv)
 }
 
 void wmf2svg_help (PlotData* pdata)
-{	fputs ("\
+{	(void)pdata;
+	fputs ("\
 Usage: wmf2svg [OPTION]... [-o <file.svg>] <file.wmf>\n\
   or:  wmf2svg [OPTION]... --auto <file1.wmf> [<file2.wmf> ...]\n\
 Convert metafile image to W3C's scaleable vector graphic (SVG) format.\n\
@@ -461,7 +462,8 @@ int main (int argc,char** argv)
 }
 
 int explicit_wmf_error (char* str,wmf_error_t err)
-{	int status = 0;
+{	(void)str;
+	int status = 0;
 
 	switch (err)
 	{

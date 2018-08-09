@@ -326,7 +326,7 @@ find_biggest_volume (boxptr boxlist, int numboxes)
 
 
 static void
-update_box (gdImagePtr im, my_cquantize_ptr cquantize, boxptr boxp)
+update_box (my_cquantize_ptr cquantize, boxptr boxp)
 /* Shrink the min/max bounds of a box to enclose only nonzero elements, */
 /* and recompute its volume and population */
 {
@@ -502,7 +502,7 @@ have_c3max:
 
 
 static int
-median_cut (gdImagePtr im, my_cquantize_ptr cquantize,
+median_cut (my_cquantize_ptr cquantize,
 	    boxptr boxlist, int numboxes,
 	    int desired_colors)
 /* Repeatedly select and split the largest box until we have enough boxes */
@@ -592,8 +592,8 @@ median_cut (gdImagePtr im, my_cquantize_ptr cquantize,
 	  break;
 	}
       /* Update stats for boxes */
-      update_box (im, cquantize, b1);
-      update_box (im, cquantize, b2);
+      update_box (cquantize, b1);
+      update_box (cquantize, b2);
       numboxes++;
     }
   return numboxes;
@@ -693,9 +693,9 @@ select_colors (gdImagePtr im, my_cquantize_ptr cquantize, int desired_colors)
   boxlist[0].c3min = 0;
   boxlist[0].c3max = gdAlphaMax >> C3_SHIFT;
   /* Shrink it to actually-used volume and set its statistics */
-  update_box (im, cquantize, &boxlist[0]);
+  update_box (cquantize, &boxlist[0]);
   /* Perform median-cut to produce final box list */
-  numboxes = median_cut (im, cquantize, boxlist, numboxes, desired_colors);
+  numboxes = median_cut (cquantize, boxlist, numboxes, desired_colors);
   /* Compute the representative color for each box, fill colormap */
   for (i = 0; i < numboxes; i++)
     compute_color (im, cquantize, &boxlist[i], i);
@@ -790,7 +790,7 @@ select_colors (gdImagePtr im, my_cquantize_ptr cquantize, int desired_colors)
  */
 
 static int
-find_nearby_colors (gdImagePtr im, my_cquantize_ptr cquantize,
+find_nearby_colors (gdImagePtr im,
 		int minc0, int minc1, int minc2, int minc3, int colorlist[])
 /* Locate the colormap entries close enough to an update box to be candidates
  * for the nearest entry to some cell(s) in the update box.  The update box
@@ -977,7 +977,7 @@ find_nearby_colors (gdImagePtr im, my_cquantize_ptr cquantize,
 
 
 static void
-find_best_colors (gdImagePtr im, my_cquantize_ptr cquantize,
+find_best_colors (gdImagePtr im,
 		  int minc0, int minc1, int minc2, int minc3,
 		  int numcolors, int colorlist[], int bestcolor[])
 /* Find the closest colormap entry for each cell in the update box,
@@ -1106,10 +1106,10 @@ fill_inverse_cmap (gdImagePtr im, my_cquantize_ptr cquantize,
   /* Determine which colormap entries are close enough to be candidates
    * for the nearest entry to some cell in the update box.
    */
-  numcolors = find_nearby_colors (im, cquantize, minc0, minc1, minc2, minc3, colorlist);
+  numcolors = find_nearby_colors (im, minc0, minc1, minc2, minc3, colorlist);
 
   /* Determine the actually nearest colors. */
-  find_best_colors (im, cquantize, minc0, minc1, minc2, minc3, numcolors, colorlist,
+  find_best_colors (im, minc0, minc1, minc2, minc3, numcolors, colorlist,
 		    bestcolor);
 
   /* Save the best color numbers (plus 1) in the main cache array */
@@ -1445,7 +1445,7 @@ pass2_fs_dither (gdImagePtr im, my_cquantize_ptr cquantize)
  */
 
 static int
-init_error_limit (gdImagePtr im, my_cquantize_ptr cquantize)
+init_error_limit (my_cquantize_ptr cquantize)
 /* Allocate and fill in the error_limiter table */
 {
   int *table;
@@ -1558,7 +1558,7 @@ gdImageTrueColorToPalette (gdImagePtr im, int dither, int colorsWanted)
 	}
     }
   cquantize->fserrors = (FSERRPTR) gdMalloc (4 * sizeof (FSERROR));
-  init_error_limit (im, cquantize);
+  init_error_limit (cquantize);
   arraysize = (size_t) ((im->sx + 2) *
 			(4 * sizeof (FSERROR)));
   /* Allocate Floyd-Steinberg workspace. */

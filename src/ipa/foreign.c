@@ -72,7 +72,8 @@ void wmf_foreign_function (wmfAPI* API)
 }
 
 int wmf_image_load_png (wmfAPI* API,FILE* png_in,wmfImage* image)
-{	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
+{	(void)API;
+	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
 #ifdef HAVE_GD
 	gdImage* gd_image = 0;
 #ifndef HAVE_LIBPNG
@@ -96,7 +97,8 @@ int wmf_image_load_png (wmfAPI* API,FILE* png_in,wmfImage* image)
 }
 
 int wmf_image_load_jpg (wmfAPI* API,FILE* jpg_in,wmfImage* image)
-{	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
+{	(void)API;
+	/* wmf_foreign_t* ddata = WMF_FOREIGN_GetData (API); */
 #ifdef HAVE_GD
 	gdImage* gd_image = 0;
 #ifndef HAVE_LIBJPEG

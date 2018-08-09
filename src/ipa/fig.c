@@ -192,34 +192,26 @@ void wmf_fig_function (wmfAPI* API)
 #ifndef WITHOUT_LAYERS
 static void wmf_fig_udata_init (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]udata_init");
-
-	
 }
 
 static void wmf_fig_udata_copy (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]udata_copy");
-
-	
 }
 
 static void wmf_fig_udata_set (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]udata_set");
-
-	
 }
 
 static void wmf_fig_udata_free (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_fig_t* ddata = WMF_FIG_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[fig_]udata_free");
-
-	
 }
 
 static int fig_brushstyle (wmfAPI* API,wmfDC* dc)
@@ -294,7 +286,8 @@ static int fig_brushstyle (wmfAPI* API,wmfDC* dc)
 }
 
 static int fig_linestyle (wmfAPI* API,wmfDC* dc)
-{	wmfPen* pen = WMF_DC_PEN (dc);
+{	(void)API;
+	wmfPen* pen = WMF_DC_PEN (dc);
 
 	int linestyle = SOLID_LINE;
 
@@ -328,7 +321,8 @@ static int fig_linestyle (wmfAPI* API,wmfDC* dc)
 }
 
 static int fig_joinstyle (wmfAPI* API,wmfDC* dc)
-{	wmfPen* pen = WMF_DC_PEN (dc);
+{	(void)API;
+	wmfPen* pen = WMF_DC_PEN (dc);
 
 	int joinstyle = JOIN_ROUND;
 
@@ -352,7 +346,8 @@ static int fig_joinstyle (wmfAPI* API,wmfDC* dc)
 }
 
 static int fig_capstyle (wmfAPI* API,wmfDC* dc)
-{	wmfPen* pen = WMF_DC_PEN (dc);
+{	(void)API;
+	wmfPen* pen = WMF_DC_PEN (dc);
 
 	int capstyle = CAP_ROUND;
 

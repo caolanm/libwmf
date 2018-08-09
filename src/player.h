@@ -105,11 +105,11 @@ static void SetDefaults (wmfAPI*,wmfPen*,wmfBrush*,wmfFont*);
 
 /* In: color.h
  */
-static wmfRGB rgb (wmfAPI*,U16,U16);
+static wmfRGB rgb (U16,U16);
 
 /* In: coord.h
  */
-static wmfL_Coord L_Coord (wmfAPI*,U16,U16);
+static wmfL_Coord L_Coord (U16,U16);
 
 static void D_Rect (wmfAPI*,wmfD_Rect*,U16,U16,U16,U16);
 
@@ -127,11 +127,11 @@ static wmfD_Coord wmf_D_Coord_translate (wmfAPI*,wmfL_Coord);
  */
 static wmfD_Rect* rgn_memchk (wmfAPI*,wmfRegion*);
 
-static unsigned int REGION_Coalesce (wmfAPI* API,wmfRegion *pReg,unsigned int prevStart,unsigned int curStart);
+static unsigned int REGION_Coalesce (wmfRegion *pReg,unsigned int prevStart,unsigned int curStart);
 
 static void REGION_RegionOp (wmfAPI*,wmfRegion*,wmfRegion*,wmfRegion*,pProcO,pProcNonO,pProcNonO);
 
-static void REGION_SetExtents (wmfAPI*,wmfRegion*);
+static void REGION_SetExtents (wmfRegion*);
 
 static void REGION_CopyRegion (wmfAPI*,wmfRegion*,wmfRegion*);
 
@@ -146,7 +146,7 @@ static void REGION_SubtractNonO1 (wmfAPI*,wmfRegion*,wmfD_Rect*,wmfD_Rect*,float
 static void REGION_IntersectRegion (wmfAPI*,wmfRegion*,wmfRegion*,wmfRegion*);
 static void REGION_IntersectO (wmfAPI*,wmfRegion*,wmfD_Rect*,wmfD_Rect*,wmfD_Rect*,wmfD_Rect*,float,float);
 
-static void WmfSetRectRgn (wmfAPI*,wmfRegion*,wmfD_Rect*);
+static void WmfSetRectRgn (wmfRegion*,wmfD_Rect*);
 static void WmfCombineRgn (wmfAPI*,wmfRegion*,wmfRegion*,wmfRegion*,U16);
 
 static void rect_merge (wmfAPI*,wmfRegion*,wmfD_Rect*,float,float);
@@ -176,41 +176,41 @@ static wmfRecord OffsetRecord (wmfAPI*,wmfRecord*,unsigned long);
 /* In: meta.h
  */
 
-static int meta_mapmode (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_orgext (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_scale (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_moveto (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_flood (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_pixel (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_arc (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_ellipse (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_line (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_lines (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_polygon (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_polygons (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_round (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_rect (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_rgn_brush (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_rgn_paint (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_rgn_create (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_clip_select (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_clip_offset (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_clip_combine (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dib_draw (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dib_brush (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_rop_draw (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dc_set (wmfAPI*,wmfRecord*,wmfAttributes*);
+static int meta_mapmode (wmfAPI*,wmfRecord*);
+static int meta_orgext (wmfAPI*,wmfRecord*);
+static int meta_scale (wmfAPI*,wmfRecord*);
+static int meta_moveto (wmfAPI*,wmfRecord*);
+static int meta_flood (wmfAPI*,wmfRecord*);
+static int meta_pixel (wmfAPI*,wmfRecord*);
+static int meta_arc (wmfAPI*,wmfRecord*);
+static int meta_ellipse (wmfAPI*,wmfRecord*);
+static int meta_line (wmfAPI*,wmfRecord*);
+static int meta_lines (wmfAPI*,wmfRecord*);
+static int meta_polygon (wmfAPI*,wmfRecord*);
+static int meta_polygons (wmfAPI*,wmfRecord*);
+static int meta_round (wmfAPI*,wmfRecord*);
+static int meta_rect (wmfAPI*,wmfRecord*);
+static int meta_rgn_brush (wmfAPI*,wmfRecord*);
+static int meta_rgn_paint (wmfAPI*,wmfRecord*);
+static int meta_rgn_create (wmfAPI*,wmfRecord*);
+static int meta_clip_select (wmfAPI*,wmfRecord*);
+static int meta_clip_offset (wmfAPI*,wmfRecord*);
+static int meta_clip_combine (wmfAPI*,wmfRecord*);
+static int meta_dib_draw (wmfAPI*,wmfRecord*);
+static int meta_dib_brush (wmfAPI*,wmfRecord*);
+static int meta_rop_draw (wmfAPI*,wmfRecord*);
+static int meta_dc_set (wmfAPI*,wmfRecord*);
 static int meta_dc_color (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dc_select (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dc_save (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_dc_restore (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_text (wmfAPI*,wmfRecord*,wmfAttributes*);
+static int meta_dc_select (wmfAPI*,wmfRecord*);
+static int meta_dc_save (wmfAPI*,wmfRecord*);
+static int meta_dc_restore (wmfAPI*,wmfRecord*);
+static int meta_text (wmfAPI*,wmfRecord*);
 static int meta_pen_create (wmfAPI*,wmfRecord*,wmfAttributes*);
 static int meta_brush_create (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_font_create (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_palette_create (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_delete (wmfAPI*,wmfRecord*,wmfAttributes*);
-static int meta_unused (wmfAPI*,wmfRecord*,wmfAttributes*);
+static int meta_font_create (wmfAPI*,wmfRecord*);
+static int meta_palette_create (wmfAPI*);
+static int meta_delete (wmfAPI*,wmfRecord*);
+static int meta_unused (wmfAPI*,wmfRecord*);
 
 static void polypoly_construct (wmfAPI*,wmfPolyPoly_t*,wmfPolyLine_t*,U16);
 

@@ -155,28 +155,32 @@ void wmf_x_function (wmfAPI* API)
 }
 
 static void wmf_x_udata_init (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)userdata;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]udata_init");
 
 }
 
 static void wmf_x_udata_copy (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)userdata;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]udata_copy");
 
 }
 
 static void wmf_x_udata_set (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)userdata;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]udata_set");
 
 }
 
 static void wmf_x_udata_free (wmfAPI* API,wmfUserData_t* userdata)
-{	/* wmf_x_t* ddata = WMF_X_GetData (API); */
+{	(void)userdata;
+	/* wmf_x_t* ddata = WMF_X_GetData (API); */
 
 	WMF_DEBUG (API,"wmf_[x_]udata_free");
 

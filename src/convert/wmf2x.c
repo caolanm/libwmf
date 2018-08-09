@@ -294,7 +294,8 @@ void wmf2x_init (PlotData* pdata,int argc,char** argv)
 }
 
 void wmf2x_help (PlotData* pdata)
-{	fputs ("\
+{	(void)pdata;
+	fputs ("\
 Usage: wmf2x [OPTION]... <file.wmf>\n\
 Display metafile image.\n\
 \n\
@@ -405,7 +406,8 @@ int main (int argc,char** argv)
 }
 
 int explicit_wmf_error (char* str,wmf_error_t err)
-{	int status = 0;
+{	(void)str;
+	int status = 0;
 
 	switch (err)
 	{

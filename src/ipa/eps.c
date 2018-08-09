@@ -227,34 +227,26 @@ static void wmf_eps_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 
 static void wmf_eps_udata_init (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_eps_t* ddata = WMF_EPS_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[eps_]udata_init");
-
-	
 }
 
 static void wmf_eps_udata_copy (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_eps_t* ddata = WMF_EPS_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[eps_]udata_copy");
-
-	
 }
 
 static void wmf_eps_udata_set (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_eps_t* ddata = WMF_EPS_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[eps_]udata_set");
-
-	
 }
 
 static void wmf_eps_udata_free (wmfAPI* API,wmfUserData_t* user_data)
 {	/* wmf_eps_t* ddata = WMF_EPS_GetData (API); */
-
+	(void)user_data;
 	WMF_DEBUG (API,"~~~~~~~~wmf_[eps_]udata_free");
-
-	
 }
 
 /* Write out postscript path, *minus* the ultimate `fill', then call eps_path_fill

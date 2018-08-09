@@ -44,7 +44,7 @@ static wmfD_Rect* rgn_memchk (wmfAPI* API,wmfRegion* rgn)
 	&& ((r1)->BR.y > (r2)->TL.y) \
 	&& ((r1)->TL.y < (r2)->BR.y) )
 
-static void WmfSetRectRgn (wmfAPI* API,wmfRegion* rgn,wmfD_Rect* rect)
+static void WmfSetRectRgn (wmfRegion* rgn,wmfD_Rect* rect)
 {	if ((rect == 0) || (rect->TL.x == rect->BR.x) || (rect->TL.y == rect->BR.y)) /* EMPTY_REGION (rgn); */
 	{	rgn->extents.TL.x = 0;
 		rgn->extents.TL.y = 0;
@@ -335,7 +335,7 @@ static void REGION_RegionOp (
  * inconsiderable cost for function calls, so...
  */
 		if (newReg->numRects != curBand)
-		{	prevBand = REGION_Coalesce (API,newReg,prevBand,curBand);
+		{	prevBand = REGION_Coalesce (newReg,prevBand,curBand);
 		}
 
 /* Now see if we've hit an intersecting band. The two bands only
@@ -348,7 +348,7 @@ static void REGION_RegionOp (
 		}
 
 		if (newReg->numRects != curBand)
-		{	prevBand = REGION_Coalesce (API,newReg,prevBand,curBand);
+		{	prevBand = REGION_Coalesce (newReg,prevBand,curBand);
 		}
 
 /* If we've finished with a band (bottom == ybot) we skip forward
@@ -386,7 +386,7 @@ static void REGION_RegionOp (
 	}
 
 	if (newReg->numRects != curBand)
-	{	REGION_Coalesce (API,newReg,prevBand,curBand);
+	{	REGION_Coalesce (newReg,prevBand,curBand);
 	}
 
 /* A bit of cleanup. To keep regions from growing without bound,
@@ -433,7 +433,6 @@ static void REGION_RegionOp (
  *
  */
 static unsigned int REGION_Coalesce (
-	wmfAPI* API,
 	wmfRegion* pReg,           /* Region to coalesce */
 	unsigned int prevStart,    /* Index of start of previous band */
 	unsigned int curStart      /* Index of start of current band */
@@ -749,7 +748,7 @@ static void REGION_SubtractRegion (
  * way there's no checking against rectangles that will be nuked
  * due to coalescing, so we have to examine fewer rectangles.
  */
-	REGION_SetExtents (API,regD);
+	REGION_SetExtents (regD);
 	regD->type = ((regD->numRects) ? COMPLEXREGION : NULLREGION);
 }
 
@@ -879,7 +878,6 @@ static void REGION_SubtractO (
  *           Re-calculate the extents of a region
  */
 static void REGION_SetExtents (
-	wmfAPI* API,
 	wmfRegion* pReg
 )
 {	wmfD_Rect* pRect;
@@ -942,7 +940,7 @@ static void REGION_IntersectRegion (
  * way there's no checking against rectangles that will be nuked
  * due to coalescing, so we have to examine fewer rectangles.
  */
-	REGION_SetExtents (API,newReg);
+	REGION_SetExtents (newReg);
 
 	newReg->type = ((newReg->numRects) ? COMPLEXREGION : NULLREGION);
 }
