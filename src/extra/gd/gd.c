@@ -2213,7 +2213,7 @@ gdImageCreateFromXbm (FILE * fd)
   /* The X protocol request CreatePixmap puts an upper bound
      of 16 bit to the size.
      see, e.g. moz#424333, fdo#48961, rhbz#1086714 */
-  if (w > SHRT_MAX || h > SHRT_MAX)
+  if (w < 0 || w > SHRT_MAX || h < 0 || h > SHRT_MAX)
     {
         return 0;
     }
