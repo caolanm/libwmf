@@ -108,7 +108,7 @@ static void wmf_fig_device_begin (wmfAPI* API)
 			page_height -= 144;
 		}
 
-		if ((ddata->fig_width > page_width) || (ddata->fig_height > page_height) || WMF_FIG_MAXPECT)
+		if ((ddata->fig_width > page_width) || (ddata->fig_height > page_height) || (ddata->flags & WMF_FIG_MAXPECT))
 		{	ratio_def = def_height / def_width;
 			ratio_page = (float) page_height / (float) page_width;
 
