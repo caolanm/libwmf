@@ -72,6 +72,8 @@ for i in $font_dir; do
 				font_glyphs=$font_cwd/$font_root.pfa
 			elif test -r $font_cwd/$font_root.pfb; then
 				font_glyphs=$font_cwd/$font_root.pfb
+			elif test -r $font_cwd/$font_root.t1; then
+				font_glyphs=$font_cwd/$font_root.t1
 			fi
 			if test "x$font_glyphs" != "x"; then
 				echo font: $font_root
