@@ -191,7 +191,6 @@ static void setbrushstyle (wmfAPI* API,wmfDC* dc)
 
 	wmfBrush* brush = 0;
 
-	int opacity;
 	int fill_style;
 
 	U16 i;
@@ -245,7 +244,7 @@ static void setbrushstyle (wmfAPI* API,wmfDC* dc)
 
 		for (j = 0; j < bmp->height; j++)
 		{	for (i = 0; i < bmp->width; i++)
-			{	opacity = wmf_ipa_bmp_color (API,bmp,&pixel,i,j);
+			{	wmf_ipa_bmp_color (API,bmp,&pixel,i,j);
 
 				XSetForeground (ddata->display,ddata->gc,get_color (API,&pixel));
 

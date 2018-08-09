@@ -56,7 +56,7 @@
 
 @BOTTOM@
 
-/* If any *printf/*scanf functions are missing, cover them with trio functions */
+/* If any *printf / *scanf functions are missing, cover them with trio functions */
 #define TRIO_REPLACE_STDIO 1
 
 #endif /* ! LIBWMF_CONFIG_H */

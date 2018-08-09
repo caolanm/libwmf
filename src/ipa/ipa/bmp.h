@@ -988,8 +988,6 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 
 	BMPData* data = 0;
 
-	int byte;
-
 	long start_position = 0;
 
 	unsigned char packet[4];
@@ -1043,7 +1041,7 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 
 		bmp_info.colors_important = ReadBlobLSBLong (src);
 
-		for (u = 0; u < (bmp_info.size - 40); u++) byte = ReadBlobByte (src);
+		for (u = 0; u < (bmp_info.size - 40); u++) ReadBlobByte (src);
 
 		if ( (bmp_info.compression == 3)
 		  && ((bmp_info.bits_per_pixel == 16) || (bmp_info.bits_per_pixel == 32)) )
@@ -1124,7 +1122,7 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 	}
 
 	while (TellBlob (src) < (long) (start_position + bmp_info.offset_bits))
-	{	byte = ReadBlobByte (src);
+	{	ReadBlobByte (src);
 	}
 
 	/* Read image data. */

@@ -301,7 +301,6 @@ static char* svg_color_closest (wmfRGB* rgb)
 static void svg_style_fill (wmfAPI* API,wmfDC* dc)
 {	wmf_svg_t* ddata = WMF_SVG_GetData (API);
 
-	wmfRGB* bg_color;
 	wmfRGB* brush_color;
 
 	wmfBMP* brush_bmp;
@@ -310,10 +309,8 @@ static void svg_style_fill (wmfAPI* API,wmfDC* dc)
 
 	unsigned int fill_opaque;
 	unsigned int fill_polyfill;
-	unsigned int fill_ROP;
 
 	unsigned int brush_style;
-	unsigned int brush_hatch;
 
 	wmfStream* out = ddata->out;
 
@@ -323,14 +320,10 @@ static void svg_style_fill (wmfAPI* API,wmfDC* dc)
 
 	fill_opaque   = (unsigned int) WMF_DC_OPAQUE (dc);
 	fill_polyfill = (unsigned int) WMF_DC_POLYFILL (dc);
-	fill_ROP      = (unsigned int) WMF_DC_ROP (dc);
-
-	bg_color = WMF_DC_BACKGROUND (dc);
 
 	brush = WMF_DC_BRUSH (dc);
 
 	brush_style = (unsigned int) WMF_BRUSH_STYLE (brush);
-	brush_hatch = (unsigned int) WMF_BRUSH_HATCH (brush);
 
 	brush_color = WMF_BRUSH_COLOR (brush);
 
@@ -498,7 +491,6 @@ static void svg_style_stroke (wmfAPI* API,wmfDC* dc)
 	unsigned int pen_style;
 	unsigned int pen_endcap;
 	unsigned int pen_join;
-	unsigned int pen_type;
 
 	wmfStream* out = ddata->out;
 
@@ -516,7 +508,6 @@ static void svg_style_stroke (wmfAPI* API,wmfDC* dc)
 	pen_style  = (unsigned int) WMF_PEN_STYLE (pen);
 	pen_endcap = (unsigned int) WMF_PEN_ENDCAP (pen);
 	pen_join   = (unsigned int) WMF_PEN_JOIN (pen);
-	pen_type   = (unsigned int) WMF_PEN_TYPE (pen);
 
 	if (pen_style == PS_NULL)
 	{	wmf_stream_printf (API,out,"stroke:none");

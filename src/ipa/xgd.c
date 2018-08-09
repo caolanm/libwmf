@@ -224,8 +224,6 @@ static int setbrushstyle (wmfAPI* API,wmfDC* dc)
 
 	int brushstyle;
 
-	int opacity;
-
 	unsigned int x;
 	unsigned int y;
 
@@ -344,7 +342,7 @@ static int setbrushstyle (wmfAPI* API,wmfDC* dc)
 		if (gd->brush.image)
 		{	for (y = 0; y < (unsigned int) gd->brush.height; y++)
 			{	for (x = 0; x < (unsigned int) gd->brush.width; x++)
-				{	opacity = wmf_ipa_bmp_color (API,bmp,&pixel,x,y);
+				{	wmf_ipa_bmp_color (API,bmp,&pixel,x,y);
 
 					fg = gdImageColorResolve (gd->brush.image,pixel.r,pixel.g,pixel.b);
 
