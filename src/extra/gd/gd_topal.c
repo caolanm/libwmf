@@ -1601,12 +1601,10 @@ gdImageTrueColorToPalette (gdImagePtr im, int dither, int colorsWanted)
   if (cquantize->transparentIsPresent)
     {
       int mt = -1;
-      int mtIndex = -1;
       for (i = 0; (i < im->colorsTotal); i++)
 	{
 	  if (im->alpha[i] > mt)
 	    {
-	      mtIndex = i;
 	      mt = im->alpha[i];
 	    }
 	}
