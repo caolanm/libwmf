@@ -775,7 +775,7 @@ TrioPreprocess(int type,
 {
 #if defined(TRIO_ERRORS)
   /* Count the number of times a parameter is referenced */
-  unsigned short usedEntries[MAX_PARAMETERS];
+  unsigned short usedEntries[MAX_PARAMETERS + 1];
 #endif
   /* Parameter counters */
   int parameterPosition;
