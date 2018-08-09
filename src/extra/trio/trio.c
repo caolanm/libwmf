@@ -1154,6 +1154,11 @@ TrioPreprocess(int type,
 	    }
 	  if (flags & FLAGS_PRECISION_PARAMETER)
 	    {
+	      if (precision < 0 || precision >= MAX_PARAMETERS)
+	        {
+	          /* Bail out completely to make the error more obvious */
+	          return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+	        }
 #if defined(TRIO_ERRORS)
 	      usedEntries[precision] += 1;
 #endif
@@ -1163,6 +1168,11 @@ TrioPreprocess(int type,
 	    }
 	  if (flags & FLAGS_BASE_PARAMETER)
 	    {
+	      if (base < 0 || base >= MAX_PARAMETERS)
+	        {
+	          /* Bail out completely to make the error more obvious */
+	          return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+	        }
 #if defined(TRIO_ERRORS)
 	      usedEntries[base] += 1;
 #endif
@@ -1172,7 +1182,7 @@ TrioPreprocess(int type,
 	    }
 	  if (flags & FLAGS_SIZE_PARAMETER)
 	    {
-	      if (varsize < 0)
+	      if (varsize < 0 || varsize >= MAX_PARAMETERS)
 	      {
 	        /* Bail out completely to make the error more obvious */
 	        return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
@@ -1336,16 +1346,21 @@ TrioPreprocess(int type,
 			    parameters[pos].flags = FLAGS_USER_DEFINED;
 			    /* Adjust parameters for insertion of new one */
 			    pos++;
+# if defined(TRIO_ERRORS)
 			    if(currentParam >= MAX_PARAMETERS)
 			      {
 			        /* Bail out completely to make the error more obvious */
 			        return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
 			      }
-# if defined(TRIO_ERRORS)
 			    usedEntries[currentParam] += 1;
 # endif
 			    parameters[pos].type = FORMAT_USER_DEFINED;
 			    currentParam++;
+			    if(currentParam >= MAX_PARAMETERS)
+			      {
+			        /* Bail out completely to make the error more obvious */
+			        return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+			      }
 			    indices[currentParam] = pos;
 			    if (currentParam > maxParam)
 			      maxParam = currentParam;
@@ -1384,6 +1399,12 @@ TrioPreprocess(int type,
 	    }
 
 #if defined(TRIO_ERRORS)
+	  if(currentParam >= MAX_PARAMETERS)
+	    {
+	      /* Bail out completely to make the error more obvious */
+	      return TRIO_ERROR_RETURN(TRIO_ETOOMANY, index);
+	    }
+
 	  /*  Count the number of times this entry has been used */
 	  usedEntries[currentParam] += 1;
 #endif
