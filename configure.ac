@@ -759,15 +759,14 @@ AC_ARG_WITH(docdir,[  --with-docdir=DIR       install documentation in DIR],[
 	fi
 ])
 
-#AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
-#	WMF_FONTDIR=$withval
-#],[	if test "x$prefix" = "xNONE"; then
-#		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
-#	else
-#		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
-#	fi
-#])
-WMF_FONTDIR=$datadir/$PACKAGE/fonts
+AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
+	WMF_FONTDIR=$withval
+],[	if test "x$prefix" = "xNONE"; then
+		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
+	else
+		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
+	fi
+])
 
 AC_ARG_WITH(sysfontmap,[  --with-sysfontmap=FILE  [default is /usr/share/fonts/fontmap]],[
 	WMF_SYS_FONTMAP=$withval

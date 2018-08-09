@@ -829,6 +829,7 @@ with_jpeg
 with_sys_gd
 enable_gd
 with_docdir
+with_fontdir
 with_sysfontmap
 with_xtrafontmap
 with_gsfontmap
@@ -1508,6 +1509,7 @@ Optional Packages:
   --with-jpeg=DIR         use libjpeg in DIR
   --with-sys-gd=DIR       use system GD in DIR (if compatible)
   --with-docdir=DIR       install documentation in DIR
+  --with-fontdir=DIR      install Type1 fonts in DIR
   --with-sysfontmap=FILE  default is /usr/share/fonts/fontmap
   --with-xtrafontmap=FILE non-system XML fontmap
   --with-gsfontmap=FILE   ghostscript fontmap
@@ -15441,15 +15443,21 @@ else
 fi
 
 
-#AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
-#	WMF_FONTDIR=$withval
-#],[	if test "x$prefix" = "xNONE"; then
-#		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
-#	else
-#		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
-#	fi
-#])
-WMF_FONTDIR=$datadir/$PACKAGE/fonts
+
+# Check whether --with-fontdir was given.
+if test "${with_fontdir+set}" = set; then :
+  withval=$with_fontdir;
+	WMF_FONTDIR=$withval
+
+else
+  	if test "x$prefix" = "xNONE"; then
+		WMF_FONTDIR=$ac_default_prefix/share/$PACKAGE/fonts
+	else
+		WMF_FONTDIR=$prefix/share/$PACKAGE/fonts
+	fi
+
+fi
+
 
 
 # Check whether --with-sysfontmap was given.
