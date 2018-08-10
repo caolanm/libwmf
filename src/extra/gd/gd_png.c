@@ -131,7 +131,6 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
   gdImagePtr im = NULL;
   int i, j, *open;
   volatile int transparent = -1;
-  volatile int palette_allocated = FALSE;
 
   /* Make sure the signature can't match by dumb luck -- TBB */
   memset (sig, 0, sizeof (sig));
@@ -177,6 +176,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
     }
 #endif
   open = NULL;
+  palette = NULL;
 
   png_set_sig_bytes (png_ptr, 8);	/* we already read the 8 signature bytes */
 
@@ -254,7 +254,6 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
 	  gdImageDestroy(im);
 	  return NULL;
 	}
-      palette_allocated = TRUE;
       if (bit_depth < 8)
 	{
 	  num_palette = 1 << bit_depth;
@@ -321,8 +320,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       fprintf (stderr, "gd-png error: cannot allocate image data\n");
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
       gdImageDestroy(im);
-      if (palette_allocated)
-        gdFree (palette);
+      gdFree(palette);
       return NULL;
     }
   if ((row_pointers = (png_bytepp) gdMalloc (height * sizeof (png_bytep))) == NULL)
@@ -331,8 +329,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
       png_destroy_read_struct (&png_ptr, &info_ptr, NULL);
       gdFree (image_data);
       gdImageDestroy(im);
-      if (palette_allocated)
-        gdFree (palette);
+      gdFree(palette);
       return NULL;
     }
 
@@ -429,8 +426,7 @@ gdImageCreateFromPngCtx (gdIOCtx * infile)
     }
 #endif
 
-  if (palette_allocated)
-    gdFree (palette);
+  gdFree (palette);
   gdFree (image_data);
   gdFree (row_pointers);
 
