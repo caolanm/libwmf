@@ -157,10 +157,6 @@ static void gd_draw_ftbitmap (wmfAPI* API,FT_Bitmap* bitmap,gdPoint pt,wmfRGB* f
 
 	fg_pixel = gdImageColorResolve (gd->image,fg->r,fg->g,fg->b);
 
-	if (bitmap->pixel_mode == ft_pixel_mode_mono)
-	{	color = fg_pixel;
-	}
-
 	for (row = 0; row < rows; row++)
 	{	buffer = bitmap->buffer + row * bitmap->pitch;
 
