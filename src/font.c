@@ -1229,7 +1229,12 @@ static char* ipa_font_gs_readline (wmfAPI* API,FILE* in)
 
 	if (line == 0) return (0);
 
-	if (fReadExtra) while (buf[strlen(buf)-1] != '\n') fgets (buf,128,in);
+	if (fReadExtra)
+	{
+		while (buf[strlen(buf)-1] != '\n')
+			if (fgets (buf,128,in) == 0)
+				break;
+	}
 
 	/* Strip the string */
 
