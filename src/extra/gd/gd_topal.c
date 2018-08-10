@@ -1057,62 +1057,6 @@ fill_inverse_cmap (gdImagePtr im, my_cquantize_ptr cquantize,
 #endif
 
 
-/*
- * Initialize the error-limiting transfer function (lookup table).
- * The raw F-S error computation can potentially compute error values of up to
- * +- MAXJSAMPLE.  But we want the maximum correction applied to a pixel to be
- * much less, otherwise obviously wrong pixels will be created.  (Typical
- * effects include weird fringes at color-area boundaries, isolated bright
- * pixels in a dark area, etc.)  The standard advice for avoiding this problem
- * is to ensure that the "corners" of the color cube are allocated as output
- * colors; then repeated errors in the same direction cannot cause cascading
- * error buildup.  However, that only prevents the error from getting
- * completely out of hand; Aaron Giles reports that error limiting improves
- * the results even with corner colors allocated.
- * A simple clamping of the error values to about +- MAXJSAMPLE/8 works pretty
- * well, but the smoother transfer function used below is even better.  Thanks
- * to Aaron Giles for this idea.
- */
-
-static int
-init_error_limit (my_cquantize_ptr cquantize)
-/* Allocate and fill in the error_limiter table */
-{
-  int *table;
-  int in, out;
-
-  cquantize->error_limiter_storage = (int *) gdMalloc ((255 * 2 + 1) * sizeof (int));
-  if (!cquantize->error_limiter_storage)
-    {
-      return 0;
-    }
-  /* so can index -MAXJSAMPLE .. +MAXJSAMPLE */
-  cquantize->error_limiter = cquantize->error_limiter_storage + 255;
-  table = cquantize->error_limiter;
-#define STEPSIZE ((255+1)/16)
-  /* Map errors 1:1 up to +- MAXJSAMPLE/16 */
-  out = 0;
-  for (in = 0; in < STEPSIZE; in++, out++)
-    {
-      table[in] = out;
-      table[-in] = -out;
-    }
-  /* Map errors 1:2 up to +- 3*MAXJSAMPLE/16 */
-  for (; in < STEPSIZE * 3; in++, out += (in & 1) ? 0 : 1)
-    {
-      table[in] = out;
-      table[-in] = -out;
-    }
-  /* Clamp the rest to final out value (which is (MAXJSAMPLE+1)/8) */
-  for (; in <= 255; in++)
-    {
-      table[in] = out;
-      table[-in] = -out;
-    }
-#undef STEPSIZE
-  return 1;
-}
-
 static void
 zeroHistogram (hist4d histogram)
 {
