@@ -1995,7 +1995,7 @@ gdImageCopyResized (gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX
 			  else
 			    {
 			      /* Find or create the best match */
-			      mapTo = gdImageColorResolveAlpha (dst,
+			      nc = gdImageColorResolveAlpha (dst,
 						      gdTrueColorGetRed (c),
 						    gdTrueColorGetGreen (c),
 						     gdTrueColorGetBlue (c),
