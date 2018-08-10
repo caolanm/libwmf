@@ -2408,7 +2408,7 @@ static int meta_dc_color (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlist)
 		hash[5] = hex[(color.b >> 4) & 0x0f];
 		hash[6] = hex[ color.b       & 0x0f];
 		hash[7] = 0;
-		value = wmf_attr_add (API, attrlist, "color", hash);
+		wmf_attr_add (API, attrlist, "color", hash);
 	}
 
 	if (SCAN (API)) wmf_ipa_color_add (API,&color);
