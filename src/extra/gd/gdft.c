@@ -625,24 +625,17 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 		}
 	      else
 		{
+		  tc_elem = (tweencolor_t *) gdCacheGet (tc_cache, &tc_key);
+		  if (!tc_elem) return tc_cache->error;
 		  /* find antialised color */
 		  if (im->trueColor)
 		    {
 		      tc_key.bgcolor = *tpixel;
-		    }
-		  else
-		    {
-		      tc_key.bgcolor = *pixel;
-		    }
-		  tc_elem = (tweencolor_t *) gdCacheGet (
-							  tc_cache, &tc_key);
-		  if (!tc_elem) return tc_cache->error;
-		  if (im->trueColor)
-		    {
 		      *tpixel = tc_elem->tweencolor;
 		    }
 		  else
 		    {
+		      tc_key.bgcolor = *pixel;
 		      *pixel = tc_elem->tweencolor;
 		    }
 		}
