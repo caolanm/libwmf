@@ -105,7 +105,10 @@ gdImageWBMPCtx (gdImagePtr image, int fg, gdIOCtx * out)
 
   /* create the WBMP */
   if ((wbmp = createwbmp (gdImageSX (image), gdImageSY (image), WBMP_WHITE)) == NULL)
-    fprintf (stderr, "Could not create WBMP\n");
+    {
+      fprintf (stderr, "Could not create WBMP\n");
+      return;
+    }
 
   /* fill up the WBMP structure */
   pos = 0;
