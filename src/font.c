@@ -535,6 +535,8 @@ static void ipa_font_add_api (wmfAPI* API,char* name)
 float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 {	FT_Face face = WMF_FONT_FTFACE (font);
 
+	if (!face) return 0.0;
+
 	FT_Vector delta;
 
 	FT_Bool use_kerning;
@@ -591,6 +593,8 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 
 static float ipa_char_position (wmfFont* font,char* str,char* last)
 {	FT_Face face = WMF_FONT_FTFACE (font);
+
+	if (!face) return 0.0;
 
 	FT_Vector delta;
 
