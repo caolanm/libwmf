@@ -412,15 +412,11 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record)
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
 				/* fallthrough */
+			default:
 			case '2':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.TL.y;
 				D_Coord_Register (API,d_pt,scope);
-			break;
-
-			default:
-				WMF_ERROR (API,"Glitch!");
-				API->err = wmf_E_Glitch;
 			break;
 			}
 		break;
@@ -445,15 +441,11 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record)
 				d_pt.y = drawarc.BR.y;
 				D_Coord_Register (API,d_pt,scope);
 				/* fallthrough */
+			default:
 			case '3':
 				d_pt.x = drawarc.TL.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
-			break;
-
-			default:
-				WMF_ERROR (API,"Glitch!");
-				API->err = wmf_E_Glitch;
 			break;
 			}
 		break;
@@ -478,20 +470,17 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record)
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
 				/* fallthrough */
+			default:
 			case '4':
 				d_pt.x = c_pt.x;
 				d_pt.y = drawarc.BR.y;
 				D_Coord_Register (API,d_pt,scope);
 			break;
-
-			default:
-				WMF_ERROR (API,"Glitch!");
-				API->err = wmf_E_Glitch;
-			break;
 			}
 		break;
 
 		case '4':
+		default:
 			switch (Qe)
 			{
 			case '4':
@@ -511,22 +500,13 @@ static int meta_arc (wmfAPI* API,wmfRecord* Record)
 				d_pt.y = drawarc.TL.y;
 				D_Coord_Register (API,d_pt,scope);
 				/* fallthrough */
+			default:
 			case '1':
 				d_pt.x = drawarc.BR.x;
 				d_pt.y = c_pt.y;
 				D_Coord_Register (API,d_pt,scope);
 			break;
-
-			default:
-				WMF_ERROR (API,"Glitch!");
-				API->err = wmf_E_Glitch;
-			break;
 			}
-		break;
-
-		default:
-			WMF_ERROR (API,"Glitch!");
-			API->err = wmf_E_Glitch;
 		break;
 		}
 
