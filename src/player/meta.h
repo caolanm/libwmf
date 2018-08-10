@@ -3132,7 +3132,7 @@ static int meta_pen_create (wmfAPI* API,wmfRecord* Record,wmfAttributes* attrlis
 		hash[5] = hex[(color.b >> 4) & 0x0f];
 		hash[6] = hex[ color.b       & 0x0f];
 		hash[7] = 0;
-		value = wmf_attr_add (API, attrlist, "color", hash);
+		wmf_attr_add (API, attrlist, "color", hash);
 	}
 
 	WMF_PEN_SET_COLOR (pen,&color);
