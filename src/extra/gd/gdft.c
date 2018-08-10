@@ -574,6 +574,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 
       for (col = 0; col < bitmap.width; col++, pc++)
 	{
+	  const int trueColor = im->trueColor;
 	  if (bitmap.pixel_mode == ft_pixel_mode_grays)
 	    {
 	      /*
@@ -603,7 +604,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 	      if (x >= im->sx || x < 0)
 		continue;
 	      /* get pixel location in gd buffer */
-	      if (im->trueColor)
+	      if (trueColor)
 		{
 		  tpixel = &im->tpixels[y][x];
 		}
@@ -614,7 +615,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 	      if (tc_key.pixel == NUMCOLORS)
 		{
 		  /* use fg color directly */
-		  if (im->trueColor)
+		  if (trueColor)
 		    {
 		      *tpixel = fg;
 		    }
@@ -628,7 +629,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 		  tc_elem = (tweencolor_t *) gdCacheGet (tc_cache, &tc_key);
 		  if (!tc_elem) return tc_cache->error;
 		  /* find antialised color */
-		  if (im->trueColor)
+		  if (trueColor)
 		    {
 		      tc_key.bgcolor = *tpixel;
 		      *tpixel = tc_elem->tweencolor;
