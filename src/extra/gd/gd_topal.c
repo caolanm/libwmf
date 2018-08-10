@@ -1031,7 +1031,6 @@ find_best_colors (gdImagePtr im,
       inc0 = inc0 * (2 * STEP_C0) + STEP_C0 * STEP_C0;
       inc1 = inc1 * (2 * STEP_C1) + STEP_C1 * STEP_C1;
       inc2 = inc2 * (2 * STEP_C2) + STEP_C2 * STEP_C2;
-      inc3 = inc3 * (2 * STEP_C3) + STEP_C3 * STEP_C3;
       /* Now loop over all cells in box, updating distance per Thomas method */
       bptr = bestdist;
       cptr = bestcolor;
