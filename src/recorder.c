@@ -48,6 +48,9 @@ static void s_rbox_set (wmfAPI * API, wmfConstruct * construct,
     {
       WMF_ERROR (API, "Hmm. Record out of range...");
       API->err = wmf_E_Glitch;
+      rbox->start = NULL;
+      rbox->end   = NULL;
+      rbox->ptr   = NULL;
       return;
     }
   rbox->start = construct->buffer + construct->rec_offset[n  ];
