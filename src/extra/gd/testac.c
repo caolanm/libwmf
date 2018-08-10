@@ -115,13 +115,6 @@ testDrawing (
      Otherwise the file would typically be slightly larger. */
   gdImageSaveAlpha (im_out, !blending);
 
-  /* If requested, convert from truecolor to palette. */
-  if (palette)
-    {
-      /* Dithering, 256 colors. */
-      gdImageTrueColorToPalette (im_out, 1, 256);
-    }
-
   gdImagePng (im_out, out);
   fclose (out);
 

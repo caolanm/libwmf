@@ -308,24 +308,6 @@ int gdImageColorResolveAlpha(gdImagePtr im, int r, int g, int b, int a);
 
 void gdImageColorDeallocate(gdImagePtr im, int color);
 
-/* Converts a truecolor image to a palette-based image,
-	using a high-quality two-pass quantization routine
-	which attempts to preserve alpha channel information
-	as well as R/G/B color information when creating
-	a palette. If ditherFlag is set, the image will be
-	dithered to approximate colors better, at the expense
-	of some obvious "speckling." colorsWanted can be
-	anything up to 256. If the original source image
-	includes photographic information or anything that
-	came out of a JPEG, 256 is strongly recommended.
-
-	Better yet, don't use this function -- write real
-	truecolor PNGs and JPEGs. The disk space gain of
-        conversion to palette is not great (for small images
-        it can be negative) and the quality loss is ugly. */
-
-void gdImageTrueColorToPalette(gdImagePtr im, int ditherFlag, int colorsWanted);
-
 /* Specifies a color index (if a palette image) or an
 	RGB color (if a truecolor image) which should be
 	considered 100% transparent. FOR TRUECOLOR IMAGES,
