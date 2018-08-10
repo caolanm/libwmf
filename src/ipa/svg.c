@@ -171,7 +171,6 @@ static void wmf_svg_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 	pt = svg_translate (API,draw_text->pt);
 
 	font_height = svg_height (API,(float)  draw_text->font_height);
-	svg_width  (API,(float) (draw_text->font_height * draw_text->font_ratio));
 
 	theta = - WMF_TEXT_ANGLE (draw_text->dc->font);
 
