@@ -617,7 +617,7 @@ gdImageCreateFromGd2PartCtx (gdIOCtx * in, int srcx, int srcy, int w, int h)
 
 	      for (x = xlo; x < xhi; x++)
 		{
-		  if (fmt == GD2_FMT_RAW)
+		  if (fmt != GD2_FMT_COMPRESSED)
 		    {
 		      if (im->trueColor)
 			{
