@@ -636,6 +636,7 @@ gdft_draw_bitmap (gdImage * im, int fg, FT_Bitmap bitmap, int pen_x, int pen_y)
 		    }
 		  tc_elem = (tweencolor_t *) gdCacheGet (
 							  tc_cache, &tc_key);
+		  if (!tc_elem) return tc_cache->error;
 		  if (im->trueColor)
 		    {
 		      *tpixel = tc_elem->tweencolor;
