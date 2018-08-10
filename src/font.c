@@ -1222,7 +1222,7 @@ static char* ipa_font_gs_readline (wmfAPI* API,FILE* in)
 		line = more;
 
 		if (line == 0)
-		{	fContinue = wmf_false;
+		{
 			break;
 		}
 	}
