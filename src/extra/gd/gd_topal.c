@@ -612,45 +612,6 @@ compute_color (gdImagePtr im, my_cquantize_ptr cquantize,
     }
 }
 
-static void
-select_colors (gdImagePtr im, my_cquantize_ptr cquantize, int desired_colors)
-/* Master routine for color selection */
-{
-  boxptr boxlist;
-  int numboxes;
-  int i;
-
-  /* Allocate workspace for box list */
-  boxlist = (boxptr) gdMalloc (desired_colors * sizeof (box));
-  /* Initialize one box containing whole space */
-  numboxes = 1;
-  /* Note maxval for alpha is different */
-  boxlist[0].c0min = 0;
-  boxlist[0].c0max = 255 >> C0_SHIFT;
-  boxlist[0].c1min = 0;
-  boxlist[0].c1max = 255 >> C1_SHIFT;
-  boxlist[0].c2min = 0;
-  boxlist[0].c2max = 255 >> C2_SHIFT;
-  boxlist[0].c3min = 0;
-  boxlist[0].c3max = gdAlphaMax >> C3_SHIFT;
-  /* Shrink it to actually-used volume and set its statistics */
-  update_box (cquantize, &boxlist[0]);
-  /* Perform median-cut to produce final box list */
-  numboxes = median_cut (cquantize, boxlist, numboxes, desired_colors);
-  /* Compute the representative color for each box, fill colormap */
-  for (i = 0; i < numboxes; i++)
-    compute_color (im, cquantize, &boxlist[i], i);
-  /* TBB: if the image contains colors at both scaled ends
-     of the alpha range, rescale slightly to make sure alpha 
-     covers the full spectrum from 100% transparent to 100% 
-     opaque. Even a faint distinct background color is 
-     generally considered failure with regard to alpha. */
-
-  im->colorsTotal = numboxes;
-  gdFree (boxlist);
-}
-
-
 /*
  * These routines are concerned with the time-critical task of mapping input
  * colors to the nearest color in the selected colormap.
