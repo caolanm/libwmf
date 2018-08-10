@@ -361,7 +361,7 @@ gdImageCreateFromGd2Ctx (gdIOCtxPtr in)
 		  xhi = im->sx;
 		};
 	      /*GD2_DBG(printf("y=%d: ",y)); */
-	      if (fmt == GD2_FMT_RAW)
+	      if (fmt != GD2_FMT_COMPRESSED)
 		{
 		  for (x = xlo; x < xhi; x++)
 		    {
