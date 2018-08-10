@@ -1,5 +1,6 @@
 #include "gd.h"
 #include "gdhelpers.h"
+#include <assert.h>
 
 #ifdef HAVE_LIBTTF
 #define NEED_CACHE 1
@@ -130,7 +131,9 @@ gdCacheGet (gdCache_head_t * head, void *keydata)
   else
     {				/* cache full - replace least-recently-used */
       /* preveprev becomes new end of list */
-      prevprev->next = NULL;
+      assert (prevprev);
+      if (prevprev)
+        prevprev->next = NULL;
       elem = prev;
       (*(head->gdCacheRelease)) (elem->userdata);
     }
