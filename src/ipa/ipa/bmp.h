@@ -947,8 +947,8 @@ static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsi
 		}
 /* ?? TODO 	if (QuantumTick (y,image->rows)) MagickMonitor (LoadImageText,y,image->rows); */
 	}
-	byte = ReadBlobByte (src);  /* end of line */
-	byte = ReadBlobByte (src);
+	ReadBlobByte (src);  /* end of line */
+	ReadBlobByte (src);
 
 	return 1;
 }
