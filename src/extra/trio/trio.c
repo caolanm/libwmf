@@ -41,8 +41,6 @@
  *    immediately followed by an 's'.
  */
 
-static const char rcsid[] = "@(#)$Id: trio.c,v 1.1 2001/06/07 08:23:02 fjfranklin Exp $";
-
 #if defined(unix) || defined(__xlC__) /* AIX xlC workaround */
 # define PLATFORM_UNIX
 #elif defined(AMIGA) && defined(__GNUC__)

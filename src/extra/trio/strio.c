@@ -20,8 +20,6 @@
  * - StrToLongDouble
  */
  
-static const char rcsid[] = "@(#)$Id: strio.c,v 1.1 2001/06/07 08:23:02 fjfranklin Exp $";
-
 #if defined(unix) || defined(__xlC__)
 # define PLATFORM_UNIX
 #elif defined(WIN32) || defined(_WIN32)
