@@ -200,65 +200,6 @@ my_cquantizer;
 typedef my_cquantizer *my_cquantize_ptr;
 
 /*
- * Prescan the pixel array. 
- * 
- * The prescan simply updates the histogram, which has been
- * initialized to zeroes by start_pass.
- *
- */
-
-static void
-prescan_quantize (gdImagePtr im, my_cquantize_ptr cquantize)
-{
-  register histptr histp;
-  register hist4d histogram = cquantize->histogram;
-  int row;
-  int col;
-  int *ptr;
-  int width = im->sx;
-
-  for (row = 0; row < im->sy; row++)
-    {
-      ptr = im->tpixels[row];
-      for (col = width; col > 0; col--)
-	{
-	  /* get pixel value and index into the histogram */
-	  int r, g, b, a;
-	  r = gdTrueColorGetRed (*ptr) >> C0_SHIFT;
-	  g = gdTrueColorGetGreen (*ptr) >> C1_SHIFT;
-	  b = gdTrueColorGetBlue (*ptr) >> C2_SHIFT;
-	  a = gdTrueColorGetAlpha (*ptr);
-	  /* We must have 100% opacity and transparency available
-	     in the color map to do an acceptable job with alpha 
-	     channel, if opacity and transparency are present in the
-	     original, because of the visual properties of large
-	     flat-color border areas (requiring 100% transparency) 
-	     and the behavior of poorly implemented browsers 
-	     (requiring 100% opacity). Test for the presence of
-	     these here, and rescale the most opaque and transparent
-	     palette entries at the end if so. This avoids the need
-	     to develop a fuller understanding I have not been able
-	     to reach so far in my study of this subject. TBB */
-	  if (a == gdAlphaTransparent)
-	    {
-	      cquantize->transparentIsPresent = 1;
-	    }
-	  if (a == gdAlphaOpaque)
-	    {
-	      cquantize->opaqueIsPresent = 1;
-	    }
-	  a >>= C3_SHIFT;
-	  histp = &histogram[r][g][b][a];
-	  /* increment, check for overflow and undo increment if so. */
-	  if (++(*histp) <= 0)
-	    (*histp)--;
-	  ptr++;
-	}
-    }
-}
-
-
-/*
  * Next we have the really interesting routines: selection of a colormap
  * given the completed histogram.
  * These routines work with a list of "boxes", each representing a rectangular
