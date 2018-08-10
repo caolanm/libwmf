@@ -554,7 +554,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 		case META_SETVIEWPORTORG:
 			SCAN_DIAGNOSTIC (API,"New Record: SETVIEWPORTORG");
-			changed = meta_orgext (API,&Record);
+			meta_orgext (API,&Record);
 			if (SCAN (API)) wmf_write (API, Size, Function, "setviewportorg",
 					atts->atts, Record.parameter, Record.size * 2);
 			SCAN_DIAGNOSTIC (API,"\n");
