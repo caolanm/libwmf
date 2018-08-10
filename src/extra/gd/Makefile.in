@@ -107,7 +107,7 @@ am_libgd_la_OBJECTS = gd.lo gd_gd.lo gd_gd2.lo gd_io.lo gd_io_dp.lo \
 	gd_io_file.lo gd_ss.lo gd_io_ss.lo gd_png.lo gd_jpeg.lo \
 	gdxpm.lo gdfontt.lo gdfonts.lo gdfontmb.lo gdfontl.lo \
 	gdfontg.lo gdtables.lo gdft.lo gdcache.lo gdkanji.lo wbmp.lo \
-	gd_wbmp.lo gdhelpers.lo gd_topal.lo gd_clip.lo
+	gd_wbmp.lo gdhelpers.lo gd_clip.lo
 libgd_la_OBJECTS = $(am_libgd_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -370,7 +370,7 @@ libgd_la_SOURCES = gd.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
 		gd_io_file.c gd_ss.c gd_io_ss.c gd_png.c gd_jpeg.c gdxpm.c \
 		gdfontt.c gdfonts.c gdfontmb.c gdfontl.c gdfontg.c \
 		gdtables.c gdft.c gdcache.c gdkanji.c wbmp.c \
-		gd_wbmp.c gdhelpers.c gd_topal.c gd_clip.c
+		gd_wbmp.c gdhelpers.c gd_clip.c
 
 gddir = $(includedir)/libwmf/gd
 gd_HEADERS = $(HDRGDINST)
@@ -472,7 +472,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gd_jpeg.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gd_png.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gd_ss.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gd_topal.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gd_wbmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdcache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdfontg.Plo@am__quote@

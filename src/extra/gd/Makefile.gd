@@ -145,7 +145,7 @@ LIBOBJS=gd.o gd_gd.o gd_gd2.o gd_io.o gd_io_dp.o \
 		gd_io_file.o gd_ss.o gd_io_ss.o gd_png.o gd_jpeg.o gdxpm.o \
 		gdfontt.o gdfonts.o gdfontmb.o gdfontl.o gdfontg.o \
 		gdtables.o gdft.o gdcache.o gdkanji.o wbmp.o \
-		gd_wbmp.o gdhelpers.o gd_topal.o 
+		gd_wbmp.o gdhelpers.o
 
 #Shared library. This should work fine on any ELF platform (Linux, etc.) with
 #GNU ld or something similarly intelligent. To avoid the chicken-and-egg

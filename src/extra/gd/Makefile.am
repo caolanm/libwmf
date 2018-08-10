@@ -22,7 +22,7 @@ libgd_la_SOURCES = gd.c gd_gd.c gd_gd2.c gd_io.c gd_io_dp.c \
 		gd_io_file.c gd_ss.c gd_io_ss.c gd_png.c gd_jpeg.c gdxpm.c \
 		gdfontt.c gdfonts.c gdfontmb.c gdfontl.c gdfontg.c \
 		gdtables.c gdft.c gdcache.c gdkanji.c wbmp.c \
-		gd_wbmp.c gdhelpers.c gd_topal.c gd_clip.c
+		gd_wbmp.c gdhelpers.c gd_clip.c
 
 gddir = $(includedir)/libwmf/gd
 
