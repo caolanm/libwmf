@@ -441,7 +441,6 @@ static void write_b64 (wmfAPI * API, const unsigned char * buffer, unsigned long
 		b32 = (b32 << 16);
 		*ptr++ = B64[(b32 >> 18)       ];
 		*ptr++ = B64[(b32 >> 12) & 0x3f];
-		remaining -= 1;
 	}
 
 	*ptr++ = '\n';
