@@ -72,6 +72,8 @@ fatal_jpeg_error (j_common_ptr cinfo)
   exit (99);
 }
 
+static int _gdImageJpegCtx(gdImagePtr im, gdIOCtx *outfile, int quality);
+
 /*
  * Write IM to OUTFILE as a JFIF-formatted JPEG image, using quality
  * QUALITY.  If QUALITY is in the range 0-100, increasing values
@@ -93,8 +95,12 @@ gdImageJpegPtr (gdImagePtr im, int *size, int quality)
 {
   void *rv;
   gdIOCtx *out = gdNewDynamicCtx (2048, NULL);
-  gdImageJpegCtx (im, out, quality);
-  rv = gdDPExtractData (out, size);
+  if (out == NULL) return NULL;
+  if (!_gdImageJpegCtx(im, out, quality)) {
+    rv = gdDPExtractData(out, size);
+  } else {
+    rv = NULL;
+  }
   out->free (out);
   return rv;
 }
@@ -103,6 +109,12 @@ static void jpeg_gdIOCtx_dest (j_compress_ptr cinfo, gdIOCtx * outfile);
 
 void
 gdImageJpegCtx (gdImagePtr im, gdIOCtx * outfile, int quality)
+{
+  _gdImageJpegCtx(im, outfile, quality);
+}
+
+/* returns 0 on success, 1 on failure */
+static int _gdImageJpegCtx(gdImagePtr im, gdIOCtx *outfile, int quality)
 {
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -139,7 +151,7 @@ gdImageJpegCtx (gdImagePtr im, gdIOCtx * outfile, int quality)
       /* we're here courtesy of longjmp */
       if (row)
 	gdFree (row);
-      return;
+      return 1;
     }
 
   cinfo.err->error_exit = fatal_jpeg_error;
@@ -173,7 +185,7 @@ gdImageJpegCtx (gdImagePtr im, gdIOCtx * outfile, int quality)
       fprintf (stderr, "gd-jpeg: error: unable to allocate JPEG row "
 	       "structure: gdCalloc returns NULL\n");
       jpeg_destroy_compress (&cinfo);
-      return;
+      return 1;
     }
 
   rowptr[0] = row;
@@ -254,6 +266,7 @@ error:
 #endif
   jpeg_destroy_compress (&cinfo);
   gdFree (row);
+  return 0;
 }
 
 gdImagePtr
