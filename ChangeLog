@@ -1,3 +1,9 @@
+v. 0.2.12
+	* fix abi
+
+v. 0.2.11
+	* merge in fixes for libgd CVE-2019-6978
+
 v. 0.2.10
 	* fix coverity, clang and shellcheck warnings
 
