@@ -21,7 +21,7 @@
  */
 static void wmf_gd_device_open (wmfAPI* API)
 {	
-#ifndef HAVE_LIBPNG
+#if !defined(HAVE_LIBPNG) || !defined(HAVE_LIBJPEG)
 	wmf_gd_t* ddata = WMF_GD_GetData (API);
 #endif
 
