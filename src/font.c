@@ -1683,7 +1683,10 @@ static FT_Face ipa_font_face_open (wmfAPI* API,char* ps_name,char* glyphs,char* 
 	}
 
 #ifdef _WIN32
-	metrics = remap_font_file_name (API,metrics);
+	if (metrics)
+	{
+		metrics = remap_font_file_name (API,metrics);
+	}
 #endif
 	if (metrics)
 	{	if (stat (metrics,&stat_buf))
