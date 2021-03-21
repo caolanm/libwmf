@@ -1503,6 +1503,8 @@ static FT_Face ipa_font_gs_face (wmfAPI* API,wmfFont* font,wmfGS_FontInfo* FI)
 
 	aalias = ipa_font_gs_alias (&(font_data->GS),FI->alias+1);
 
+	if (!aalias) return 0;
+
 	if (aalias[0] != '(')
 	{	WMF_DEBUG (API,"font lookup is too complicated! Giving up...");
 		return (0);
