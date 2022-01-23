@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 if LIBWMF_BUILD_ALL
 DIRHEAVY = . src include fonts
 else

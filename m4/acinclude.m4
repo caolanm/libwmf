@@ -38,10 +38,10 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 	LDFLAGS="$LDFLAGS $LIBPLOT_LIBS"
 
 	AC_MSG_CHECKING(whether libplot requires X)
-	AC_TRY_LINK([
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <plot.h>
-	],[
+	]], [[
 	plPlotter* plotter;
 	plPlotterParams* params;
 
@@ -50,7 +50,7 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 
 	pl_deletepl_r (plotter);
 	pl_deleteplparams (params);
-	],[	ac_can_link_libplot=yes
+	]])],[	ac_can_link_libplot=yes
 		AC_MSG_RESULT(no)
 	],[	AC_MSG_RESULT(yes)
 	])
@@ -69,10 +69,10 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 			LDFLAGS="$LDFLAGS $LIBPLOT_LIBS"
 
 			AC_MSG_CHECKING(whether libplot links against Athena)
-			AC_TRY_LINK([
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <plot.h>
-			],[
+			]], [[
 	plPlotter* plotter;
 	plPlotterParams* params;
 
@@ -81,7 +81,7 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 
 	pl_deletepl_r (plotter);
 	pl_deleteplparams (params);
-			],[	ac_can_link_libplot=yes
+			]])],[	ac_can_link_libplot=yes
 				AC_MSG_RESULT(yes)
 			],[	AC_MSG_RESULT(no)
 			])
@@ -108,10 +108,10 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 			LDFLAGS="$LDFLAGS $LIBPLOT_LIBS"
 
 			AC_MSG_CHECKING(whether libplot links against Motif)
-			AC_TRY_LINK([
+			AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
 #include <plot.h>
-			],[
+			]], [[
 	plPlotter* plotter;
 	plPlotterParams* params;
 
@@ -120,7 +120,7 @@ AC_DEFUN([AC_LIBPLOT_LIBS],[
 
 	pl_deletepl_r (plotter);
 	pl_deleteplparams (params);
-			],[	ac_can_link_libplot=yes
+			]])],[	ac_can_link_libplot=yes
 				AC_MSG_RESULT(yes)
 			],[	AC_MSG_RESULT(no)
 			])
