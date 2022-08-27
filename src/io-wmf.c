@@ -135,6 +135,8 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 
 	flags = WMF_OPT_IGNORE_NONFATAL | WMF_OPT_FUNCTION;
 	api_options.function = wmf_gd_function;
+	api_options.argc = 0;
+	api_options.argv = NULL;
 
 	err = wmf_api_create (&API, flags, &api_options);
 	if (err != wmf_E_None) {
