@@ -1,11 +1,13 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src/player.c)
+AC_INIT([libwmf], [0.2.12], [])
+AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_SRCDIR([src/player.c])
 
 LIBWMF_PACKAGE=libwmf
 AC_SUBST(LIBWMF_PACKAGE)
 
 dnl This next section is courtesy gtk+
-dnl 
+dnl
 # Making releases:
 #   WMF_MICRO_VERSION += 1;
 #   WMF_INTERFACE_AGE += 1;
@@ -27,6 +29,7 @@ WMFLITE_BINARY_AGE=5
 dnl spec file substitutions
 LIBWMF_VERSION=$WMF_MAJOR_VERSION.$WMF_MINOR_VERSION.$WMF_MICRO_VERSION
 LIBWMF_RELEASE=1
+
 AC_SUBST(LIBWMF_VERSION)
 AC_SUBST(LIBWMF_RELEASE)
 
@@ -53,23 +56,23 @@ PACKAGE=$LIBWMF_PACKAGE
 VERSION=$LIBWMF_VERSION
 
 dnl Initialize automake stuff
-AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+AM_INIT_AUTOMAKE
 
 # Specify a configuration file
-AM_CONFIG_HEADER(wmfconfig.h)
+AC_CONFIG_HEADERS([wmfconfig.h])
 
 # CFLAGS to be listed by libwmf-config should be added to this:
 WMF_CONFIG_CFLAGS=
 
 # Other CFLAGS, not to be listed by libwmf-config, should be added to this:
-WMF_CFLAGS=
+AM_CFLAGS=
 
 # LDFLAGS to be listed by libwmf-config should be added to this:
-WMF_LIBFLAGS=
+AM_LDFLAGS=
 
 # WMF_DEFS is for flags such as -DDEBUG which are to applied only to
 # libwmf source not extra packages such as gd - more global defs should be
-# added to WMF_CFLAGS
+# added to AM_CFLAGS
 AC_ARG_ENABLE(debug,[  --enable-debug          set DEBUG option to libwmf [default=no]],[
 	if [ test "x$enableval" != "xno" ]; then
 		WMF_DEFS="-DDEBUG=1"
@@ -106,13 +109,6 @@ AM_CONDITIONAL(LIBWMF_BUILD_ALL,[ test "x$libwmf_build_all" = "xyes" ])
 GD_DEFS=
 
 dnl Initialize libtool
-# Tests for Windows
-AC_CYGWIN
-AC_EXEEXT
-AC_OBJEXT
-AC_MINGW32
-# End Tests for Windows
-
 AC_MSG_CHECKING([for Win32])
 case "$host" in
   *-*-mingw*)
@@ -138,12 +134,10 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
 # Configure libtool
-AC_LIBTOOL_WIN32_DLL
-AM_PROG_LIBTOOL
+LT_INIT([win32-dll])
 #end libtool stuff
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS(time.h)
 AC_CHECK_HEADER(unistd.h,[
 	AC_DEFINE([HAVE_UNISTD_H], [], [Header unistd.h is available])
@@ -181,7 +175,7 @@ if [ test "x$check_for_vsnprintf" = "xyes" ]; then
 		dnl which is incompatible with trio (the latter's fault).
 		AC_CHECK_LIB(db,vsnprintf,[
 			AC_DEFINE([HAVE_VSNPRINTF], [], [Function vsnprintf is available])
-			WMF_LIBFLAGS="$WMF_LIBFLAGS -ldb"
+			AM_LDFLAGS="$AM_LDFLAGS -ldb"
 		],[	require_trio=yes
 		])
 	])
@@ -614,7 +608,7 @@ if [ test "$search_for_gd" != "no" ]; then
 	other_libs=""
 
 	dnl Do I need extra libs with Xpm?
-	dnl 
+	dnl
 	if [ test "x$libwmf_x" = "xyes" ]; then
 		CPPFLAGS="$CPPFLAGS $WMF_X_CFLAGS"
 		LDFLAGS="$LDFLAGS $WMF_X_LDFLAGS"
@@ -775,12 +769,12 @@ AC_ARG_WITH(xtrafontmap,[  --with-xtrafontmap=FILE non-system XML fontmap],[
 
 AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 	WMF_GS_FONTMAP=$withval
-],[	dnl 
+],[	dnl
 	dnl Test first for Debian Font Manager's ghostscript Fontmap.
 	dnl Next test for GnuWin32 ghostscript Fontmap.
 	dnl Next test for standard ghostscript Fontmap.
 	dnl If not found, default to RedHat location.
-	dnl 
+	dnl
 	if [ test -r /var/lib/defoma/gs.d/dirs/fonts/Fontmap.GS ]; then
 		WMF_GS_FONTMAP=/var/lib/defoma/gs.d/dirs/fonts/Fontmap.GS
 	elif [ test -r /var/lib/defoma/gs.d/dirs/fonts/Fontmap ]; then
@@ -815,12 +809,12 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 
 AC_ARG_WITH(gsfontdir,[  --with-gsfontdir=DIR    directory for ghostscript fonts],[
 	WMF_GS_FONTDIR=$withval
-],[	dnl 
+],[	dnl
 	dnl Test first for Debian Font Manager's ghostscript font directory.
 	dnl Next test for GnuWin32 ghostscript font directory.
 	dnl Next test for standard ghostscript font directory.
 	dnl If not found, default to RedHat location.
-	dnl 
+	dnl
 	if [ test -d /var/lib/defoma/gs.d/dirs/fonts ]; then
 		WMF_GS_FONTDIR=/var/lib/defoma/gs.d/dirs/fonts
 	elif [ test -d 'c:/progra~1/gs/gs/lib/fonts' ]; then
@@ -834,19 +828,19 @@ AC_ARG_WITH(gsfontdir,[  --with-gsfontdir=DIR    directory for ghostscript fonts
 
 dnl Output...
 
-WMF_CFLAGS="$WMF_FT_CFLAGS $WMF_X_CFLAGS $WMF_PLOT_CFLAGS $WMF_XML_CFLAGS"
-WMF_CFLAGS="$WMF_CFLAGS $WMF_GD_CFLAGS $WMF_JPEG_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
+AM_CPPFLAGS="$CPPFLAGS"
+AC_SUBST([AM_CPPFLAGS])
 
-AC_SUBST(WMF_CFLAGS)
+AM_CFLAGS="$AM_CFLAGS $WMF_FT_CFLAGS $WMF_X_CFLAGS $WMF_PLOT_CFLAGS $WMF_XML_CFLAGS"
+AM_CFLAGS="$AM_CFLAGS $WMF_GD_CFLAGS $WMF_JPEG_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
+AC_SUBST([AM_CFLAGS])
 
 WMF_CONFIG_CFLAGS="$WMF_FT_CONFIG_CFLAGS $WMF_Z_CONFIG_CFLAGS $WMF_X_CONFIG_CFLAGS"
+AC_SUBST([WMF_CONFIG_CFLAGS])
 
-AC_SUBST(WMF_CONFIG_CFLAGS)
-
-WMF_LIBFLAGS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LDFLAGS"
-WMF_LIBFLAGS="$WMF_LIBFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
-
-AC_SUBST(WMF_LIBFLAGS)
+AM_LDFLAGS="$AM_LDFLAGS $WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LDFLAGS"
+AM_LDFLAGS="$AM_LDFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
+AC_SUBST([AM_LDFLAGS])
 
 AC_SUBST(WMF_DOCDIR)
 AC_SUBST(WMF_FONTDIR)
@@ -858,7 +852,7 @@ AC_SUBST(WMF_GS_FONTDIR)
 AC_SUBST(WMF_DEFS)
 AC_SUBST(GD_DEFS)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 doc/Makefile
 doc/caolan/Makefile
@@ -878,6 +872,7 @@ src/convert/Makefile
 libwmf.pc
 libwmf.spec
 ])
+AC_OUTPUT
 
 echo ""
 echo "	Support for X:			$libwmf_x"

@@ -1,16 +1,12 @@
-INCLUDES = -I$(srcdir)
-
-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
-
-LDFLAGS = @LDFLAGS@
+AM_CPPFLAGS += -I$(srcdir)
 
 DEFS = @DEFS@ @GD_DEFS@
 
 GDHDRS = gd.h gdcache.h gd_clip.h gd_io.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h
 
 if LIBWMF_OPT_SYS_GD
-LIBGD = 
-HDRGDINST = 
+LIBGD =
+HDRGDINST =
 else
 LIBGD = libgd.la
 HDRGDINST = $(GDHDRS)

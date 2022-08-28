@@ -1,18 +1,14 @@
-CFLAGS = @CFLAGS@ @WMF_CFLAGS@
-
-LDFLAGS = @LDFLAGS@
-
 DEFS = @DEFS@ @WMF_DEFS@ \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DVERSION=\"@VERSION@\"
 
 if LIBWMF_OPT_SYS_GD
-GDHDRS = 
+GDHDRS =
 else
 GDHDRS = -I$(top_srcdir)/src/extra/gd
 endif
 
-INCLUDES = \
+AM_CPPFLAGS += \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/src \
 	$(GDHDRS) \
@@ -22,7 +18,7 @@ noinst_LTLIBRARIES = libipa.la
 
 libipa_la_SOURCES = eps.c fig.c svg.c xgd.c x.c ipa.c plot.c foreign.c
 
-libipa_la_LDFLAGS = 
+libipa_la_LDFLAGS =
 
 IPAHEADERS = \
 	ipa/bmp.h \
