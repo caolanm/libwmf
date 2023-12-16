@@ -2222,7 +2222,7 @@ TrioWriteDouble(trio_T *self,
   if (exponentDigits > 0)
     expectedWidth += exponentDigits + sizeof("E+") - 1;
   if (isExponentNegative)
-    expectedWidth += sizeof('-') - 1;
+    expectedWidth += sizeof("-") - 1;
   if (isHex)
     expectedWidth += sizeof("0X") - 1;
   
