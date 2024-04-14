@@ -1,4 +1,4 @@
-fontdir = $(datadir)/libwmf/fonts/
+fontdir = @WMF_FONTDIR@
 
 bin_SCRIPTS = libwmf-fontmap
 
