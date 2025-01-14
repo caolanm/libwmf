@@ -747,15 +747,6 @@ AC_SUBST(GDK_PIXBUF_DIR)
 
 dnl Other options...
 
-AC_ARG_WITH(docdir,[  --with-docdir=DIR       install documentation in DIR],[
-	WMF_DOCDIR=$withval
-],[	if test "x$prefix" = "xNONE"; then
-		WMF_DOCDIR=$ac_default_prefix/share/doc/$PACKAGE
-	else
-		WMF_DOCDIR=$prefix/share/doc/$PACKAGE
-	fi
-])
-
 AC_ARG_WITH(fontdir,[  --with-fontdir=DIR      install Type1 fonts in DIR],[
 	WMF_FONTDIR=$withval
 ],[	if test "x$prefix" = "xNONE"; then
@@ -850,7 +841,6 @@ AM_LDFLAGS="$AM_LDFLAGS $WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X
 AM_LDFLAGS="$AM_LDFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
 AC_SUBST([AM_LDFLAGS])
 
-AC_SUBST(WMF_DOCDIR)
 AC_SUBST(WMF_FONTDIR)
 AC_SUBST(WMF_SYS_FONTMAP)
 AC_SUBST(WMF_XTRA_FONTMAP)
@@ -862,10 +852,6 @@ AC_SUBST(GD_DEFS)
 
 AC_CONFIG_FILES([
 Makefile
-doc/Makefile
-doc/caolan/Makefile
-doc/caolan/pics/Makefile
-doc/html/Makefile
 fonts/Makefile
 fonts/libwmf-fontmap
 fonts/fontmap
@@ -888,7 +874,6 @@ echo "	Support for GD:			$libwmf_gd"
 echo "	Support for JPEG though GD:	$libwmf_gd_jpeg"
 echo "	Support for XML:		$libwmf_xml"
 echo ""
-echo "	Documentation directory:	$WMF_DOCDIR"
 echo "	Font directory:			$WMF_FONTDIR"
 echo "	System XML fontmap file:	$WMF_SYS_FONTMAP"
 echo "	Non-system XML fontmap file:	$WMF_XTRA_FONTMAP"
