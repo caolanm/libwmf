@@ -5,7 +5,7 @@ LIBWMF_PACKAGE=libwmf
 AC_SUBST(LIBWMF_PACKAGE)
 
 dnl This next section is courtesy gtk+
-dnl 
+dnl
 # Making releases:
 #   WMF_MICRO_VERSION += 1;
 #   WMF_INTERFACE_AGE += 1;
@@ -142,6 +142,10 @@ AC_LIBTOOL_WIN32_DLL
 AM_PROG_LIBTOOL
 #end libtool stuff
 
+dnl Rest of file doesn't use proper AS_IF(), so pull in this
+dnl prerequisite macro as early as possible.
+PKG_PROG_PKG_CONFIG
+
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS(time.h)
@@ -273,7 +277,7 @@ dnl (2) expat/libxml2 {-lexpat/-lxml2}
 
 WMF_XML_DIR=""
 WMF_XML_CFLAGS=""
-WMF_XML_LDFLAGS=""
+WMF_XML_LIBS=""
 
 libwmf_xml=unknown
 
@@ -322,10 +326,10 @@ if test $libwmf_xml = expat -o $libwmf_xml = unknown; then
 		CPPFLAGS="$CPPFLAGS -I$WMF_XML_DIR/include"
 		LDFLAGS="$LDFLAGS -L$WMF_XML_DIR/lib"
 		WMF_XML_CFLAGS="-I$WMF_XML_DIR/include"
-		WMF_XML_LDFLAGS="-L$WMF_XML_DIR/lib -lexpat"
+		WMF_XML_LIBS="-L$WMF_XML_DIR/lib -lexpat"
 	else
 		WMF_XML_CFLAGS=""
-		WMF_XML_LDFLAGS="-lexpat"
+		WMF_XML_LIBS="-lexpat"
 	fi
 	AC_CHECK_HEADER(expat.h,[
 		AC_CHECK_LIB(expat,XML_ParserFree,[
@@ -347,16 +351,19 @@ fi
 if test $libwmf_xml = libxml2 -o $libwmf_xml = unknown; then
 	if [ test -n "$WMF_XML_DIR" ]; then
 		AC_PATH_PROG(XML2_CONFIG,xml2-config,,$WMF_XML_DIR/bin $PATH)
-	else
-		AC_PATH_PROG(XML2_CONFIG,xml2-config)
-	fi
-
-	if test "x$XML2_CONFIG" != "x"; then
-		WMF_XML_CFLAGS=`$XML2_CONFIG --cflags`
-		WMF_XML_LDFLAGS=`$XML2_CONFIG --libs`
-		libwmf_xml=libxml2
+		if test "x$XML2_CONFIG" != "x"; then
+			WMF_XML_CFLAGS=`$XML2_CONFIG --cflags`
+			WMF_XML_LIBS=`$XML2_CONFIG --libs`
+			libwmf_xml=libxml2
+		fi
 	elif test $libwmf_xml = libxml2; then
-		AC_MSG_ERROR([* * * unable to find xml2-config; see ftp://xmlsoft.org/ * * *])
+		PKG_CHECK_MODULES([WMF_XML], [libxml-2.0], [libwmf_xml=libxml2])
+	else
+		dnl optional
+		PKG_CHECK_MODULES([WMF_XML], [libxml-2.0], [libwmf_xml=libxml2], [:])
+	fi
+	if test $libwmf_xml = libxml2 && test "$WMF_XML_LIBS" = ""; then
+		AC_MSG_ERROR([* * * unable to find xml2-config or libxml-2.0.pc; see ftp://xmlsoft.org/ * * *])
 	fi
 fi
 
@@ -367,7 +374,7 @@ elif test $libwmf_xml = libxml2; then
 else
 	libwmf_xml=none
 	WMF_XML_CFLAGS=""
-	WMF_XML_LDFLAGS=""
+	WMF_XML_LIBS=""
 fi
 
 dnl (3) freetype {-lfreetype} [-DHAVE_LIBFREETYPE]
@@ -614,7 +621,7 @@ if [ test "$search_for_gd" != "no" ]; then
 	other_libs=""
 
 	dnl Do I need extra libs with Xpm?
-	dnl 
+	dnl
 	if [ test "x$libwmf_x" = "xyes" ]; then
 		CPPFLAGS="$CPPFLAGS $WMF_X_CFLAGS"
 		LDFLAGS="$LDFLAGS $WMF_X_LDFLAGS"
@@ -775,12 +782,12 @@ AC_ARG_WITH(xtrafontmap,[  --with-xtrafontmap=FILE non-system XML fontmap],[
 
 AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 	WMF_GS_FONTMAP=$withval
-],[	dnl 
+],[	dnl
 	dnl Test first for Debian Font Manager's ghostscript Fontmap.
 	dnl Next test for GnuWin32 ghostscript Fontmap.
 	dnl Next test for standard ghostscript Fontmap.
 	dnl If not found, default to RedHat location.
-	dnl 
+	dnl
 	if [ test -r /var/lib/defoma/gs.d/dirs/fonts/Fontmap.GS ]; then
 		WMF_GS_FONTMAP=/var/lib/defoma/gs.d/dirs/fonts/Fontmap.GS
 	elif [ test -r /var/lib/defoma/gs.d/dirs/fonts/Fontmap ]; then
@@ -815,12 +822,12 @@ AC_ARG_WITH(gsfontmap,[  --with-gsfontmap=FILE   ghostscript fontmap],[
 
 AC_ARG_WITH(gsfontdir,[  --with-gsfontdir=DIR    directory for ghostscript fonts],[
 	WMF_GS_FONTDIR=$withval
-],[	dnl 
+],[	dnl
 	dnl Test first for Debian Font Manager's ghostscript font directory.
 	dnl Next test for GnuWin32 ghostscript font directory.
 	dnl Next test for standard ghostscript font directory.
 	dnl If not found, default to RedHat location.
-	dnl 
+	dnl
 	if [ test -d /var/lib/defoma/gs.d/dirs/fonts ]; then
 		WMF_GS_FONTDIR=/var/lib/defoma/gs.d/dirs/fonts
 	elif [ test -d 'c:/progra~1/gs/gs/lib/fonts' ]; then
@@ -843,7 +850,7 @@ WMF_CONFIG_CFLAGS="$WMF_FT_CONFIG_CFLAGS $WMF_Z_CONFIG_CFLAGS $WMF_X_CONFIG_CFLA
 
 AC_SUBST(WMF_CONFIG_CFLAGS)
 
-WMF_LIBFLAGS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LDFLAGS"
+WMF_LIBFLAGS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LIBS"
 WMF_LIBFLAGS="$WMF_LIBFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
 
 AC_SUBST(WMF_LIBFLAGS)
