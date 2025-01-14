@@ -1,3 +1,11 @@
+# project files
+fonts/fontmap
+fonts/libwmf-fontmap
+libtool
+libwmf.pc
+libwmf.spec
+wmfconfig.h
+
 # Prerequisites
 *.d
 
