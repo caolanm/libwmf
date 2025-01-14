@@ -1,4 +1,5 @@
 # project files
+build-aux/
 fonts/fontmap
 fonts/libwmf-fontmap
 libtool
