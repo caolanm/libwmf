@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: libwmf
 Description: A library for reading and converting Windows MetaFile vector graphics (WMF)
 Version: @LIBWMF_VERSION@
-Libs: -lwmf -lwmflite @WMF_LIBFLAGS@
+Libs: -lwmf -lwmflite @AM_LDFLAGS@
 Cflags: @WMF_CONFIG_CFLAGS@
