@@ -10,7 +10,7 @@ DIST_SUBDIRS = . src include fonts
 
 SUBDIRS = $(DIRHEAVY)
 
-bin_SCRIPTS = libwmf-config
+dist_bin_SCRIPTS = libwmf-config
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libwmf.pc
@@ -36,5 +36,4 @@ WMFEXAMPLES = \
 
 EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README $(WMFEXAMPLES) \
 	libwmf.spec \
-	patches/acconfig.h \
-	ac-helpers/pkg-config/pkg.m4
+	patches/acconfig.h
