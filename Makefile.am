@@ -36,5 +36,4 @@ WMFEXAMPLES = \
 
 EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README $(WMFEXAMPLES) \
 	libwmf.spec \
-	patches/acconfig.h \
-	ac-helpers/pkg-config/pkg.m4
+	patches/acconfig.h
