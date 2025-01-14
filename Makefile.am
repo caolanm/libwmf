@@ -10,7 +10,7 @@ DIST_SUBDIRS = . src include fonts
 
 SUBDIRS = $(DIRHEAVY)
 
-bin_SCRIPTS = libwmf-config
+dist_bin_SCRIPTS = libwmf-config
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libwmf.pc
