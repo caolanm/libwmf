@@ -1,3 +1,12 @@
+libwmf-0.2.14 Release Notes
+---------------------------
+
+- Fix missing includes on macOS
+- Fix isExponentNegative expectedWidth accounting
+- Fix font installation dir
+- Use pkg-config for libxml2 when no explicit directory given
+- Automake cleanup and distcheck fixes
+
 libwmf-0.2.13 Release Notes
 ---------------------------
 
@@ -35,7 +44,7 @@ build libwmf without any device layers, but this has not been tested extensively
 and is not recommended for general use.)
 
 Special thanks to Bob Friesenhahn, Leonard Rosenthol, David C Sterratt and
-Tomasz K³oczko.
+Tomasz KÅ‚oczko.
 
 Hopefully this release will build on Solaris. My apologies to everyone who had
 problems with libwmf-0.2.1.
