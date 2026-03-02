@@ -162,23 +162,27 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 		goto _wmf_error;
 	}
 
-	/* find out how large the app wants the pixbuf to be
+	unsigned int uwidth, uheight;
+	err = wmf_display_size (API, &uwidth, &uheight, resolution_x, resolution_y);
+	width = uwidth;
+	height = uheight;
+	if (err != wmf_E_None || width <= 0 || height <= 0) {
+		g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+			     "Couldn't determine image size");
+		goto _wmf_error;
+	}
+
+	/* advertise natural size and find out how large the app wants the pixbuf to be
 	 */
 	if (context->size_func != NULL)
 		(*context->size_func) (&width, &height, context->user_data);
 
-	/* if these are <= 0, assume user wants the natural size of the wmf
+	/* if these are <= 0, assume user wants to close, as specified in
+	 * GdkPixbufModuleSizeFunc documentation
 	 */
 	if (width <= 0 || height <= 0) {
-		unsigned int uwidth, uheight;
-		err = wmf_display_size (API, &uwidth, &uheight, resolution_x, resolution_y);
-		width = uwidth;
-		height = uheight;
-		if (err != wmf_E_None || width <= 0 || height <= 0) {
-			g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-				     "Couldn't determine image size");
-			goto _wmf_error;
-		}
+		result = TRUE;
+		goto _wmf_error;
 	}
 
 	ddata->bbox          = bbox;        
