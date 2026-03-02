@@ -177,6 +177,14 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 	if (context->size_func != NULL)
 		(*context->size_func) (&width, &height, context->user_data);
 
+	/* if these are <= 0, assume user wants to close, as specified in
+	 * GdkPixbufModuleSizeFunc documentation
+	 */
+	if (width <= 0 || height <= 0) {
+		result = TRUE;
+		goto _wmf_error;
+	}
+
 	ddata->bbox          = bbox;        
 	ddata->width         = width;
 	ddata->height        = height;
