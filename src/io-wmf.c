@@ -294,6 +294,7 @@ fill_info (GdkPixbufFormat *info)
 		{ NULL, NULL, 0 }
 	};
 	static gchar *mime_types[] = { 
+		"image/wmf",
 		"image/x-wmf",
 		NULL 
 	};
