@@ -125,6 +125,25 @@ AC_MSG_RESULT([$os_win32])
 
 AC_SUBST(SYS_LIBM)
 
+dnl Setup DEF file flags for Windows DLL generation
+libwmflite_la_DEF_LDFLAGS=""
+libwmf_la_DEF_LDFLAGS=""
+AC_MSG_NOTICE([CC is $CC])
+if test "x$os_win32" = "xyes"; then
+    case "$CC" in
+		cl* | *cl.exe)
+			libwmflite_la_DEF_LDFLAGS="/DEF:.libs/wmflite.def"
+			libwmf_la_DEF_LDFLAGS="/DEF:.libs/wmf.def"
+			;;
+		*)
+			libwmflite_la_DEF_LDFLAGS="-Wl,--output-def=.libs/wmflite.def"
+			libwmf_la_DEF_LDFLAGS="-Wl,--output-def=.libs/wmf.def"
+			;;
+	esac
+fi
+AC_SUBST(libwmflite_la_DEF_LDFLAGS)
+AC_SUBST(libwmf_la_DEF_LDFLAGS)
+
 dnl Checks for programs.
 
 AC_PROG_AWK
@@ -517,7 +536,7 @@ AC_CHECK_HEADER(png.h,[
 			WMF_PNG_LDFLAGS="-lpng"
 		fi
 	],[	AC_MSG_ERROR(* * * unable to find libpng which is required by libwmf * * *)
-	],-lz -lm)
+	],-lz $SYS_LIBM)
 ],[	AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *)
 ])
 
@@ -634,7 +653,7 @@ if [ test "$search_for_gd" != "no" ]; then
 
 	CPPFLAGS="$CPPFLAGS $WMF_FT_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
 	LDFLAGS="$LDFLAGS $WMF_FT_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS"
-	other_libs="$other_libs -lfreetype -lpng -lz -lm"
+	other_libs="$other_libs -lfreetype -lpng -lz $SYS_LIBM"
 
 	AC_CHECK_HEADER(gd.h,[
 		AC_CHECK_LIB(gd,gdClipSetAdd,[
