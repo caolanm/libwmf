@@ -517,7 +517,7 @@ AC_CHECK_HEADER(png.h,[
 			WMF_PNG_LDFLAGS="-lpng"
 		fi
 	],[	AC_MSG_ERROR(* * * unable to find libpng which is required by libwmf * * *)
-	],-lz -lm)
+	],-lz $SYS_LIBM)
 ],[	AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *)
 ])
 
@@ -634,7 +634,7 @@ if [ test "$search_for_gd" != "no" ]; then
 
 	CPPFLAGS="$CPPFLAGS $WMF_FT_CFLAGS $WMF_PNG_CFLAGS $WMF_Z_CFLAGS"
 	LDFLAGS="$LDFLAGS $WMF_FT_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS"
-	other_libs="$other_libs -lfreetype -lpng -lz -lm"
+	other_libs="$other_libs -lfreetype -lpng -lz $SYS_LIBM"
 
 	AC_CHECK_HEADER(gd.h,[
 		AC_CHECK_LIB(gd,gdClipSetAdd,[
