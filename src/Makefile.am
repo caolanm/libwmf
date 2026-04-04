@@ -23,6 +23,7 @@ SUBDIRS = $(DIRHEAVY)
 AM_CFLAGS += @GDK_PIXBUF_CFLAGS@
 
 DEFS = @DEFS@ @WMF_DEFS@ $(DEFHEAVY) $(GDK_PIXBUF_DEFS) \
+    -DLIBWMF_EXPORTS \
 	-DPACKAGE=\"@PACKAGE@\" \
 	-DVERSION=\"@VERSION@\" \
 	-DWMF_FONTDIR=\"@WMF_FONTDIR@\" \
@@ -40,7 +41,8 @@ libwmflite_la_SOURCES = api.c bbuf.c meta.c player.c recorder.c
 libwmflite_la_LDFLAGS = $(SYS_LIBM) \
 	-no-undefined \
 	-version-info $(LT_LITE_CURRENT):$(LT_LITE_REVISION):$(LT_LITE_AGE) \
-	-release $(LT_RELEASE) -export-dynamic
+	-release $(LT_RELEASE) -export-dynamic \
+	$(libwmflite_la_DEF_LDFLAGS)
 
 libwmf_la_SOURCES = font.c stream.c wmf.c xml.c
 
@@ -61,7 +63,8 @@ libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO)
 libwmf_la_LDFLAGS = \
 	-no-undefined \
 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
-	-release $(LT_RELEASE) -export-dynamic
+	-release $(LT_RELEASE) -export-dynamic \
+	$(libwmf_la_DEF_LDFLAGS)
 
 loaderdir = $(libdir)/$(GDK_PIXBUF_DIR)
 

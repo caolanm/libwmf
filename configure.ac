@@ -125,6 +125,25 @@ AC_MSG_RESULT([$os_win32])
 
 AC_SUBST(SYS_LIBM)
 
+dnl Setup DEF file flags for Windows DLL generation
+libwmflite_la_DEF_LDFLAGS=""
+libwmf_la_DEF_LDFLAGS=""
+AC_MSG_NOTICE([CC is $CC])
+if test "x$os_win32" = "xyes"; then
+    case "$CC" in
+		cl* | *cl.exe)
+			libwmflite_la_DEF_LDFLAGS="/DEF:.libs/wmflite.def"
+			libwmf_la_DEF_LDFLAGS="/DEF:.libs/wmf.def"
+			;;
+		*)
+			libwmflite_la_DEF_LDFLAGS="-Wl,--output-def=.libs/wmflite.def"
+			libwmf_la_DEF_LDFLAGS="-Wl,--output-def=.libs/wmf.def"
+			;;
+	esac
+fi
+AC_SUBST(libwmflite_la_DEF_LDFLAGS)
+AC_SUBST(libwmf_la_DEF_LDFLAGS)
+
 dnl Checks for programs.
 
 AC_PROG_AWK
