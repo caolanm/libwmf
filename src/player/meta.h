@@ -844,8 +844,8 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 	U16 par_U16_x;
 	U16 par_U16_y;
 
-	U16 num_pars;
-	U16 count;
+	unsigned long num_pars;
+	unsigned long count;
 	U16 style;
 
 	U16 i;
@@ -903,8 +903,11 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 			if (ERR (API)) break;
 		}
 	}
-	if (skip_record)
-	{
+	if (skip_record || (Record->size < 1 + polypoly.npoly + 2 * num_pars))
+	{	if (!skip_record)
+		{	WMF_ERROR (API,"Bad record - too few parameters for polypolygon!");
+			API->err = wmf_E_BadFormat;
+		}
 		for (i = 0; i < polypoly.npoly; i++)
 		{	if (polypoly.pt[i]) wmf_free (API, polypoly.pt[i]);
 		}
