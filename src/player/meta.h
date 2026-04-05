@@ -2097,6 +2097,11 @@ static int meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 	{	bmp_draw.crop.h = bmp_read.bmp.height - bmp_draw.crop.y;
 	}
 
+	if ((bmp_draw.crop.w == 0) || (bmp_draw.crop.h == 0))
+	{	if (FR->bmp_free) FR->bmp_free (API,&(bmp_read.bmp));
+		return (changed);
+	}
+
 	stretch_x = (double) par_U16_w / (double) bmp_draw.crop.w;
 	stretch_y = (double) par_U16_h / (double) bmp_draw.crop.h;
 
