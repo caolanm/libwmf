@@ -852,7 +852,7 @@ static long TellBlob (BMPSource* src)
 %
 %
 */
-static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsigned char* pixels)
+static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsigned char* pixels,unsigned int number_pixels,unsigned int bytes_per_line)
 {	int byte;
 	int count;
 	int i;
@@ -865,12 +865,12 @@ static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsi
 	unsigned char* q;
 	unsigned char* end;
 
-	for (u = 0; u < ((U32) bmp->width * (U32) bmp->height); u++) pixels[u] = 0;
+	for (u = 0; u < number_pixels; u++) pixels[u] = 0;
 
 	byte = 0;
 	x = 0;
 	q = pixels;
-	end = pixels + bmp->width * bmp->height;
+	end = pixels + number_pixels;
 
 	for (y = 0; y < bmp->height; )
 	{	count = ReadBlobByte (src);
@@ -903,7 +903,7 @@ static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsi
 				y++;
 				if (y >= bmp->height)
 					return 0;
-				q = pixels + y * bmp->width;
+				q = pixels + y * bytes_per_line;
 				break;
 			 }
 			case 0x02:
@@ -914,7 +914,7 @@ static int DecodeImage (wmfBMP* bmp,BMPSource* src,unsigned int compression,unsi
 					return 0;
 				if (x >= bmp->width)
 					return 0;
-				q = pixels + y * bmp->width + x;
+				q = pixels + y * bytes_per_line + x;
 				break;
 			 }
 			default:
@@ -1171,7 +1171,7 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 	{
 		if (bmp_info.bits_per_pixel == 8)	/* Convert run-length encoded raster pixels. */
 		{
-			if (!DecodeImage (bmp,src,(unsigned int) bmp_info.compression,data->image))
+			if (!DecodeImage (bmp,src,(unsigned int) bmp_info.compression,data->image,image_size,bytes_per_line))
 			{	WMF_ERROR (API,"corrupt bmp");
 				API->err = wmf_E_BadFormat;
 			}
