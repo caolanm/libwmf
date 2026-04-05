@@ -141,6 +141,12 @@ static void dc_stack_push (wmfAPI* API,wmfDC* dc)
 		return;
 	}
 
+	if (P->dc_stack_length >= 1024)
+	{	WMF_ERROR (API,"DC stack depth limit exceeded!");
+		API->err = wmf_E_BadFormat;
+		return;
+	}
+
 	if (P->dc_stack == 0)
 	{	P->dc_stack = (wmfDC**) wmf_malloc (API,8 * sizeof (wmfDC*));
 
