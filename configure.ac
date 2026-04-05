@@ -164,7 +164,7 @@ PKG_PROG_PKG_CONFIG
 dnl Checks for header files.
 AC_CHECK_HEADERS(time.h)
 AC_CHECK_HEADER(unistd.h,[
-	AC_DEFINE([HAVE_UNISTD_H], [], [Header unistd.h is available])
+	AC_DEFINE([HAVE_UNISTD_H], [1], [Header unistd.h is available])
 	GD_DEFS="$GD_DEFS -DHAVE_UNISTD_H"
 ])
 
