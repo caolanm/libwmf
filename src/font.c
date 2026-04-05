@@ -44,8 +44,8 @@ static char* _libwmf_get_xtra_fontmap (void)
 	static char retval[1000] = "";
 
 	if (retval[0] == '\0')
-	{	strcpy (retval, _libwmf_get_fontdir ());
-		strcat (retval, "\\share\\libwmf\\fonts\\fontmap");
+	{	snprintf (retval, sizeof (retval), "%s\\share\\libwmf\\fonts\\fontmap",
+			  _libwmf_get_fontdir ());
 	}
 
 	return retval;
