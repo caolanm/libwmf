@@ -2665,8 +2665,12 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 			fprintf (stderr,"\t#par=%lu; max. index = 0",Record->size);
 		}
 
+		length = ParU16 (API,Record,0);
+
+		if (length == 0) break;
+
 		if (WMF_DC_TEXTALIGN (P->dc) & TA_UPDATECP)
-		{	if ((Record->size) < (unsigned int)(1 + (length + 1) / 2))
+		{	if ((Record->size) < (unsigned long)(1 + (length + 1) / 2))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -2675,7 +2679,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 			l_pt = P->current;
 		}
 		else
-		{	if ((Record->size) < (unsigned int)(3 + (length + 1) / 2))
+		{	if ((Record->size) < (unsigned long)(3 + (length + 1) / 2))
 			{	WMF_ERROR (API,"Record is too short!");
 				API->err = wmf_E_BadFormat;
 				break;
@@ -2693,10 +2697,6 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 
 		drawtext.pt = wmf_D_Coord_translate (API,l_pt);
 
-		length = ParU16 (API,Record,0);
-
-		if (length == 0) break;
-
 		drawtext.TL.x = 0;
 		drawtext.TL.y = 0;
 
@@ -2709,6 +2709,12 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 	case META_EXTTEXTOUT:
 		if (SCAN (API) && DIAG (API))
 		{	fprintf (stderr,"\t[0x%04x]",Record->function);
+		}
+
+		if (Record->size < 4)
+		{	WMF_ERROR (API,"Record is too short!");
+			API->err = wmf_E_BadFormat;
+			break;
 		}
 
 		if (WMF_DC_TEXTALIGN (P->dc) & TA_UPDATECP)
@@ -2737,7 +2743,13 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 
 		bbox_info = ParU16 (API,Record,3);
 		if (bbox_info)
-		{	if (SCAN (API) && DIAG (API))
+		{	if (Record->size < (unsigned long)(8 + (length + 1) / 2))
+			{	WMF_ERROR (API,"Record is too short!");
+				API->err = wmf_E_BadFormat;
+				break;
+			}
+
+			if (SCAN (API) && DIAG (API))
 			{	fprintf (stderr,",7");
 			}
 
@@ -2763,7 +2775,13 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 			str_record = OffsetRecord (API,Record,8);
 		}
 		else
-		{	drawtext.TL.x = 0;
+		{	if (Record->size < (unsigned long)(4 + (length + 1) / 2))
+			{	WMF_ERROR (API,"Record is too short!");
+				API->err = wmf_E_BadFormat;
+				break;
+			}
+
+			drawtext.TL.x = 0;
 			drawtext.TL.y = 0;
 
 			drawtext.BR.x = 0;
