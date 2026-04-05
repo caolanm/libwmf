@@ -6,9 +6,9 @@ else
 DIRHEAVY = . src include
 endif
 
-DIST_SUBDIRS = . src include fonts
+DIST_SUBDIRS = . src include fonts tests
 
-SUBDIRS = $(DIRHEAVY)
+SUBDIRS = $(DIRHEAVY) tests
 
 dist_bin_SCRIPTS = libwmf-config
 
