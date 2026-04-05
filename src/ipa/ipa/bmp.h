@@ -824,6 +824,17 @@ static unsigned int ReadBlobLSBLong (BMPSource* src)
 	return (value);
 }
 
+static signed int ReadBlobLSBSignedLong (BMPSource* src)
+{	union
+	{	unsigned int unsigned_value;
+		signed int   signed_value;
+	} quantum;
+
+	quantum.unsigned_value = ReadBlobLSBLong (src);
+
+	return (quantum.signed_value);
+}
+
 static long TellBlob (BMPSource* src)
 {	return ((long) (src->ptr - src->begin));
 }
@@ -1026,8 +1037,8 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 	}
 	else
 	{	/* Microsoft Windows BMP image file. */
-		bmp_info.width  = ReadBlobLSBLong (src);
-		bmp_info.height = ReadBlobLSBLong (src);
+		bmp_info.width  = ReadBlobLSBSignedLong (src);
+		bmp_info.height = ReadBlobLSBSignedLong (src);
 		bmp_info.planes = ReadBlobLSBShort (src);
 
 		bmp_info.bits_per_pixel = ReadBlobLSBShort (src);
@@ -1072,6 +1083,18 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 				bmp_info.gamma_scale.z = ReadBlobLSBShort (src);
 			}
 		}
+	}
+
+	if (bmp_info.width <= 0)
+	{	WMF_ERROR (API,"BMP has invalid width");
+		API->err = wmf_E_BadFormat;
+		return;
+	}
+
+	if ((bmp_info.height == 0) || (bmp_info.height < -INT_MAX))
+	{	WMF_ERROR (API,"BMP has invalid height");
+		API->err = wmf_E_BadFormat;
+		return;
 	}
 
 	if (bmp_info.height < 0)
