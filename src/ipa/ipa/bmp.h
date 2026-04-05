@@ -1088,8 +1088,16 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 	if (bmp->height == 0) bmp->height = (U16) bmp_info.height;
 
 	data->NColors = 0;
-	if ((bmp_info.number_colors != 0) || (bmp_info.bits_per_pixel < 16))
-	{	data->NColors = (unsigned int) bmp_info.number_colors;
+	if ((bmp_info.number_colors != 0) || (bmp_info.bits_per_pixel <= 8))
+	{	unsigned int max_colors = 0;
+
+		if (bmp_info.bits_per_pixel <= 8)
+			max_colors = 1u << bmp_info.bits_per_pixel;
+
+		data->NColors = (unsigned int) bmp_info.number_colors;
+
+		if ((max_colors > 0) && (data->NColors > max_colors))
+			data->NColors = max_colors;
 	}
 
 	if (data->NColors > 0)
