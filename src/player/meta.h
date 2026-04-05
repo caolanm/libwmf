@@ -688,6 +688,12 @@ static int meta_lines (wmfAPI* API,wmfRecord* Record)
 
 	polyline.count = ParU16 (API,Record,0);
 
+	if (Record->size < (unsigned long) 1 + 2 * polyline.count)
+	{	WMF_ERROR (API,"Bad record - too few parameters for polyline!");
+		API->err = wmf_E_BadFormat;
+		return (changed);
+	}
+
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,",%lu",(unsigned long) (2 * polyline.count));
 	}
@@ -764,6 +770,12 @@ static int meta_polygon (wmfAPI* API,wmfRecord* Record)
 	}
 
 	polyline.count = ParU16 (API,Record,0);
+
+	if (Record->size < (unsigned long) 1 + 2 * polyline.count)
+	{	WMF_ERROR (API,"Bad record - too few parameters for polygon!");
+		API->err = wmf_E_BadFormat;
+		return (changed);
+	}
 
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,",%lu",(unsigned long) (2 * polyline.count));
