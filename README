@@ -1,3 +1,10 @@
+libwmf-0.2.15 Release Notes
+---------------------------
+
+- Various image and record parsing fixes
+- Add basic test suite
+- MSVC build fixes
+
 libwmf-0.2.14 Release Notes
 ---------------------------
 

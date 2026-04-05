@@ -1,3 +1,11 @@
+v. 0.2.15
+	* BMP image parsing fixes in embedded DIBs
+	* record size validation for polyline, polygon, polypolygon and text records
+	* fix RLE decoder row-stride mismatch
+	* limit DC stack depth to prevent resource exhaustion
+	* add basic test suite
+	* MSVC build fixes
+
 v. 0.2.14
 	* new release with accumulated fixes
 
