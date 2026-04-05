@@ -21,6 +21,7 @@
 #include "wmfconfig.h"
 #endif /* HAVE_CONFIG_H */
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>

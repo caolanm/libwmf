@@ -1131,6 +1131,18 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 
 	bytes_per_line = 4 * ((bmp->width * bmp_info.bits_per_pixel + 31) / 32);
 
+	if ((bmp->width == 0) || (bmp->height == 0))
+	{	WMF_ERROR (API,"BMP image has zero width or height");
+		API->err = wmf_E_BadFormat;
+		return;
+	}
+
+	if (bytes_per_line > UINT_MAX / bmp->height)
+	{	WMF_ERROR (API,"BMP image dimensions too large");
+		API->err = wmf_E_BadFormat;
+		return;
+	}
+
 	image_size = bytes_per_line * bmp->height;
 
 	data->image = (unsigned char*) wmf_malloc (API,image_size);
