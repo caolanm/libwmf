@@ -15,6 +15,7 @@
 #ifndef _WIN32
 #include <unistd.h>
 #else
+#include <io.h>
 #define R_OK 2
 #endif
 
