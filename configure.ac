@@ -474,28 +474,39 @@ if test $LIBWMF_BUILDSTYLE = heavy; then
 
 dnl WMF_Z_CFLAGS are required later on when testing for png, etc.
 
-AC_CHECK_HEADER(zlib.h,[
-	AC_CHECK_LIB(z,gzputs,[
-		if [ test "x$ZLIB_DIR" != "x" ]; then
-			WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
-			WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
-			WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lz"
-		else
-			WMF_Z_LDFLAGS="-lz"
-		fi
-	],[	AC_CHECK_LIB(gz,gzputs,[
-			if [ test "x$ZLIB_DIR" != "x" ]; then
-				WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
-				WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
-				WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lgz"
-			else
-				WMF_Z_LDFLAGS="-lgz"
-			fi
-		],[	AC_MSG_ERROR(* * * unable to find libz which is required by libwmf * * *)
-		])
-	])
-],[	AC_MSG_ERROR(* * * unable to find "zlib.h" which is required by libwmf * * *)
+PKG_CHECK_MODULES([ZLIB], [zlib], [
+    WMF_Z_CONFIG_CFLAGS="$ZLIB_CFLAGS"
+    WMF_Z_CFLAGS="$ZLIB_CFLAGS"
+    WMF_Z_LDFLAGS="$ZLIB_LIBS"
+    have_zlib=yes
+], [
+    have_zlib=no
 ])
+
+if test "x$have_zlib" != "xyes"; then
+    AC_CHECK_HEADER(zlib.h,[
+        AC_CHECK_LIB(z,gzputs,[
+            if [ test "x$ZLIB_DIR" != "x" ]; then
+                WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
+                WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
+                WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lz"
+            else
+                WMF_Z_LDFLAGS="-lz"
+            fi
+        ],[	AC_CHECK_LIB(gz,gzputs,[
+				if [ test "x$ZLIB_DIR" != "x" ]; then
+					WMF_Z_CONFIG_CFLAGS="-I$ZLIB_DIR/include"
+					WMF_Z_CFLAGS="-I$ZLIB_DIR/include"
+					WMF_Z_LDFLAGS="-L$ZLIB_DIR/lib -lgz"
+				else
+					WMF_Z_LDFLAGS="-lgz"
+				fi
+			],[	AC_MSG_ERROR(* * * unable to find libz which is required by libwmf * * *)
+			])
+		])
+	],[ AC_MSG_ERROR(* * * unable to find "zlib.h" which is required by libwmf * * *)
+	])
+fi
 
 fi # $LIBWMF_BUILDSTYLE = heavy
 
@@ -527,18 +538,28 @@ if test $LIBWMF_BUILDSTYLE = heavy; then
 dnl "png.h" includes "zlib.h"
 CPPFLAGS="$CPPFLAGS $WMF_Z_CFLAGS"
 
-AC_CHECK_HEADER(png.h,[
-	AC_CHECK_LIB(png,png_write_image,[
-		if [ test "x$PNG_DIR" != "x" ]; then
-			WMF_PNG_CFLAGS="-I$PNG_DIR/include"
-			WMF_PNG_LDFLAGS="-L$PNG_DIR/lib -lpng"
-		else
-			WMF_PNG_LDFLAGS="-lpng"
-		fi
-	],[	AC_MSG_ERROR(* * * unable to find libpng which is required by libwmf * * *)
-	],-lz $SYS_LIBM)
-],[	AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *)
+PKG_CHECK_MODULES([LIBPNG], [libpng], [
+    WMF_PNG_CFLAGS="$LIBPNG_CFLAGS"
+    WMF_PNG_LDFLAGS="$LIBPNG_LIBS"
+    have_png=yes
+], [
+    have_png=no
 ])
+
+if test "x$have_png" != "xyes"; then
+    AC_CHECK_HEADER(png.h,[
+        AC_CHECK_LIB(png,png_write_image,[
+            if [ test "x$PNG_DIR" != "x" ]; then
+                WMF_PNG_CFLAGS="-I$PNG_DIR/include"
+                WMF_PNG_LDFLAGS="-L$PNG_DIR/lib -lpng"
+            else
+                WMF_PNG_LDFLAGS="-lpng"
+            fi
+        ],[ AC_MSG_ERROR(* * * unable to find libpng which is required by libwmf * * *) 
+        ],-lz $SYS_LIBM)
+    ],[ AC_MSG_ERROR(* * * unable to find "png.h" which is required by libwmf * * *) 
+    ])
+fi
 
 AC_DEFINE([HAVE_LIBPNG], [], [Library libpng is available])
 GD_DEFS="$GD_DEFS -DHAVE_LIBPNG"
