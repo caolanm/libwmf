@@ -33,63 +33,63 @@ typedef void * wmfCanvas;
 /**
  * Make a canvas for drawing to, to build a metafile in memory.
  */
-extern wmfCanvas * wmf_canvas (wmfAPI*,unsigned short,unsigned short,unsigned short);
+extern LIBWMF_EXPORT wmfCanvas * wmf_canvas (wmfAPI*,unsigned short,unsigned short,unsigned short);
 
 /**
  * Final canvas call: finish off the metafile, free canvas etc., and return the metafile buffer.
  */
-extern unsigned char * wmf_canvas_done (wmfAPI*,wmfCanvas*,unsigned char**,unsigned long*);
+extern LIBWMF_EXPORT unsigned char * wmf_canvas_done (wmfAPI*,wmfCanvas*,unsigned char**,unsigned long*);
 
 /**
  * Set current pen (stroke) attributes.
  */
-extern int wmf_canvas_set_pen (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_set_pen (wmfAPI*,wmfCanvas*,
 			       unsigned short,unsigned short,unsigned short,
 			       unsigned short,wmfRGB);
 
 /**
  * Set current brush (fill) attributes.
  */
-extern int wmf_canvas_set_brush (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,wmfRGB);
+extern LIBWMF_EXPORT int wmf_canvas_set_brush (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,wmfRGB);
 
 /**
  * Change current font.
  */
-extern int wmf_canvas_set_font (wmfAPI*,wmfCanvas*,const char*,
+extern LIBWMF_EXPORT int wmf_canvas_set_font (wmfAPI*,wmfCanvas*,const char*,
 				unsigned short,unsigned short,unsigned short,unsigned short,
 				unsigned short,unsigned short,unsigned short,unsigned short);
 
 /**
  * Set polygon fill mode.
  */
-extern int wmf_canvas_set_polyfill (wmfAPI*,wmfCanvas*,unsigned short);
+extern LIBWMF_EXPORT int wmf_canvas_set_polyfill (wmfAPI*,wmfCanvas*,unsigned short);
 
 /**
  * Set background mode.
  */
-extern int wmf_canvas_set_background (wmfAPI*,wmfCanvas*,unsigned short);
+extern LIBWMF_EXPORT int wmf_canvas_set_background (wmfAPI*,wmfCanvas*,unsigned short);
 
 /**
  * Set background color.
  */
-extern int wmf_canvas_set_bgcolor (wmfAPI*,wmfCanvas*,wmfRGB);
+extern LIBWMF_EXPORT int wmf_canvas_set_bgcolor (wmfAPI*,wmfCanvas*,wmfRGB);
 
 /**
  * Set text color.
  */
-extern int wmf_canvas_set_textcolor (wmfAPI*,wmfCanvas*,wmfRGB);
+extern LIBWMF_EXPORT int wmf_canvas_set_textcolor (wmfAPI*,wmfCanvas*,wmfRGB);
 
 /**
  * Draw a line.
  */
-extern int wmf_canvas_line (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_line (wmfAPI*,wmfCanvas*,
 			    unsigned short,unsigned short,
 			    unsigned short,unsigned short);
 
 /**
  * Draw a rounded rectangle.
  */
-extern int wmf_canvas_roundrect (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_roundrect (wmfAPI*,wmfCanvas*,
 				 unsigned short,unsigned short,
 				 unsigned short,unsigned short,
 				 unsigned short,unsigned short);
@@ -97,14 +97,14 @@ extern int wmf_canvas_roundrect (wmfAPI*,wmfCanvas*,
 /**
  * Draw a rectangle.
  */
-extern int wmf_canvas_rect (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_rect (wmfAPI*,wmfCanvas*,
 			    unsigned short,unsigned short,
 			    unsigned short,unsigned short);
 
 /**
  * Draw an ellipse in the given bounding box.
  */
-extern int wmf_canvas_ellipse (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_ellipse (wmfAPI*,wmfCanvas*,
 			       unsigned short,unsigned short,
 			       unsigned short,unsigned short);
 
@@ -121,7 +121,7 @@ typedef enum _wmf_canvas_arc_t
 /**
  * Draw an elliptic arc in the given bounding box.
  */
-extern int wmf_canvas_arc (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_arc (wmfAPI*,wmfCanvas*,
 			   unsigned short,unsigned short,
 			   unsigned short,unsigned short,
 			   unsigned short,unsigned short,
@@ -130,30 +130,30 @@ extern int wmf_canvas_arc (wmfAPI*,wmfCanvas*,
 /**
  * Draw a line connecting a sequence of points.
  */
-extern int wmf_canvas_polyline (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_polyline (wmfAPI*,wmfCanvas*,
 				unsigned short*,unsigned short*,unsigned short);
 
 /**
  * Draw a polygon.
  */
-extern int wmf_canvas_polygon (wmfAPI*,wmfCanvas*,
+extern LIBWMF_EXPORT int wmf_canvas_polygon (wmfAPI*,wmfCanvas*,
 			       unsigned short*,unsigned short*,unsigned short);
 
 /**
  * Draw a set of polygons.
  */
-extern int wmf_canvas_polygons (wmfAPI*,wmfCanvas*,unsigned short,
+extern LIBWMF_EXPORT int wmf_canvas_polygons (wmfAPI*,wmfCanvas*,unsigned short,
 				unsigned short**,unsigned short**,unsigned short*);
 
 /**
  * Draw text.
  */
-extern int wmf_canvas_text (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,const char*);
+extern LIBWMF_EXPORT int wmf_canvas_text (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,const char*);
 
 /**
  * Place a bitmap.
  */
-extern int wmf_canvas_bitmap (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,
+extern LIBWMF_EXPORT int wmf_canvas_bitmap (wmfAPI*,wmfCanvas*,unsigned short,unsigned short,
 			      unsigned short,unsigned short,const unsigned char*,unsigned long);
 
 #ifdef __cplusplus

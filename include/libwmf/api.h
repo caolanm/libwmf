@@ -61,7 +61,7 @@ extern LIBWMF_EXPORT wmf_error_t wmf_lite_destroy (wmfAPI*);
 /**
  * Reads the header of the current metafile
  */
-extern wmf_error_t wmf_header_read (wmfAPI*);
+extern LIBWMF_EXPORT wmf_error_t wmf_header_read (wmfAPI*);
 
 /**
  * Scans the current metafile to determine bounding box and resources
@@ -86,7 +86,7 @@ extern LIBWMF_EXPORT wmf_error_t wmf_display_size (wmfAPI*,unsigned int*,unsigne
 /**
  * Sets user defines input stream functions for reading a metafile
  */
-extern wmf_error_t wmf_bbuf_input (wmfAPI*,wmfRead,wmfSeek,wmfTell,void*);
+extern LIBWMF_EXPORT wmf_error_t wmf_bbuf_input (wmfAPI*,wmfRead,wmfSeek,wmfTell,void*);
 
 /**
  * Opens a file as the current metafile
@@ -96,7 +96,7 @@ extern LIBWMF_EXPORT wmf_error_t wmf_file_open (wmfAPI*,const char*);
 /**
  * Closes the file corresponding to the current metafile
  */
-extern wmf_error_t wmf_file_close (wmfAPI*);
+extern LIBWMF_EXPORT wmf_error_t wmf_file_close (wmfAPI*);
 
 /**
  * Specifies an array of unsigned char as the current metafile
@@ -160,7 +160,7 @@ extern LIBWMF_EXPORT void wmf_free (wmfAPI*,void*);
 /**
  * Detach memory from library's memory manager
  */
-extern void  wmf_detach (wmfAPI*,void*);
+extern LIBWMF_EXPORT void  wmf_detach (wmfAPI*,void*);
 
 /**
  * strdup() & attach to library's memory manager
@@ -185,52 +185,52 @@ extern LIBWMF_EXPORT unsigned long wmf_strbuf_grow (wmfAPI*);
 /**
  * Initializes the metafile player (called by wmf_api_create())
  */
-extern wmf_error_t wmf_player_init (wmfAPI*);
+extern LIBWMF_EXPORT wmf_error_t wmf_player_init (wmfAPI*);
 
 /**
  * Returns the Aldus Checksum of the metafile's header
  */
-extern U16 wmf_aldus_checksum (wmfAPI*);
+extern LIBWMF_EXPORT U16 wmf_aldus_checksum (wmfAPI*);
 
 /**
  * Reads a two-byte sequence from the current metafile, returns U16
  */
-extern U16 wmf_read_16 (wmfAPI*);
+extern LIBWMF_EXPORT U16 wmf_read_16 (wmfAPI*);
 
 /**
  * Reads a four-byte sequence from the current metafile, returns U32
  */
-extern U32 wmf_read_32 (wmfAPI*,U16*,U16*);
+extern LIBWMF_EXPORT U32 wmf_read_32 (wmfAPI*,U16*,U16*);
 
 /**
  * file input (wmf_file_open): fgetc()
  */
-extern int wmf_file_read (void*);
+extern LIBWMF_EXPORT int wmf_file_read (void*);
 
 /**
  * file input (wmf_file_open): fseek()
  */
-extern int wmf_file_seek (void*,long);
+extern LIBWMF_EXPORT int wmf_file_seek (void*,long);
 
 /**
  * file input (wmf_file_open): ftell()
  */
-extern long wmf_file_tell (void*);
+extern LIBWMF_EXPORT long wmf_file_tell (void*);
 
 /**
  * memory input (wmf_mem_open): fgetc() equiv.
  */
-extern int wmf_mem_read (void*);
+extern LIBWMF_EXPORT int wmf_mem_read (void*);
 
 /**
  * memory input (wmf_mem_open): fseek() equiv.
  */
-extern int wmf_mem_seek (void*,long);
+extern LIBWMF_EXPORT int wmf_mem_seek (void*,long);
 
 /**
  * memory input (wmf_mem_open): ftell() equiv.
  */
-extern long wmf_mem_tell (void*);
+extern LIBWMF_EXPORT long wmf_mem_tell (void*);
 
 /* default ztream functions; NOT to be used directly! */
 
@@ -262,7 +262,7 @@ extern LIBWMF_EXPORT void wmf_error (wmfAPI*,char*,int,char*);
 /**
  * Writes message to debug stream (use WMF_DEBUG macro)
  */
-extern void wmf_debug (wmfAPI*,char*,int,char*);
+extern LIBWMF_EXPORT void wmf_debug (wmfAPI*,char*,int,char*);
 
 /**
  * Formatted print to debug stream
@@ -272,7 +272,7 @@ extern LIBWMF_EXPORT void wmf_printf (wmfAPI*,char*,...);
 /**
  * Asserts on zero expression (use WMF_ASSERT macro)
  */
-extern void wmf_assert (wmfAPI*,char*,int);
+extern LIBWMF_EXPORT void wmf_assert (wmfAPI*,char*,int);
 
 /**
  * Outputs library-specific command-line options
@@ -282,7 +282,7 @@ extern char* wmf_help (void);
 /**
  * Sets drawing origin in device coordinates
  */
-extern void wmf_set_viewport_origin (wmfAPI*,wmfD_Coord);
+extern LIBWMF_EXPORT void wmf_set_viewport_origin (wmfAPI*,wmfD_Coord);
 
 /**
  * Sets call-back function, called after every metafile record
@@ -292,7 +292,7 @@ extern LIBWMF_EXPORT void wmf_status_function (wmfAPI*,void*,wmfStatus);
 /**
  * Writes to --wmf-write file (which may be WMF or home-made wmfxml)
  */
-extern void wmf_write (wmfAPI*,unsigned long,unsigned int,const char*,
+extern LIBWMF_EXPORT void wmf_write (wmfAPI*,unsigned long,unsigned int,const char*,
 		       char**,const unsigned char*,unsigned long);
 
 /**
@@ -313,7 +313,7 @@ extern LIBWMF_EXPORT void wmf_attr_new (wmfAPI*,wmfAttributes*);
 /**
  * Clear/Empty a wmfAttributes structure
  */
-extern void wmf_attr_clear (wmfAPI*,wmfAttributes*);
+extern LIBWMF_EXPORT void wmf_attr_clear (wmfAPI*,wmfAttributes*);
 
 /**
  * Free memory associated with a wmfAttributes structure
@@ -328,7 +328,7 @@ extern LIBWMF_EXPORT const char * wmf_attr_add (wmfAPI*,wmfAttributes*,const cha
 /**
  * Return value of name in a wmfAttributes structure; returns 0 if name not found
  */
-extern const char * wmf_attr_query (wmfAPI*,wmfAttributes*,const char*);
+extern LIBWMF_EXPORT const char * wmf_attr_query (wmfAPI*,wmfAttributes*,const char*);
 
 /**
  * Load wmfxml file and wmf_mem_open() it
