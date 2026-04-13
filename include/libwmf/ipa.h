@@ -84,7 +84,7 @@ extern int    wmf_ipa_bmp_color (wmfAPI*,wmfBMP*,wmfRGB*,unsigned int,unsigned i
 extern void   wmf_ipa_bmp_setcolor (wmfAPI*,wmfBMP*,wmfRGB*,unsigned char,unsigned int,unsigned int);
 extern int    wmf_ipa_bmp_interpolate (wmfAPI*,wmfBMP*,wmfRGB*,float,float);
 
-extern void          wmf_ipa_color_init (wmfAPI*);
+extern LIBWMF_EXPORT void          wmf_ipa_color_init (wmfAPI*);
 extern LIBWMF_EXPORT void          wmf_ipa_color_add (wmfAPI*,wmfRGB*);
 extern LIBWMF_EXPORT unsigned long wmf_ipa_color_index (wmfAPI*,wmfRGB*);
 extern LIBWMF_EXPORT unsigned long wmf_ipa_color_count (wmfAPI*);
@@ -96,8 +96,8 @@ extern unsigned int wmf_ipa_page_height (wmfAPI*,wmf_page_t);
 
 /* Other useful functions
  */
-extern wmfRGB wmf_rgb_white (void);
-extern wmfRGB wmf_rgb_black (void);
+extern LIBWMF_EXPORT wmfRGB wmf_rgb_white (void);
+extern LIBWMF_EXPORT wmfRGB wmf_rgb_black (void);
 extern LIBWMF_EXPORT wmfRGB wmf_rgb_color (wmfAPI*,float,float,float);
 
 /* Structure definitions
