@@ -22,6 +22,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "wmfdefs.h"
 
@@ -538,7 +539,36 @@ int * wmf_gd_image_pixels (void * gd_image)
 	int * pixels = 0;
 #ifdef HAVE_GD
 	gdImagePtr img = (gdImagePtr) gd_image;
-	if (img) pixels = img->_tpixels;
+	if (img)
+	{
+#ifdef HAVE_SYS_GD
+		static int* export_pixels = 0;
+		static size_t export_count = 0;
+
+		size_t width = gdImageSX (img);
+		size_t height = gdImageSY (img);
+		size_t count = width * height;
+		size_t row;
+		size_t col;
+
+		if (count > export_count)
+		{	int* more = (int*) realloc (export_pixels,count * sizeof (int));
+			if (more == 0) return (0);
+			export_pixels = more;
+			export_count = count;
+		}
+
+		for (row = 0; row < height; row++)
+		{	for (col = 0; col < width; col++)
+			{	export_pixels[(row * width) + col] = gdImageTrueColorPixel (img,col,row);
+			}
+		}
+
+		pixels = export_pixels;
+#else
+		pixels = img->_tpixels;
+#endif
+	}
 #endif /* HAVE_GD */
 	return (pixels);
 }

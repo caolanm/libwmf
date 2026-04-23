@@ -160,7 +160,7 @@ static void wmf_gd_device_end (wmfAPI* API)
 	if (gd->pen.image) gdImageDestroy (gd->pen.image);
 
 	if (ddata->type == wmf_gd_image)
-	{	gdClipSetReset (gd->image); /* Remove any clipping rectangles */
+	{	wmf_gd_clip_reset (gd->image); /* Remove any clipping rectangles */
 		ddata->gd_image = (void*) gd->image;
 	}
 	else
