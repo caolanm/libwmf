@@ -677,10 +677,8 @@ if [ test "$search_for_gd" != "no" ]; then
 	other_libs="$other_libs -lfreetype -lpng -lz $SYS_LIBM"
 
 	AC_CHECK_HEADER(gd.h,[
-		AC_CHECK_LIB(gd,gdClipSetAdd,[
-			AC_CHECK_LIB(gd,gdft_draw_bitmap,[
-				libwmf_gd="sys"
-			],,$other_libs)
+		AC_CHECK_LIB(gd,gdImageSetClip,[
+			libwmf_gd="sys"
 		],,$other_libs)
 	])
 fi
@@ -688,6 +686,9 @@ fi
 if [ test "x$libwmf_gd" != "xnone" ]; then
 	AC_DEFINE([HAVE_GD], [1], [Library gd is available])
 	build_gd_layer=yes
+	if [ test "x$libwmf_gd" = "xsys" ]; then
+		AC_DEFINE([HAVE_SYS_GD], [1], [Build against system libgd])
+	fi
 else
 	build_gd_layer=no
 fi
@@ -877,8 +878,11 @@ AC_SUBST([AM_CFLAGS])
 WMF_CONFIG_CFLAGS="$WMF_FT_CONFIG_CFLAGS $WMF_Z_CONFIG_CFLAGS $WMF_X_CONFIG_CFLAGS"
 AC_SUBST([WMF_CONFIG_CFLAGS])
 
-AM_LDFLAGS="$AM_LDFLAGS $WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LIBS"
-AM_LDFLAGS="$AM_LDFLAGS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
+WMF_DEP_LIBS="$WMF_PLOT_LDFLAGS $WMF_GD_LDFLAGS $WMF_FT_LDFLAGS $WMF_X_LDFLAGS $WMF_XML_LIBS"
+WMF_DEP_LIBS="$WMF_DEP_LIBS $WMF_JPEG_LDFLAGS $WMF_PNG_LDFLAGS $WMF_Z_LDFLAGS $SYS_LIBM"
+AC_SUBST([WMF_DEP_LIBS])
+
+AM_LDFLAGS="$AM_LDFLAGS $WMF_DEP_LIBS"
 AC_SUBST([AM_LDFLAGS])
 
 AC_SUBST(WMF_FONTDIR)

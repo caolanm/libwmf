@@ -98,13 +98,20 @@ static void wmf_gd_region_clip (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 	gdPoint TL;
 	gdPoint BR;
 
+#ifdef HAVE_SYS_GD
+	int x_min = 0;
+	int x_max = 0;
+	int y_min = 0;
+	int y_max = 0;
+#else
 	gdClipRectangle rect;
+#endif
 
 	unsigned int i;
 
 	WMF_DEBUG (API,"wmf_[gd_]region_clip");
 
-	gdClipSetReset (gd->image);
+	wmf_gd_clip_reset (gd->image);
 
 	if (poly_rect->count == 0) return;
 
@@ -112,11 +119,33 @@ static void wmf_gd_region_clip (wmfAPI* API,wmfPolyRectangle_t* poly_rect)
 	{	TL = gd_translate (API,poly_rect->TL[i]);
 		BR = gd_translate (API,poly_rect->BR[i]);
 
+#ifdef HAVE_SYS_GD
+		if (i == 0)
+		{	x_min = MIN (TL.x,BR.x);
+			x_max = MAX (TL.x,BR.x) - 1;
+			y_min = MIN (TL.y,BR.y);
+			y_max = MAX (TL.y,BR.y) - 1;
+			continue;
+		}
+
+		x_min = MIN (x_min,MIN (TL.x,BR.x));
+		x_max = MAX (x_max,MAX (TL.x,BR.x) - 1);
+		y_min = MIN (y_min,MIN (TL.y,BR.y));
+		y_max = MAX (y_max,MAX (TL.y,BR.y) - 1);
+#else
 		rect.x_min = MIN (TL.x,BR.x);
 		rect.x_max = MAX (TL.x,BR.x) - 1;
 		rect.y_min = MIN (TL.y,BR.y);
 		rect.y_max = MAX (TL.y,BR.y) - 1;
 
 		gdClipSetAdd (gd->image,&rect);
+#endif
 	}
+
+#ifdef HAVE_SYS_GD
+	/* System libgd accepts a single clip rectangle, so use the
+	 * bounding box of the WMF clip region here.
+	 */
+	gdImageSetClip (gd->image,x_min,y_min,x_max,y_max);
+#endif
 }
