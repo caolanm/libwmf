@@ -58,7 +58,7 @@ else
 LIBGD = extra/gd/libgd.la
 endif
 
-libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO)
+libwmf_la_LIBADD = ipa/libipa.la libwmflite.la $(LIBGD) $(LIBTRIO) @WMF_DEP_LIBS@
 
 libwmf_la_LDFLAGS = \
 	-no-undefined \
