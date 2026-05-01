@@ -850,7 +850,7 @@ static void REGION_SubtractO (
 				pNextRect++;
 			}
 			r1++;
-			left = r1->TL.x;
+			if (r1 != r1End) left = r1->TL.x;
 		}
 	}
 
