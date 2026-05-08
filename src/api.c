@@ -82,7 +82,7 @@ wmf_error_t wmf_lite_create (wmfAPI** API_return,unsigned long flags,wmfAPI_Opti
 	{	MM->list = (void**) options->malloc (options->context,MM->max * sizeof (void*));
 	}
 	else
-	{	MM->list = (void**) malloc (MM->max * sizeof (void*));
+	{	MM->list = (void**) calloc (MM->max, sizeof (void*));
 	}
 	if (MM->list == 0)
 	{	if ((flags & WMF_OPT_NO_ERROR) == 0)
@@ -636,7 +636,7 @@ char* wmf_strdup (wmfAPI* API,const char* str)
 
 	if (ERR (API)) return (0);
 
-	strcpy (cpy,str);
+	memcpy (cpy,str,strlen (str) + 1);
 
 	return (cpy);
 }
@@ -666,8 +666,8 @@ char* wmf_str_append (wmfAPI* API,char* pre,char* post)
 
 	if (ERR (API)) return (0);
 
-	strcpy (cpy,pre);
-	strcat (cpy,post);
+	memcpy (cpy,pre,strlen (pre) + 1);
+	memcpy (cpy + strlen (pre),post,strlen (post) + 1);
 
 	return (cpy);
 }
