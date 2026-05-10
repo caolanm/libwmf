@@ -772,7 +772,16 @@ GDK_PIXBUF_CFLAGS=""
 GDK_PIXBUF_LIBS=""
 GDK_PIXBUF_DIR=""
 
-if test $LIBWMF_BUILDSTYLE != lite; then
+AC_ARG_ENABLE(pixbuf,[  --disable-pixbuf        don't build gdk-pixbuf plugin],[
+	if [ test "x$enableval" = "xno" ]; then
+		search_for_pixbuf=no
+	else
+		search_for_pixbuf=yes
+	fi
+],[	search_for_pixbuf=yes
+])
+
+if test $LIBWMF_BUILDSTYLE != lite -a $search_for_pixbuf != no; then
 	PKG_CHECK_MODULES(GDK_PIXBUF,gdk-pixbuf-2.0 >= 2.1.2,[
 		GDK_PIXBUF_VERSION=`$PKG_CONFIG --variable=gdk_pixbuf_binary_version gdk-pixbuf-2.0`
 		GDK_PIXBUF_DIR="gdk-pixbuf-2.0/$GDK_PIXBUF_VERSION/loaders"
