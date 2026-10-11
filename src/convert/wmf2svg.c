@@ -58,6 +58,7 @@ typedef struct _ImageContext ImageContext;
 struct _ImageContext
 {	int number;
 	char* prefix;
+	char* name; /* the last name from image_name, freed when the next is made */
 };
 
 char* image_name (void*);
@@ -188,6 +189,9 @@ int wmf2svg_draw (PlotData* pdata)
 		ddata->height = (unsigned int) ceil ((double) wmf_height);
 	}
 
+	IC.prefix = 0;
+	IC.name = 0;
+
 	if (pdata->inline_images)
 	{	ddata->flags |= WMF_SVG_INLINE_IMAGES;
 	}
@@ -210,6 +214,9 @@ int wmf2svg_draw (PlotData* pdata)
 	}
 
 	wmf_api_destroy (API);
+
+	free (IC.prefix);
+	free (IC.name);
 
 	return (status);
 }
@@ -550,6 +557,9 @@ char* image_name (void* context)
 	IC->number++;
 
 	sprintf (name,"%s-%d.png",IC->prefix,IC->number);
+
+	free (IC->name);
+	IC->name = name;
 
 	return (name);
 }

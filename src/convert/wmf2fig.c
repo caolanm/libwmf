@@ -57,6 +57,7 @@ struct _ImageContext
 {	int number;
 	char* prefix;
 	char* suffix;
+	char* name; /* the last name from image_name, freed when the next is made */
 };
 
 char* image_name (void*);
@@ -185,6 +186,7 @@ int wmf2fig_draw (PlotData* pdata)
 	ddata->flags |= pdata->options.flags;
 
 	IC.number = 0;
+	IC.name = 0;
 	IC.prefix = (char*) malloc (strlen (pdata->wmf_filename) + 1);
 	if (IC.prefix)
 	{	strcpy (IC.prefix,pdata->wmf_filename);
@@ -208,6 +210,9 @@ int wmf2fig_draw (PlotData* pdata)
 	}
 
 	wmf_api_destroy (API);
+
+	free (IC.prefix);
+	free (IC.name);
 
 	return (status);
 }
@@ -589,6 +594,9 @@ char* image_name (void* context)
 	IC->number++;
 
 	sprintf (name,"%s-%d.%s",IC->prefix,IC->number,IC->suffix);
+
+	free (IC->name);
+	IC->name = name;
 
 	return (name);
 }
