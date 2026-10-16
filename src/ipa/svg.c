@@ -148,6 +148,15 @@ void wmf_svg_function (wmfAPI* API)
 #endif /* ! WITHOUT_LAYERS */
 }
 #ifndef WITHOUT_LAYERS
+static void svg_text_write (wmfAPI* API,wmfStream* out,const char* str)
+{	for (; *str; str++)
+	{	if (*str == '&') wmf_stream_printf (API,out,"&amp;");
+		else if (*str == '<') wmf_stream_printf (API,out,"&lt;");
+		else if (*str == '>') wmf_stream_printf (API,out,"&gt;");
+		else wmf_stream_printf (API,out,"%c",*str);
+	}
+}
+
 static void wmf_svg_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 {	wmf_svg_t* ddata = WMF_SVG_GetData (API);
 
@@ -205,7 +214,7 @@ static void wmf_svg_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 	wmf_stream_printf (API,out,"%f %f %f %f ",cos_theta,sin_theta,-sin_theta,cos_theta);
 	wmf_stream_printf (API,out,"%f %f)\"\n\t>",pt.x,pt.y);
 
-	wmf_stream_printf (API,out,"%s",draw_text->str);
+	svg_text_write (API,out,draw_text->str);
 
 /*	wmf_stream_printf (API,out,"</tspan></text>\n");
  */	wmf_stream_printf (API,out,"</text>\n");

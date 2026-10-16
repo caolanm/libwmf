@@ -54,6 +54,20 @@ static PS_to_FIG PSFontNo[35] = {
 	{ "ZapfChancery-MediumItalic",		33 },
 	{ "ZapfDingbats",			34 }};
 
+/* A FIG string ends at \001 and at the end of the line, so a backslash and every byte outside
+ * printable ASCII is written as an escape.
+ */
+static void fig_text_write (wmfAPI* API,wmfStream* out,const char* str)
+{	unsigned char c;
+
+	for (; *str; str++)
+	{	c = (unsigned char) (*str);
+		if (c == '\\') wmf_stream_printf (API,out,"\\\\");
+		else if ((c < 0x20) || (c > 0x7e)) wmf_stream_printf (API,out,"\\%03o",(unsigned int) c);
+		else wmf_stream_printf (API,out,"%c",c);
+	}
+}
+
 static void wmf_fig_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 {	wmf_fig_t* ddata = WMF_FIG_GetData (API);
 
@@ -134,7 +148,8 @@ static void wmf_fig_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 		pt.x,
 		pt.y);
 
-	wmf_stream_printf (API,out,"%s\\001\n",draw_text->str);
+	fig_text_write (API,out,draw_text->str);
+	wmf_stream_printf (API,out,"\\001\n");
 
 	wmf_stream_printf (API,out,"# end draw_text\n");
 }

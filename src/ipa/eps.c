@@ -194,6 +194,7 @@ static void wmf_eps_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 	for (i = 0; i < length; i++)
 	{	if (draw_text->str[i] == ')') wmf_stream_printf (API,out,"\\)");
 		else if (draw_text->str[i] == '(') wmf_stream_printf (API,out,"\\(");
+		else if (draw_text->str[i] == '\\') wmf_stream_printf (API,out,"\\\\");
 		else wmf_stream_printf (API,out,"%c",draw_text->str[i]);
 	}
 	wmf_stream_printf (API,out,")\n");
