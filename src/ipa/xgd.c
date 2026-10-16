@@ -587,6 +587,17 @@ int * wmf_gd_get_image_pixels (wmfAPI* API)
 	return (pixels);
 }
 
+void wmf_gd_image_destroy (wmfAPI* API)
+{
+#ifdef HAVE_GD
+	wmf_gd_t* ddata = WMF_GD_GetData (API);
+	if (ddata->gd_image)
+	{	gdImageDestroy ((gdImagePtr) ddata->gd_image);
+		ddata->gd_image = 0;
+	}
+#endif /* HAVE_GD */
+}
+
 int * wmf_gd_image_pixels (void * gd_image)
 {
 	int * pixels = 0;

@@ -11,6 +11,7 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="xgd_8c.html#a0">wmf_gd_function</a> (<a class="el" href="types_8h.html#a22">wmfAPI</a> *API)</td></tr>
 <tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="xgd_8c.html#a2">wmf_gd_get_image_pixels</a> (<a class="el" href="types_8h.html#a22">wmfAPI</a> *API)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="xgd_8c.html#a3">wmf_gd_image_destroy</a> (<a class="el" href="types_8h.html#a22">wmfAPI</a> *API)</td></tr>
 <tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="xgd_8c.html#a1">wmf_gd_image_pixels</a> (void *gd_image)</td></tr>
 </table>
 <hr><h2>Function Documentation</h2>
@@ -70,6 +71,35 @@
 
 <p>
 If using the wmf_gd_image option to write to a GD image, the true-color pixels (stored in a contiguous array of height * width integers) of the image can be retrieved using <a class="el" href="xgd_8c.html#a2">wmf_gd_get_image_pixels()</a>. The returned buffer is owned by the API and is released by wmf_api_destroy(); do not free() it.     </td>
+  </tr>
+</table>
+<a name="a3" doxytag="xgd.c::wmf_gd_image_destroy"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void wmf_gd_image_destroy </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="types_8h.html#a22">wmfAPI</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>API</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
   </tr>
 </table>
 <a name="a1" doxytag="xgd.c::wmf_gd_image_pixels"></a><p>

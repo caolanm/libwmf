@@ -20,6 +20,7 @@ EXPORTS
   wmf_foreign_function
   wmf_gd_function
   wmf_gd_get_image_pixels
+  wmf_gd_image_destroy
   wmf_gd_image_pixels
   wmf_help
   wmf_image_free
