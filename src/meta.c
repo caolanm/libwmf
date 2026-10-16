@@ -544,7 +544,7 @@ const char * wmf_attr_add (wmfAPI * API, wmfAttributes * list,
 	if (list->count == list->max)
 	{	more = (char **) wmf_realloc (API, list->atts, 2 * (list->max + 8 + 1) * sizeof (char *));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return 0;
 		}

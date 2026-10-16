@@ -183,7 +183,7 @@ static void dc_stack_push (wmfAPI* API,wmfDC* dc)
 	if (P->dc_stack_length == P->dc_stack_maxlen)
 	{	more =  (wmfDC**) wmf_realloc (API,P->dc_stack,(P->dc_stack_maxlen + 8) * sizeof (wmfDC*));
 
-		if (ERR (API)) return;
+		if (more == 0) return;
 
 		P->dc_stack = more;
 		P->dc_stack_maxlen += 8;

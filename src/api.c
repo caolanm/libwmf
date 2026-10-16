@@ -755,7 +755,7 @@ unsigned long wmf_strbuf_grow (wmfAPI* API)
 
 	more = (char*) wmf_realloc (API,API->string_buffer.buffer,(API->string_buffer.length + 64) * sizeof (char));
 
-	if (ERR (API))
+	if (more == 0)
 	{	WMF_DEBUG (API,"bailing...");
 		return (0);
 	}

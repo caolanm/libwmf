@@ -208,7 +208,7 @@ static int gd_sink (void* context,const char* buffer,int length)
 	while ((gd->length + (long) length) > gd->max_length)
 	{	more = (char*) wmf_realloc (API,gd->buffer,gd->max_length + 4096);
 
-		if (ERR (API)) break;
+		if (more == 0) break;
 
 		gd->buffer = more;
 		gd->max_length += 4096;

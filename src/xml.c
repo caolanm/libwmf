@@ -70,7 +70,7 @@ static void cd_append (wmfXML_InputData * data, const char * buffer, unsigned lo
 	{	size = data->cd_length + length;
 		more = (char *) wmf_realloc (data->API, data->cd_buffer, size);
 
-		if (ERR (data->API))
+		if (more == 0)
 		{	WMF_DEBUG (data->API,"bailing...");
 			return;
 		}
@@ -113,7 +113,7 @@ static void mem_append (wmfXML_InputData * data, unsigned char * buffer, unsigne
 	{	size = data->mem_length + length;
 		more = (unsigned char *) wmf_realloc (data->API, data->mem_buffer, size);
 
-		if (ERR (data->API))
+		if (more == 0)
 		{	WMF_DEBUG (data->API,"bailing...");
 			return;
 		}
@@ -163,7 +163,7 @@ static void store_atts (wmfAPI * API, const char * element_name, const char ** a
 	{	size = (API->store.max + 16) * sizeof (wmfAttributes);
 		more = (wmfAttributes *) wmf_realloc (API, API->store.attrlist, size);
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API, "bailing...");
 			return;
 		}

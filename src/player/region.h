@@ -37,7 +37,7 @@ static wmfD_Rect* rgn_memchk (wmfAPI* API,wmfRegion* rgn)
 
 	more = wmf_realloc (API,rgn->rects,(rgn->size + 8) * sizeof (wmfD_Rect));
 
-	if ((more == 0) || (ERR (API))) return (0); /* The two conditions are equivalent, I think */
+	if (more == 0) return (0);
 
 	rgn->rects = more;
 	rgn->size += 8; /* The exponential increase in memory allocation in MEMCHECK scares me */
@@ -153,15 +153,18 @@ static void REGION_UnionRegion (wmfAPI* API,wmfRegion* newReg,wmfRegion* reg1,wm
 }
 
 static void REGION_CopyRegion (wmfAPI* API,wmfRegion* dst,wmfRegion* src)
-{	if (dst != src) /*  don't want to copy to itself */
-	{	if (dst->size < src->numRects)
-		{	dst->rects = wmf_realloc (API,dst->rects,src->numRects * sizeof (wmfD_Rect));
+{	wmfD_Rect* more = 0;
 
-			if (ERR (API))
+	if (dst != src) /*  don't want to copy to itself */
+	{	if (dst->size < src->numRects)
+		{	more = wmf_realloc (API,dst->rects,src->numRects * sizeof (wmfD_Rect));
+
+			if (more == 0)
 			{	WMF_DEBUG (API,"bailing...");
 				return;
 			}
 
+			dst->rects = more;
 			dst->size = src->numRects;
 		}
 		dst->numRects = src->numRects;

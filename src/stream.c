@@ -286,7 +286,7 @@ int wmf_stream_sputs (char* str,void* context)
 	{	if ((defstr->len + 1) == defstr->max)
 		{	more = (char*) wmf_realloc (API,defstr->buf,(defstr->max + 256) * sizeof (char));
 
-			if (ERR (API))
+			if (more == 0)
 			{	WMF_DEBUG (API,"bailing...");
 				defstr->max = max;
 				return (EOF);

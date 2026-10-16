@@ -245,7 +245,7 @@ void wmf_ipa_color_add (wmfAPI* API,wmfRGB* rgb)
 	if (color->count == color->max)
 	{	more = wmf_realloc (API,color->rgb,(color->max + 32) * sizeof (wmfRGB));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}

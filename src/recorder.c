@@ -133,7 +133,7 @@ static void s_append_record (wmfAPI * API, wmfConstruct * construct,
 	  bytes++;
 	}
       uc_more = (unsigned char *) wmf_realloc (API, construct->buffer, construct->max + bytes);
-      if (ERR (API))
+      if (uc_more == 0)
 	{
 	  WMF_DEBUG (API, "bailing...");
 	  return;
@@ -145,7 +145,7 @@ static void s_append_record (wmfAPI * API, wmfConstruct * construct,
     {
       bytes = (construct->rec_max + 1 + 16) * sizeof (unsigned long);
       ul_more = (unsigned long *) wmf_realloc (API, construct->rec_offset, bytes);
-      if (ERR (API))
+      if (ul_more == 0)
 	{
 	  WMF_DEBUG (API, "bailing...");
 	  return;

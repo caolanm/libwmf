@@ -91,7 +91,7 @@ static void ipa_font_add_wmf (wmfAPI* API,wmfFontMap* mapping)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (wmfFontMap*) wmf_realloc (API,font_data->wmf,(i + 0x11) * sizeof (wmfFontMap));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -131,7 +131,7 @@ static void ipa_font_add_sub (wmfAPI* API,wmfMapping* mapping)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (wmfMapping*) wmf_realloc (API,font_data->sub,(i + 0x11) * sizeof (wmfMapping));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -168,7 +168,7 @@ static void ipa_font_add_ps (wmfAPI* API,wmfMapping* mapping)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (wmfFT_Mapping*) wmf_realloc (API,font_data->ps,(i + 0x11) * sizeof (wmfFT_Mapping));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -208,7 +208,7 @@ static void ipa_font_add_cache (wmfAPI* API,wmfFT_CacheEntry* entry)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (wmfFT_CacheEntry*) wmf_realloc (API,font_data->cache,(i + 0x11) * sizeof (wmfFT_CacheEntry));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -480,7 +480,7 @@ void wmf_ipa_font_dir (wmfAPI* API,char* fontdir)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (char**) wmf_realloc (API,font_data->fontdirs,(i + 0x11) * sizeof (char*));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -514,7 +514,7 @@ static void ipa_font_add_api (wmfAPI* API,char* name)
 	if ((i & 0x0f) == (unsigned int) 0x0f)
 	{	more = (char**) wmf_realloc (API,API->fonts,(i + 0x11) * sizeof (char*));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
@@ -1091,7 +1091,7 @@ static void ipa_font_gs_add (wmfAPI* API,wmfGS_FontData* FD,char* name,char* ali
 	if (FD->len == FD->max)
 	{	more = (wmfGS_FontInfo*) wmf_realloc (API,FD->FI,(FD->max+0x20) * sizeof (wmfGS_FontInfo));
 
-		if (ERR (API))
+		if (more == 0)
 		{	WMF_DEBUG (API,"bailing...");
 			return;
 		}
