@@ -1,3 +1,6 @@
+v. 0.2.17
+	* new wmf_gd_image_destroy()
+
 v. 0.2.16
 	* license file corrected to LGPL, as always intended
 	* many parsing and resource handling corrections in the player
