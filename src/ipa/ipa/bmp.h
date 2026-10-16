@@ -834,7 +834,7 @@ static unsigned int ReadBlobLSBLong (BMPSource* src)
 
 	if (value < 4) return (~value); /* i.e., = -1 */
 
-	value  = buffer[3] << 24;
+	value  = (unsigned int) buffer[3] << 24;
 	value |= buffer[2] << 16;
 	value |= buffer[1] <<  8;
 	value |= buffer[0];
