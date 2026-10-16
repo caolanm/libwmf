@@ -3145,6 +3145,7 @@ static int meta_text (wmfAPI* API,wmfRecord* Record)
 			drawtext.bbox.BR.x = 0;
 			drawtext.bbox.BR.y = 0;
 		}
+		drawtext.str = str_save;
 		wmf_free (API,lpDx);
 	}
 	else
