@@ -128,7 +128,7 @@ void wmf_gd_function (wmfAPI* API)
  */
 	ddata->type = wmf_gd_png;
 
-	ddata->gd_data = (void*) wmf_malloc (API,sizeof (gd_t));
+	ddata->gd_data = (void*) wmf_calloc (API,1,sizeof (gd_t));
 
 	if (ERR (API))
 	{	WMF_DEBUG (API,"bailing...");
@@ -136,9 +136,6 @@ void wmf_gd_function (wmfAPI* API)
 	}
 
 	gd = (gd_t*) ddata->gd_data;
-
-	gd->image = 0;
-	gd->flat_pixels = 0;
 
 	ddata->file   = 0;
 	ddata->memory = 0;
