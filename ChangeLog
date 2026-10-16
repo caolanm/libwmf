@@ -1,5 +1,9 @@
 v. 0.2.17
-	* new wmf_gd_image_destroy()
+	* more parsing and resource handling corrections in the player and the output devices
+	* text escaped as each format needs in the svg, eps and fig output
+	* faster handling of long text, many colors and complex clip regions
+	* new wmf_gd_image_destroy(), and the gdk-pixbuf loader frees each image it loads
+	* a security policy, SECURITY.md
 
 v. 0.2.16
 	* license file corrected to LGPL, as always intended
