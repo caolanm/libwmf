@@ -120,7 +120,7 @@ static void wmf_x_draw_text (wmfAPI* API,wmfDrawText_t* draw_text)
 
 	FT_Set_Transform (face,&matrix,&pen);
 
-	FT_Load_Char (face,draw_text->str[0],FT_LOAD_RENDER);
+	if (FT_Load_Char (face,draw_text->str[0],FT_LOAD_RENDER)) return;
 
 	pt.x += face->glyph->bitmap_left;
 	pt.y -= face->glyph->bitmap_top;
