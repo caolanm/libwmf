@@ -1030,6 +1030,9 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 
 	unsigned long u;
 
+	uint64_t remaining;
+	int too_large;
+
 	size_t bytes_read;
 
 	data = (BMPData*) bmp->data;
@@ -1209,6 +1212,22 @@ static void ReadBMPImage (wmfAPI* API,wmfBMP* bmp,BMPSource* src)
 
 	if (bytes_per_line > UINT_MAX / bmp->height)
 	{	WMF_ERROR (API,"BMP image dimensions too large");
+		API->err = wmf_E_BadFormat;
+		return;
+	}
+
+	/* Run-length encoded data is taken to expand at most 256 times, or 512 times for 4 bits per
+	 * pixel, which compression 2 has already turned into 8 above.
+	 */
+	remaining = (uint64_t) (src->end - src->ptr);
+	if ((bmp_info.compression == 0) || (bmp_info.compression == 3))
+	{	too_large = (remaining / bmp->height) < bytes_per_line;
+	}
+	else
+	{	too_large = (remaining * ((bmp_info.compression == 2) ? 512 : 256) / bmp->height) < bmp->width;
+	}
+	if (too_large)
+	{	WMF_ERROR (API,"BMP image dimensions larger than its data");
 		API->err = wmf_E_BadFormat;
 		return;
 	}
