@@ -37,7 +37,13 @@ struct _wmfXML_InputData
 	unsigned long mem_length;
 	unsigned long mem_max;
 
+	/* 0 before the root element, 1 inside a wmfxml root, 2 once that root has closed, and -1
+	 * when the root is not wmfxml.
+	 */
 	int wmfxml;
+
+	/* The number of open elements inside the root. */
+	unsigned long depth;
 };
 
 #endif /* ! WMFXML_H */

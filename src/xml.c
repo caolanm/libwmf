@@ -206,6 +206,8 @@ static void xml_start (void * user_data, const char * name, const char ** atts)
 	}
 	if (input_data->wmfxml != 1) return;
 
+	input_data->depth++;
+
 	store_atts (API, name, atts);
 
 	input_data->cd_bufptr = input_data->cd_buffer;
@@ -244,13 +246,12 @@ static void xml_end (void * user_data, const char * name)
 
 	if (input_data->wmfxml != 1) return;
 
-	if (strcmp (name, "wmfxml") == 0)
-	{	for (i = 0; i < API->store.count; i++)
-		{	attr = API->store.attrlist + i;
-			attr->buffer = input_data->mem_buffer + attr->offset;
-		}
+	if (input_data->depth == 0)
+	{	input_data->wmfxml = 2;
 		return;
 	}
+	input_data->depth--;
+
 	attr = API->store.attrlist + (API->store.count - 1);
 
 	attr->length = 0;
@@ -323,6 +324,32 @@ static void xml_end (void * user_data, const char * name)
 	input_data->cd_length = 0;
 }
 
+/* Point each stored record at its data, once the whole document is in the import buffer.
+ * Returns wmf_E_BadFormat if the parse failed or the root element never closed.
+ */
+static wmf_error_t xml_finish (wmfXML_InputData * input_data, int parsed)
+{	wmfAPI * API = input_data->API;
+
+	wmfAttributes * attr = 0;
+
+	unsigned long i;
+
+	if (ERR (API)) return API->err;
+
+	if ((!parsed) || (input_data->wmfxml != 2))
+	{	WMF_ERROR (API, "wmf_wmfxml_import: incomplete or badly formed file");
+		API->err = wmf_E_BadFormat;
+		return API->err;
+	}
+
+	for (i = 0; i < API->store.count; i++)
+	{	attr = API->store.attrlist + i;
+		attr->buffer = input_data->mem_buffer + attr->offset;
+	}
+
+	return API->err;
+}
+
 #ifdef HAVE_EXPAT
 
 #include <expat.h>
@@ -356,6 +383,7 @@ wmf_error_t wmf_wmfxml_import (wmfAPI * API, const char * wmfxml_filename)
 	input_data.mem_max    = 0;
 
 	input_data.wmfxml = 0;
+	input_data.depth  = 0;
 
 	if (ERR (API)) return API->err;
 
@@ -395,13 +423,17 @@ wmf_error_t wmf_wmfxml_import (wmfAPI * API, const char * wmfxml_filename)
 			break;
 		}
 	}
-	if ((status == 0) && (API->err == wmf_E_None)) XML_Parse (parser, buffer, 0, 1);
+	if ((status == 0) && (API->err == wmf_E_None))
+	{	if (XML_Parse (parser, buffer, 0, 1) == 0) status = 1;
+	}
 
 	XML_ParserFree (parser);
 
 	fclose (in);
 
 	if (input_data.cd_buffer) wmf_free (API, input_data.cd_buffer);
+
+	xml_finish (&input_data, status == 0);
 
 	if (ERR (API))
 	{	if (input_data.mem_buffer) wmf_free (API, input_data.mem_buffer);
@@ -426,6 +458,8 @@ wmf_error_t wmf_wmfxml_import (wmfAPI * API, const char * wmfxml_filename)
 
 	wmfXML_InputData input_data;
 
+	int parsed;
+
 	input_data.API = API;
 
 	input_data.cd_buffer = 0;
@@ -441,6 +475,7 @@ wmf_error_t wmf_wmfxml_import (wmfAPI * API, const char * wmfxml_filename)
 	input_data.mem_max    = 0;
 
 	input_data.wmfxml = 0;
+	input_data.depth  = 0;
 
 	if (ERR (API)) return API->err;
 
@@ -462,13 +497,15 @@ wmf_error_t wmf_wmfxml_import (wmfAPI * API, const char * wmfxml_filename)
 	ctxt->sax = &sax;
 	ctxt->userData = (void*) (&input_data);
 
-	xmlParseDocument (ctxt);
+	parsed = (xmlParseDocument (ctxt) == 0) && ctxt->wellFormed;
 
 	ctxt->sax = 0;
 
 	xmlFreeParserCtxt (ctxt);
 
 	if (input_data.cd_buffer) wmf_free (API, input_data.cd_buffer);
+
+	xml_finish (&input_data, parsed);
 
 	if (ERR (API))
 	{	if (input_data.mem_buffer) wmf_free (API, input_data.mem_buffer);
