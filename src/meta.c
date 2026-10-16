@@ -552,10 +552,11 @@ const char * wmf_attr_add (wmfAPI * API, wmfAttributes * list,
 		list->atts = more;
 		list->max += 8;
 	}
-	list->atts[list->count++] = copy_name;
-	list->atts[list->count++] = copy_value;
+	list->atts[2 * list->count]     = copy_name;
+	list->atts[2 * list->count + 1] = copy_value;
+	list->count++;
 
-	list->atts[list->count] = 0;
+	list->atts[2 * list->count] = 0;
 
 	return copy_value;
 }
