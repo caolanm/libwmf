@@ -186,6 +186,16 @@ static void wmf_x_udata_free (wmfAPI* API,wmfUserData_t* userdata)
 
 }
 
+/* A ROP2 code outside R2_BLACK..R2_WHITE draws as R2_COPYPEN.
+ */
+static int x_rop_function (wmfDC* dc)
+{	U16 rop = WMF_DC_ROP (dc);
+
+	if ((rop < R2_BLACK) || (rop > R2_WHITE)) rop = R2_COPYPEN;
+
+	return (Our_XROPfunction[rop - 1]);
+}
+
 static void setbrushstyle (wmfAPI* API,wmfDC* dc)
 {	wmf_x_t* ddata = WMF_X_GetData (API);
 
@@ -199,12 +209,13 @@ static void setbrushstyle (wmfAPI* API,wmfDC* dc)
 
 	U16 i;
 	U16 j;
+	U16 hatch;
 
 	XGCValues values;
 
 	brush = WMF_DC_BRUSH (dc);
 
-	values.function = Our_XROPfunction[WMF_DC_ROP (dc) - 1];
+	values.function = x_rop_function (dc);
 
 	if (values.function == GXinvert)
 	{	values.function = GXxor;
@@ -219,9 +230,11 @@ static void setbrushstyle (wmfAPI* API,wmfDC* dc)
 	switch (WMF_BRUSH_STYLE (brush))
 	{	/* TODO: these arrays are convenient but how SEG-safe are they? */
 	case BS_HATCHED:
+		hatch = WMF_BRUSH_HATCH (brush);
+		if (hatch > NB_HATCH_STYLES) hatch = HS_DIAGCROSS;
 		if (ddata->hatch != None) XFreePixmap (ddata->display,ddata->hatch);
 		ddata->hatch = XCreateBitmapFromData (ddata->display,ddata->root,
-		                                      HatchBrushes[WMF_BRUSH_HATCH (brush)],8,8);
+		                                      HatchBrushes[hatch],8,8);
 		fill_style = ((WMF_DC_OPAQUE (dc)) ? FillOpaqueStippled : FillStippled);
 		XSetStipple (ddata->display,ddata->gc,ddata->hatch);
 	break;
@@ -328,7 +341,7 @@ static void setlinestyle (wmfAPI* API,wmfDC* dc)
 
 	default:
 		values.foreground = color;
-		values.function = Our_XROPfunction[WMF_DC_ROP (dc) - 1];
+		values.function = x_rop_function (dc);
 	break;
 	}
 
