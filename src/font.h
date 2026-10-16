@@ -31,7 +31,7 @@ static void ipa_font_add_ps (wmfAPI*,wmfMapping*);
 static void ipa_font_add_cache (wmfAPI*,wmfFT_CacheEntry*);
 static void ipa_font_add_api (wmfAPI*,char*);
 
-static float ipa_char_position (wmfFont*,char*,char*);
+static float ipa_char_position (wmfFont*,char,FT_UInt*,float*);
 
 static wmfXML_FontInfo* ipa_font_sys_map (wmfAPI*,wmfFont*);
 static FT_Face          ipa_font_sys_face (wmfAPI*,wmfFont*,wmfXML_FontInfo*);

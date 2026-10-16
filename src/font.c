@@ -595,53 +595,43 @@ float wmf_ipa_font_stringwidth (wmfAPI* API,wmfFont* font,char* str)
 	return (width*72/(300*12));
 }
 
-static float ipa_char_position (wmfFont* font,char* str,char* last)
+/* Return the position of ch after the characters already measured into width, then add the
+ * advance of ch to width. width is at 12 point, 300 by 100 dpi, as in wmf_ipa_font_stringwidth.
+ */
+static float ipa_char_position (wmfFont* font,char ch,FT_UInt* previous,float* width)
 {	FT_Face face = WMF_FONT_FTFACE (font);
 
 	if (!face) return 0.0;
 
 	FT_Vector delta;
 
-	FT_Bool use_kerning;
-
 	FT_UInt glyph_index;
-	FT_UInt previous;
 
-	float width;
-
-	char* ptr;
+	float position;
 
 	FT_Set_Char_Size (face,0,12 * 64,300,100);
 
 	FT_Set_Transform (face,0,0);
 
-	use_kerning = FT_HAS_KERNING (face);
+	/* convert character code to glyph index */ /* === Should this be unsigned ?? ==== */
+	glyph_index = FT_Get_Char_Index (face,ch);
 
-	previous = 0;
+	if (FT_HAS_KERNING (face) && (*previous) && glyph_index)
+	{	FT_Get_Kerning (face,(*previous),glyph_index,0,&delta);
 
-	width = 0;
-
-	for (ptr = str; ptr <= last; ptr++)
-	{	/* convert character code to glyph index */ /* === Should this be unsigned ?? ==== */
-		glyph_index = FT_Get_Char_Index (face,(*ptr));
-
-		if (use_kerning && previous && glyph_index)
-		{	FT_Get_Kerning (face,previous,glyph_index,0,&delta);
-
-			width += (float) (delta.x >> 6);
-		}
-
-		if (ptr == last) break;
-
-		/* load glyph image into the slot.  DO NOT RENDER IT! */
-		FT_Load_Glyph (face,glyph_index,FT_LOAD_DEFAULT);
-
-		width += (float) (face->glyph->advance.x >> 6);
-
-		previous = glyph_index;
+		(*width) += (float) (delta.x >> 6);
 	}
 
-	return (width*72/(300*12));
+	position = (*width)*72/(300*12);
+
+	/* load glyph image into the slot.  DO NOT RENDER IT! */
+	FT_Load_Glyph (face,glyph_index,FT_LOAD_DEFAULT);
+
+	(*width) += (float) (face->glyph->advance.x >> 6);
+
+	(*previous) = glyph_index;
+
+	return (position);
 }
 
 void wmf_ipa_draw_text (wmfAPI* API,wmfDrawText_t* draw_text,wmfCharDrawer ipa_draw_text)
@@ -653,6 +643,9 @@ void wmf_ipa_draw_text (wmfAPI* API,wmfDrawText_t* draw_text,wmfCharDrawer ipa_d
 	char buffer[2];
 
 	float text_width;
+	float width = 0;
+
+	FT_UInt previous = 0;
 
 	float cos_theta;
 	float sin_theta;
@@ -672,7 +665,7 @@ void wmf_ipa_draw_text (wmfAPI* API,wmfDrawText_t* draw_text,wmfCharDrawer ipa_d
 		buffer[0] = draw_text->str[i];
 		buffer[1] = 0;
 
-		text_width = ipa_char_position (draw_text->dc->font,draw_text->str,draw_text->str+i);
+		text_width = ipa_char_position (draw_text->dc->font,draw_text->str[i],&previous,&width);
 
 		text_width = (float) ((double) text_width * draw_text->font_height * draw_text->font_ratio);
 
