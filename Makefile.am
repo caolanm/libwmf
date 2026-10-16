@@ -39,6 +39,6 @@ WMFFUZZ = \
 	fuzz/wmf_fuzzer.c \
 	fuzz/wmf_fuzzer.options
 
-EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README $(WMFEXAMPLES) $(WMFFUZZ) \
+EXTRA_DIST = AUTHORS BUILDING CREDITS NEWS README SECURITY.md $(WMFEXAMPLES) $(WMFFUZZ) \
 	libwmf.spec \
 	patches/acconfig.h
