@@ -181,7 +181,10 @@ LIBWMF_EXPORT wmfRGB wmf_yellow		= { 255, 255,   0 };
 LIBWMF_EXPORT wmfRGB wmf_yellowgreen		= { 154, 205,  50 };
 
 /* Color table
+ *
+ * The table holds at most the 32 standard and 512 user colors that a FIG file can define.
  */
+#define WMF_IPA_COLOR_MAX 544
 
 /**
  * Initialize internal color table
@@ -236,6 +239,8 @@ void wmf_ipa_color_add (wmfAPI* API,wmfRGB* rgb)
 		}
 	}
 	if (!new_color) return;
+
+	if (color->count == WMF_IPA_COLOR_MAX) return;
 
 	if (color->count == color->max)
 	{	more = wmf_realloc (API,color->rgb,(color->max + 32) * sizeof (wmfRGB));
