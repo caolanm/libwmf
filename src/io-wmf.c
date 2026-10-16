@@ -226,6 +226,7 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 					   width, height, width * 4,
 					   pixbuf_destroy_function, NULL);
 	if (pixbuf == NULL) {
+		g_free (pixels);
 		g_set_error (error, GDK_PIXBUF_ERROR, GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
 			     "Couldn't decode WMF file");
 		goto _wmf_error;
@@ -239,6 +240,7 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 					   gdk_pixbuf_get_width (pixbuf), 
 					   gdk_pixbuf_get_height (pixbuf), 
 					   context->user_data);
+	g_object_unref (pixbuf);
 	result = TRUE;
 
  _wmf_error:
