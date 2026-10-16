@@ -163,7 +163,9 @@ static void REGION_CopyRegion (wmfAPI* API,wmfRegion* dst,wmfRegion* src)
 
 		dst->type = src->type;
 
-		memcpy ((char*) dst->rects,(char*) src->rects,src->numRects * sizeof (wmfD_Rect));
+		if (src->numRects)
+		{	memcpy ((char*) dst->rects,(char*) src->rects,src->numRects * sizeof (wmfD_Rect));
+		}
 	}
 }
 
