@@ -2188,8 +2188,8 @@ static int meta_dib_draw (wmfAPI* API,wmfRecord* Record)
 		return (changed);
 	}
 
-	stretch_x = (double) par_U16_w / (double) bmp_draw.crop.w;
-	stretch_y = (double) par_U16_h / (double) bmp_draw.crop.h;
+	stretch_x = (double) width  / (double) bmp_draw.crop.w;
+	stretch_y = (double) height / (double) bmp_draw.crop.h;
 
 	bmp_draw.pixel_width  = ABS (P->dc->pixel_width ) * stretch_x;
 	bmp_draw.pixel_height = ABS (P->dc->pixel_height) * stretch_y;
