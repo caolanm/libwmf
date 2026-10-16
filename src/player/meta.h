@@ -920,23 +920,15 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 		return (changed);
 	}
 
-/* The record holds two parameters for every point, so the point arrays together
- * are about twice the size of the record.
- */
-	for (i = 0; i < polypoly.npoly; i++)
-	{	polypoly.pt[i] = (wmfD_Coord*) wmf_malloc (API, polypoly.count[i] * sizeof (wmfD_Coord));
-		if (ERR (API))
-		{	WMF_DEBUG (API,"bailing...");
-			return (changed);
-		}
-	}
-
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,",%lu",(unsigned long) (polypoly.npoly + 2 * num_pars));
 	}
 
 	if (SCAN (API))
-	{	pen = WMF_DC_PEN (P->dc);
+	{	wmf_free (API, polypoly.pt);
+		wmf_free (API, polypoly.count);
+
+		pen = WMF_DC_PEN (P->dc);
 
 		scope = (float) (MAX (WMF_PEN_WIDTH (pen),WMF_PEN_HEIGHT (pen))) / 2;
 
@@ -954,6 +946,17 @@ static int meta_polygons (wmfAPI* API,wmfRecord* Record)
 			D_Coord_Register (API,d_pt,scope);
 		}
 		return (changed);
+	}
+
+/* The record holds two parameters for every point, so the point arrays together
+ * are about twice the size of the record.
+ */
+	for (i = 0; i < polypoly.npoly; i++)
+	{	polypoly.pt[i] = (wmfD_Coord*) wmf_malloc (API, polypoly.count[i] * sizeof (wmfD_Coord));
+		if (ERR (API))
+		{	WMF_DEBUG (API,"bailing...");
+			return (changed);
+		}
 	}
 
 	polypoly.dc = P->dc;
