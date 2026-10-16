@@ -1282,7 +1282,7 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 		{	userdata.dc = P->dc;
 			userdata.data = P->dc->userdata;
 
-			if (FR->udata_free) FR->udata_free (API,&userdata);
+			if (PLAY (API) && FR->udata_free) FR->udata_free (API,&userdata);
 			dc_free (API,P->dc);
 		}
 		P->dc = dc_stack_pop (API);
