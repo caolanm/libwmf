@@ -158,6 +158,12 @@ wmf_error_t wmf_header_read (wmfAPI* API)
 
 	if (ERR (API)) return (API->err);
 
+	if (API->File->placeable && (API->File->pmh->Inch == 0))
+	{	WMF_ERROR (API,"wmf_header_read: placeable header has no units per inch");
+		API->err = wmf_E_BadFormat;
+		return (API->err);
+	}
+
 	if (API->File->wmfheader->HeaderSize == 9)
 	{	API->File->wmfheader->Version       = wmf_read_16 (API);
 		API->File->wmfheader->FileSize      = wmf_read_32 (API,0,0);
