@@ -20,8 +20,18 @@
 #ifndef WMFPLAYER_REGION_H
 #define WMFPLAYER_REGION_H
 
+/* Each region operation reads the whole region, so the time taken grows with this limit.
+ */
+#define WMF_REGION_MAX_RECTS 4096
+
 static wmfD_Rect* rgn_memchk (wmfAPI* API,wmfRegion* rgn)
 {	wmfD_Rect* more = 0;
+
+	if (rgn->numRects >= WMF_REGION_MAX_RECTS)
+	{	WMF_ERROR (API,"Region rectangle limit exceeded!");
+		API->err = wmf_E_BadFormat;
+		return (0);
+	}
 
 	if ((rgn->numRects + 1) < rgn->size) return (rgn->rects + rgn->numRects);
 
