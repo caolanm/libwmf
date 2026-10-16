@@ -218,6 +218,7 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 		goto _wmf_error;
 	}
 
+	wmf_gd_image_destroy (API);
 	wmf_api_destroy (API);
 	API = NULL;
 
@@ -242,7 +243,10 @@ gdk_pixbuf__wmf_image_stop_load (gpointer data, GError **error)
 
  _wmf_error:
 
-	if (API != NULL) wmf_api_destroy (API);
+	if (API != NULL) {
+		if (ddata != NULL) wmf_gd_image_destroy (API);
+		wmf_api_destroy (API);
+	}
 
 	g_byte_array_free (context->data, TRUE);
 	g_free (context);
