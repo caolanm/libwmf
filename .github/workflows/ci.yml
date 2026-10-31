@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    name: Ubuntu ${{ matrix.cc }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cc: [gcc, clang]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake libtool pkg-config clang \
+            libfreetype-dev zlib1g-dev libpng-dev libjpeg-dev libexpat1-dev
+      - name: Configure
+        run: |
+          autoreconf -fi
+          ./configure CC=${{ matrix.cc }}
+      - name: Build
+        run: make -j$(nproc)
+      - name: Check
+        run: make -j$(nproc) check || { cat tests/test-suite.log; exit 1; }
+      - name: Distcheck
+        if: matrix.cc == 'gcc'
+        run: make -j$(nproc) distcheck
+
+  alpine:
+    name: Alpine (musl)
+    runs-on: ubuntu-latest
+    container: alpine:latest
+    steps:
+      - name: Install dependencies
+        run: |
+          apk add --no-cache build-base autoconf automake libtool pkgconf \
+            freetype-dev zlib-dev libpng-dev libjpeg-turbo-dev expat-dev
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: |
+          autoreconf -fi
+          ./configure
+      - name: Build
+        run: make -j$(nproc)
+      - name: Check
+        run: make -j$(nproc) check || { cat tests/test-suite.log; exit 1; }
+
+  macos:
+    name: macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: brew install autoconf automake libtool pkgconf freetype libpng jpeg-turbo
+      - name: Configure
+        run: |
+          autoreconf -fi
+          ./configure
+      - name: Build
+        run: make -j$(sysctl -n hw.ncpu)
+      - name: Check
+        run: make -j$(sysctl -n hw.ncpu) check || { cat tests/test-suite.log; exit 1; }
+
+  windows:
+    name: Windows MSYS2 ${{ matrix.link }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        link: [shared, static]
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            autoconf automake libtool make
+            mingw-w64-ucrt-x86_64-cc
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-freetype
+            mingw-w64-ucrt-x86_64-zlib
+            mingw-w64-ucrt-x86_64-libpng
+            mingw-w64-ucrt-x86_64-libjpeg-turbo
+            mingw-w64-ucrt-x86_64-expat
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: |
+          autoreconf -fi
+          if [ ${{ matrix.link }} = static ]; then
+            ./configure --disable-shared --enable-static
+          else
+            ./configure --enable-shared --disable-static
+          fi
+      - name: Build
+        run: make -j$(nproc)
+      - name: Check
+        run: make -j$(nproc) check || { cat tests/test-suite.log; exit 1; }
+
+  mingw-cross:
+    name: Fedora MinGW cross ${{ matrix.link }}
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    strategy:
+      fail-fast: false
+      matrix:
+        link: [shared, static]
+    steps:
+      - name: Install dependencies
+        run: |
+          dnf -y install autoconf automake libtool make pkgconf-pkg-config gettext-devel \
+            mingw64-gcc mingw64-pkg-config mingw64-freetype mingw64-zlib \
+            mingw64-libpng mingw64-libjpeg-turbo
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: |
+          autoreconf -fi
+          if [ ${{ matrix.link }} = static ]; then
+            link="--disable-shared --enable-static"
+          else
+            link="--enable-shared --disable-static"
+          fi
+          PKG_CONFIG=x86_64-w64-mingw32-pkg-config \
+            ./configure --host=x86_64-w64-mingw32 --without-x --disable-pixbuf $link
+      - name: Build
+        run: make -j$(nproc)
