@@ -20,16 +20,6 @@
 #ifndef WMFPLAYER_COLOR_H
 #define WMFPLAYER_COLOR_H
 
-#ifdef _WIN32
-  #ifdef LIBWMF_EXPORTS
-    #define LIBWMF_EXPORT __declspec(dllexport)
-  #else
-    #define LIBWMF_EXPORT __declspec(dllimport)
-  #endif
-#else
-  #define LIBWMF_EXPORT
-#endif
-
 /* These are the colors defined in the SVG standard (I haven't checked the final recommendation for changes)
  */
 LIBWMF_EXPORT wmfRGB wmf_aliceblue		= { 240, 248, 255 };
