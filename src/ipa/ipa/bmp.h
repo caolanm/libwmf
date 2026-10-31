@@ -66,7 +66,7 @@ static void ldr_bmp_png (wmfAPI* API,wmfBMP_Draw_t* bmp_draw,FILE* out)
 		return;
 	}
 
-	if (setjmp (png_ptr->jmpbuf))
+	if (setjmp (png_jmpbuf (png_ptr)))
 	{	WMF_DEBUG (API,"Failed to write bitmap as PNG! (setjmp failed)");
 		png_destroy_write_struct (&png_ptr,&info_ptr);
 		wmf_free (API,buffer);
