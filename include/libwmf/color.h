@@ -20,16 +20,6 @@
 #ifndef LIBWMF_COLOR_H
 #define LIBWMF_COLOR_H
 
-#ifdef _WIN32
-  #ifdef LIBWMF_EXPORTS
-    #define LIBWMF_EXPORT __declspec(dllexport)
-  #else
-    #define LIBWMF_EXPORT __declspec(dllimport)
-  #endif
-#else
-  #define LIBWMF_EXPORT
-#endif
-
 #include <libwmf/ipa.h>
 
 /* These are the color names specified by W3C for the SVG standard

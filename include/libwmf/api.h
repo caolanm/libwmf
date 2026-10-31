@@ -20,16 +20,6 @@
 #ifndef LIBWMF_API_H
 #define LIBWMF_API_H
 
-#ifdef _WIN32
-  #ifdef LIBWMF_EXPORTS
-    #define LIBWMF_EXPORT __declspec(dllexport)
-  #else
-    #define LIBWMF_EXPORT __declspec(dllimport)
-  #endif
-#else
-  #define LIBWMF_EXPORT
-#endif
-
 #include <zlib.h>
 
 #include <libwmf/types.h>

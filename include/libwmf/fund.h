@@ -20,6 +20,16 @@
 #ifndef LIBWMF_FUND_H
 #define LIBWMF_FUND_H
 
+/* Define LIBWMF_STATIC when building or linking a static libwmf on Windows.
+ */
+#if !defined(_WIN32) || defined(LIBWMF_STATIC)
+  #define LIBWMF_EXPORT
+#elif defined(LIBWMF_EXPORTS)
+  #define LIBWMF_EXPORT __declspec(dllexport)
+#else
+  #define LIBWMF_EXPORT __declspec(dllimport)
+#endif
+
 /* Other fundamental types: is this the best way to do it??
  * Potential conflicts with wv, or other, if not careful...
  */
