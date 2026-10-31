@@ -10,12 +10,15 @@ permissions:
 
 jobs:
   linux:
-    name: Ubuntu ${{ matrix.cc }}
+    name: Ubuntu ${{ matrix.name }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        cc: [gcc, clang]
+        include:
+          - { name: gcc, cc: gcc }
+          - { name: clang, cc: clang }
+          - { name: clang without GD, cc: clang, configure: --disable-gd }
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
@@ -26,7 +29,7 @@ jobs:
       - name: Configure
         run: |
           autoreconf -fi
-          ./configure CC=${{ matrix.cc }}
+          ./configure CC=${{ matrix.cc }} ${{ matrix.configure }}
       - name: Build
         run: make -j$(nproc)
       - name: Check
