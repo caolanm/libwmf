@@ -70,6 +70,8 @@ static void wmf_svg_device_begin (wmfAPI* API)
 	wmf_stream_printf (API,out,"\"http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd\">\n");
 
 	wmf_stream_printf (API,out,"<svg width=\"%u\" height=\"%u\"\n",ddata->width,ddata->height);
+	wmf_stream_printf (API,out,"\txmlns=\"http://www.w3.org/2000/svg\"\n");
+	wmf_stream_printf (API,out,"\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n");
 	wmf_stream_printf (API,out,"\txmlns:sodipodi=\"http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd\">\n");
 
 	if (ddata->Description)
