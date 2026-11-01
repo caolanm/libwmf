@@ -20,7 +20,7 @@ jobs:
           - { name: clang, cc: clang }
           - { name: clang without GD, cc: clang, configure: --disable-gd }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -47,7 +47,7 @@ jobs:
         run: |
           apk add --no-cache build-base autoconf automake libtool pkgconf \
             freetype-dev zlib-dev libpng-dev libjpeg-turbo-dev expat-dev
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Configure
         run: |
           autoreconf -fi
@@ -61,7 +61,7 @@ jobs:
     name: macOS
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Install dependencies
         run: brew install autoconf automake libtool pkgconf freetype libpng jpeg-turbo
       - name: Configure
@@ -97,7 +97,7 @@ jobs:
             mingw-w64-ucrt-x86_64-libpng
             mingw-w64-ucrt-x86_64-libjpeg-turbo
             mingw-w64-ucrt-x86_64-expat
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Configure
         run: |
           autoreconf -fi
@@ -125,7 +125,7 @@ jobs:
           dnf -y install autoconf automake libtool make pkgconf-pkg-config gettext-devel \
             mingw64-gcc mingw64-pkg-config mingw64-freetype mingw64-zlib \
             mingw64-libpng mingw64-libjpeg-turbo
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Configure
         run: |
           autoreconf -fi
