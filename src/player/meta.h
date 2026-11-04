@@ -707,6 +707,8 @@ static int meta_lines (wmfAPI* API,wmfRecord* Record)
 	{	fprintf (stderr,",%lu",(unsigned long) (2 * polyline.count));
 	}
 
+	if (polyline.count == 0) return (changed);
+
 	if (SCAN (API))
 	{	pen = WMF_DC_PEN (P->dc);
 
@@ -789,6 +791,8 @@ static int meta_polygon (wmfAPI* API,wmfRecord* Record)
 	if (SCAN (API) && DIAG (API))
 	{	fprintf (stderr,",%lu",(unsigned long) (2 * polyline.count));
 	}
+
+	if (polyline.count == 0) return (changed);
 
 	if (SCAN (API))
 	{	pen = WMF_DC_PEN (P->dc);
