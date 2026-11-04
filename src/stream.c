@@ -271,8 +271,6 @@ int wmf_stream_sputs (char* str,void* context)
 {	char* more = 0;
 	char* sptr = 0;
 
-	unsigned long max=0;
-
 	wmfDefaultStream* defstr = (wmfDefaultStream*) context;
 
 	wmfAPI* API = defstr->API;
@@ -288,7 +286,6 @@ int wmf_stream_sputs (char* str,void* context)
 
 			if (more == 0)
 			{	WMF_DEBUG (API,"bailing...");
-				defstr->max = max;
 				return (EOF);
 			}
 
