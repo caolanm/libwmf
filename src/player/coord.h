@@ -201,6 +201,16 @@ static double PixelWidth (wmfAPI* API)
 	case (MM_ISOTROPIC):	/* scale here depends on window & viewport extents */
 	case (MM_ANISOTROPIC):
 
+		/* If the metafile never set a viewport extent (META_SETVIEWPORTEXT),
+		 * the 1024x1024 default invented by this library is not real device
+		 * information. Using it would apply an arbitrary, usually highly
+		 * anisotropic scale to all logical coordinates and destroy the image
+		 * aspect ratio in rasterized output. Fall back to 1:1 mapping instead.
+		 */
+		if ((P->flags & PLAYER_VIEWPORT_EXT_SET) == 0)
+		{	return (1);
+		}
+
 		if (P->dc->Window.width == 0)
 		{	WMF_ERROR (API,"PixelWidth: window has bad size!");
 			API->err = wmf_E_BadFormat;
@@ -246,6 +256,11 @@ static double PixelHeight (wmfAPI* API)
 	{
 	case (MM_ISOTROPIC):	/* scale here depends on window & viewport extents */
 	case (MM_ANISOTROPIC):
+
+		/* See PixelWidth() above for the rationale. */
+		if ((P->flags & PLAYER_VIEWPORT_EXT_SET) == 0)
+		{	return (1);
+		}
 
 		if (P->dc->Window.height == 0)
 		{	WMF_ERROR (API,"PixelHeight: window has bad size!");
