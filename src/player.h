@@ -237,6 +237,7 @@ static wmfRecord OffsetRecord (wmfAPI*,wmfRecord*,unsigned long);
 #define PLAYER_SCANNED          (1 << 0)
 #define PLAYER_PLAY             (1 << 1)
 #define PLAYER_TLBR_D_SET       (1 << 2)
+#define PLAYER_VIEWPORT_EXT_SET   (1 << 3) /* META_SETVIEWPORTEXT was seen in the metafile */
 
 #define SCAN(API) ((((wmfPlayer_t*)((API)->player_data))->flags & PLAYER_PLAY) == 0)
 #define PLAY(API)  (((wmfPlayer_t*)((API)->player_data))->flags & PLAYER_PLAY)

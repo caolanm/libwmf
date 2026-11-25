@@ -381,6 +381,8 @@ static wmf_error_t WmfPlayMetaFile (wmfAPI* API)
 
 	WMF_DEBUG (API,"~~~~~~~~WmfPlayMetaFile");
 
+	P->flags &= ~PLAYER_VIEWPORT_EXT_SET; /* set again if META_SETVIEWPORTEXT is met */
+
 	P->dc_stack_length = 0;
 
 	visible = &(P->visible);

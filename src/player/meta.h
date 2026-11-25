@@ -68,6 +68,7 @@ static int meta_orgext (wmfAPI* API,wmfRecord* Record)
 	case META_SETVIEWPORTEXT:
 		P->Viewport_Width  = par_S32_x;
 		P->Viewport_Height = par_S32_y;
+		P->flags |= PLAYER_VIEWPORT_EXT_SET; /* real viewport extent supplied */
 		PixelWidth (API);
 		PixelHeight (API); /* Recalculate pixel size */
 	break;
